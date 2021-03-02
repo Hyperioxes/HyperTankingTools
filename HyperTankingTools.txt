@@ -1,0 +1,25 @@
+## APIVersion: 100033
+## Title: HyperTankingTools
+## Version: 1.12b
+## Author: Hyperioxes
+## Description: Set of trackers and tools that help with tanking
+## SavedVariables: HyperTankingToolsSV
+## DependsOn: LibAddonMenu-2.0>=31 LibMsgWin-1.0
+
+
+
+
+HyperTankingTools.lua
+Settings.lua
+Variables.lua
+Functions.lua
+InitializeUI.lua
+UpdateUI.lua
+PreviewUI.lua
+BlockFormula.lua
+DodgeRollData.lua
+DefaultSettings.lua
+Events.lua
+Alerts.lua
+TextureList.lua
+DodgeRoll.lua
