@@ -23,6 +23,8 @@ HTT_DodgeRollData = {
 	[137544] = {duration = 2.5,notOnlyPlayer = true,texture = "/esoui/art/icons/ability_u26_vampire_02_b.dds",isOnByDefault = true}, -- Rive (moving)
 	[137285] = {duration = 3,0,notOnlyPlayer = true,texture = "/esoui/art/icons/ability_u26_vampire_02_b.dds",isOnByDefault = true}, -- Rive (normal phase)
 	[137833] = {duration = 2.5,notOnlyPlayer = true,texture = "/esoui/art/icons/ability_u26_vampire_02_b.dds",isOnByDefault = true}, -- Rive (boss flying phase)
+	[140031] = {duration = 2.5,notOnlyPlayer = true,texture = "/esoui/art/icons/ability_u26_vampire_02_b.dds",isOnByDefault = true,notBeginning = 2240}, -- Rive
+	[140035] = {duration = 2.5,notOnlyPlayer = true,texture = "/esoui/art/icons/ability_u26_vampire_02_b.dds",isOnByDefault = true,notBeginning = 2240}, -- Rive
 	--missing rive id
 	},
 	["Stone Garden"] = {

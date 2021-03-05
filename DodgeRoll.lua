@@ -109,7 +109,7 @@ function HTT_DodgeRoll_Events()
 	EVENT_MANAGER:RegisterForEvent("coneDebug", EVENT_COMBAT_EVENT, function( eventCode, result, isError, abilityName, abilityGraphic, 
 	abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
 
-	--d(eventCode.."-"..result.."-"..abilityName.."-"..abilityId.."-"..targetType.."-"..powerType.."-"..hitValue)
+	--d(eventCode.."-"..result.."-"..GetAbilityName(abilityId).."-"..abilityId.."-"..targetType.."-"..powerType.."-"..hitValue)
 	end)
 	--EVENT_MANAGER:AddFilterForEvent("coneDebug", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,17228)
 
@@ -117,7 +117,7 @@ function HTT_DodgeRoll_Events()
 	for _,v in pairs(HTT_DodgeRollData) do
 		for k1,v1 in pairs(v) do
 			if HTTsavedVars[HTT_variables.currentlySelectedProfile].alertNotifications[k1] then
-				HTT_DodgeRoll_RegisterEvent(k1,v1.duration,v1.notOnlyPlayer,v1.sound,v1.texture,v1.dodgeDurationOverride,v1.onlyBlock,v1.preventDouble,v1.nameOverride,v1.sourceNameOverride)
+				HTT_DodgeRoll_RegisterEvent(k1,v1.duration,v1.notOnlyPlayer,v1.sound,v1.texture,v1.dodgeDurationOverride,v1.onlyBlock,v1.preventDouble,v1.nameOverride,v1.sourceNameOverride,v1.notBeginning)
 			end
 		end
 	end
@@ -198,11 +198,11 @@ function HTT_DodgeRoll_Update()
 	end
 end
 
-function HTT_DodgeRoll_RegisterEvent(abilityID,duration,notOnlyPlayer,sound,texture,dodgeDurationOverride,onlyBlock,preventDouble,nameOverride,sourceNameOverride)
+function HTT_DodgeRoll_RegisterEvent(abilityID,duration,notOnlyPlayer,sound,texture,dodgeDurationOverride,onlyBlock,preventDouble,nameOverride,sourceNameOverride,notBeginning)
 	EVENT_MANAGER:RegisterForEvent("HTT"..abilityID..duration, EVENT_COMBAT_EVENT, function( _, result, _, abilityName, _, 
 	_, sourceName, _, _, targetType, hitValue, _, _, _, _, _, _)
 
-	if (result == ACTION_RESULT_BEGIN and ((targetType == COMBAT_UNIT_TYPE_PLAYER) or notOnlyPlayer) and (preventDouble==nil or preventDouble==hitValue)) then
+	if ((result == ACTION_RESULT_BEGIN or result == notBeginning) and ((targetType == COMBAT_UNIT_TYPE_PLAYER) or notOnlyPlayer) and (preventDouble==nil or preventDouble==hitValue)) then
 		HTT_DodgeRoll_SendAlert(abilityID,nameOverride or abilityName,duration,sourceNameOverride or sourceName,texture,dodgeDurationOverride,onlyBlock)
 		if sound  then
 			PlaySound(sound)
