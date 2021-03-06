@@ -496,7 +496,7 @@ function HTT_updateUI.UpdateCombat()
 						duration = (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][v][GetUnitName("reticleover")] or 0)
 					end
 					if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Weapon Skill" then
-						if (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Crusher")][GetUnitName("reticleover")] or 0) > GetGameTimeSeconds() then
+						if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Crusher") ~= nil and (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Crusher")][GetUnitName("reticleover")] or 0) > GetGameTimeSeconds() then
 							HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v] = HTT_functions.crushersLeft(remainingTime,(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Crusher")][GetUnitName("reticleover")] or 0) - GetGameTimeSeconds()).." crushers left"
 						else
 							HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v] = HTT_functions.crushersLeft(remainingTime,0).." crushers left"

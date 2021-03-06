@@ -1,6 +1,6 @@
 ## APIVersion: 100033
 ## Title: HyperTankingTools
-## Version: 1.12b
+## Version: 1.13
 ## Author: Hyperioxes
 ## Description: Set of trackers and tools that help with tanking
 ## SavedVariables: HyperTankingToolsSV

@@ -427,7 +427,7 @@ function HTT_LoadSettings()
         name = "Hyper Tanking Tools",
         displayName = "Hyper Tanking Tools",
         author = "Hyperioxes",
-        version = "1.12b",
+        version = "1.13",
 		website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
 		feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
 		donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
@@ -1378,7 +1378,7 @@ function HTT_LoadSettings()
 		 table.insert(optionsTable, {
         type = "submenu",
         name = "Class Special Tracker",
-        tooltip = "Settings of class special tracker (Stonefist for DK, Shimmering Shield for Warden)",	--(optional)
+        tooltip = "Settings of class special tracker (Stonefist for DK, Shimmering Shield for Warden and Empower for Necro)",	--(optional)
         controls = {
 
         },
@@ -3144,7 +3144,7 @@ function HTT_LoadSettings()
      table.insert(optionsTable, {
         type = "submenu",
         name = "Notifications",
-        tooltip = "tip",	--(optional)
+        --tooltip = "tip",	--(optional)
         controls = {},
     })
 
@@ -3170,7 +3170,7 @@ function HTT_LoadSettings()
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].alertNotifications[k1] end,
                 setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].alertNotifications[k1] = value 
                 if value then
-                    HTT_DodgeRoll_RegisterEvent(k1,v1.duration,v1.notOnlyPlayer,v1.sound,v1.texture,v1.dodgeDurationOverride,v1.onlyBlock,v1.preventDouble,v1.nameOverride,v1.sourceNameOverride)
+                    HTT_DodgeRoll_RegisterEvent(k1,v1.duration,v1.notOnlyPlayer,v1.sound,v1.texture,v1.dodgeDurationOverride,v1.onlyBlock,v1.preventDouble,v1.nameOverride,v1.sourceNameOverride,v1.resultOverride or 2200)
                 else
                     EVENT_MANAGER:UnregisterForEvent("HTT"..k1..v1.duration, EVENT_COMBAT_EVENT)
                 end
