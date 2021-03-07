@@ -842,7 +842,8 @@ function HTT_functions.AddIDtoDebuff(abilityID,tableSlot)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][tableSlot] = {[#HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][tableSlot]+1] = abilityID}
 end
 
-function HTT_functions.addDebuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,onlyCastByPlayer)
+function HTT_functions.addDebuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,onlyCastByPlayer,skill,itemSet)
+
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][tableSlot] = nameOfTracker
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][tableSlot] = {[1] = abilityID}
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["icons"][tableSlot] = GetAbilityIcon(abilityID)
@@ -853,19 +854,21 @@ function HTT_functions.addDebuff(nameOfTracker,abilityID,tableSlot,text,textWhen
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][tableSlot][2] = color[2]
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][tableSlot][3] = color[3]
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][tableSlot][4] = color[4]
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors2"][tableSlot] = {unpack(color2 or {})}
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors3"][tableSlot] = {unpack(color3 or {})}
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][tableSlot] = true
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"][tableSlot] = true
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["textWhenMissing"][tableSlot] = textWhenMissing
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][tableSlot] = {}
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][tableSlot] = {}
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][tableSlot] = {}
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][tableSlot] = skill or {}
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][tableSlot] = itemSet or {}
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["onlyCastByPlayer"][tableSlot] = onlyCastByPlayer
 	table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs,tableSlot)
 
 
 end
 
-function HTT_functions.addCooldown(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,duration)
+function HTT_functions.addCooldown(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"][tableSlot] = nameOfTracker
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][tableSlot] = {[1] = abilityID}
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["icons"][tableSlot] = GetAbilityIcon(abilityID)
@@ -905,6 +908,8 @@ function HTT_functions.removeDebuff(tableSlot)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][tableSlot] = nil
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][tableSlot] = nil
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][tableSlot] = nil
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors2"][tableSlot] = nil
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors3"][tableSlot] = nil
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][tableSlot] = nil
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["textWhenMissing"][tableSlot] = nil
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][tableSlot] = nil

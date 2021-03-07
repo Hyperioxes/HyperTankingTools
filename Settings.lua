@@ -661,11 +661,11 @@ function HTT_LoadSettings()
 
             [8] = {
                 type = "checkbox",
-                name = "(BETA) Alert UI visibility",
+                name = "(BETA) Attack Pattern UI visibility",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isAlertUIOn end,
                 setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].isAlertUIOn = value end,
                 width = "half",	--or "half" (optional)
-                tooltip = "Turns ON/OFF the window with alerts (currently only works on Arkasis)",
+                tooltip = "Turns ON/OFF the window with cooldowns of enemy's mechanics (currently only works on Arkasis)",
             },
             [9] = {
                 type = "checkbox",
@@ -1932,7 +1932,7 @@ function HTT_LoadSettings()
 				type = "button",
 				name = "Create Debuff Tracker",
 				func = function() local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
-                HTT_functions.addDebuff(createNewDebuffSavedVariables["name"],createNewDebuffSavedVariables["ID"],freeSlot,createNewDebuffSavedVariables["text"],createNewDebuffSavedVariables["textWhenMissing"],createNewDebuffSavedVariables["color"],createNewDebuffSavedVariables["onlyPlayer"])  
+                HTT_functions.addDebuff(createNewDebuffSavedVariables["name"],createNewDebuffSavedVariables["ID"],freeSlot, createNewDebuffSavedVariables["text"],createNewDebuffSavedVariables["textWhenMissing"],createNewDebuffSavedVariables["color"],nil,nil,createNewDebuffSavedVariables["onlyPlayer"],nil,nil)  
 				currentlyEditedDebuffKey = freeSlot
                 refreshAllDebuffTrackerInfo()
                 if HTT:GetNamedChild("DurationTimerReticle"..freeSlot) == nil then
@@ -3313,4 +3313,141 @@ function HTT_LoadSettings()
     })]]
     
     LibAddonMenu2:RegisterOptionControls("Hyper Tanking Tools", optionsTable)
+end
+
+
+
+local function createList(table)
+    if table then
+        local holder = ""
+        for _,text in pairs(table) do
+            holder = holder.."-"..text.." - "..GetAbilityName(text).."\n"
+        end
+        return holder
+    else
+        return "-none"
+    end
+end
+
+
+function HTT_LoadSettingsPremadeTrackers()
+    local panelData = {
+        type = "panel",
+        name = "Hyper Tanking Tools - Premade Trackers",
+        displayName = "Hyper Tanking Tools - Premade Trackers",
+        author = "Hyperioxes",
+        version = "1.13",
+		website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
+		feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
+		donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
+        slashCommand = "/httpt",
+        registerForRefresh = true,
+        registerForDefaults = true,
+    }
+    LibAddonMenu2:RegisterAddonPanel("Hyper Tanking Tools - Premade Trackers", panelData)
+
+    local optionsTable = {}
+    for nameOfSubmenu,tableOfTrackers in pairs(HTTPremadeTrackersData) do
+        local submenuCounter = 1
+        table.insert(optionsTable, {
+                type = "submenu",
+                name = nameOfSubmenu,
+                --tooltip = "My submenu tooltip",	--(optional)
+                controls = {},
+        })
+        local trackerCounter = 1
+             for trackerName,trackerVariables in pairs(tableOfTrackers) do
+             
+             table.insert(optionsTable[submenuCounter].controls, {
+                type = "submenu",
+                name = "|t32:32:"..GetAbilityIcon(trackerVariables.ID).."|t   "..trackerName,
+                --tooltip = "My submenu tooltip",	--(optional)
+                controls = {},
+            })
+            table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
+                type = "texture",
+                image = GetAbilityIcon(trackerVariables.ID),
+                imageWidth = 100,	--max of 250 for half width, 510 for full
+                imageHeight = 100,	--max of 100
+                --tooltip = "Image's tooltip text.",	--(optional)
+                width = "half",	--or "half" (optional)
+            })
+            table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
+                type = "description",
+                title = "|cffd769"..trackerName.."|r",	--(optional)
+                text = trackerVariables.description,
+                width = "half",	--or "half" (optional)
+            })
+            table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
+                type = "description",
+                title = "|cffd769Text displayed when applied:|r",	--(optional)
+                text = trackerVariables.text,
+                width = "half",	--or "half" (optional)
+            })
+            table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
+                type = "description",
+                title = "|cffd769Text displayed when missing:|r",	--(optional)
+                text = trackerVariables.textWhenMissing,
+                width = "half",	--or "half" (optional)
+            })
+            table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
+                type = "description",
+                title = "|cffd769Tracked ID:|r",	--(optional)
+                text = trackerVariables.ID.."",
+                width = "half",	--or "half" (optional)
+            })
+            table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
+                type = "description",
+                title = "|cffd769Tracked item set:|r",	--(optional)
+                text = trackerVariables.itemSetToShow or "none",
+                width = "half",	--or "half" (optional)
+            })
+            table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
+                type = "description",
+                title = "|cffd769List of tracked skills:|r",	--(optional)
+                text = createList(trackerVariables.skills or nil),
+                width = "half",	--or "half" (optional)
+            })
+            --[[table.insert(optionsTable[1].controls, {
+                type = "colorpicker",
+                name = "Color (can be changed before adding)",
+                --tooltip = "Color Picker's tooltip text.",
+                getFunc = function() return 1, 0, 0, 1 end,	--(alpha is optional)
+                setFunc = function(r,g,b,a) print(r, g, b, a) end,	--(alpha is optional)
+                width = "half",	--or "half" (optional)
+            })]]
+            table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
+                type = "button",
+                name = "Add to current profile",
+                --tooltip = "Button's tooltip text.",
+                func = function() 
+                	        if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],trackerName) then
+		                        d("Duplicate tracker name")
+	                        else
+                               local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
+                               HTT_functions.addDebuff(trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills,trackerVariables.itemSet)  
+                                refreshAllDebuffTrackerInfo()
+                                if HTT:GetNamedChild("DurationTimerReticle"..freeSlot) == nil then
+                                    HTT_functions.createDebuffControl(freeSlot)
+                                    HTT_functions.createBossDebuffControl(freeSlot)
+                                end
+                                if trackerName == "Weapon Skill" then
+                                    HTT_functions.GenerateWeaponEvent(trackerVariables.ID,freeSlot)
+                                else
+                                    HTT_functions.initializeEventsDebuffs(trackerVariables.ID,freeSlot)
+                                end
+                                HTT_functions.reanchorReticle()
+                                HTT_functions.reanchorBoss()
+                            end
+				        end,
+                width = "half",	--or "half" (optional)
+                --warning = "Will need to reload the UI.",	--(optional)
+            })
+            trackerCounter = trackerCounter+1
+        end
+        
+        submenuCounter = submenuCounter+1
+    end
+
+    LibAddonMenu2:RegisterOptionControls("Hyper Tanking Tools - Premade Trackers", optionsTable)
 end
