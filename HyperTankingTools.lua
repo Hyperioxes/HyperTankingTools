@@ -559,6 +559,7 @@ function OnAddOnLoaded(event, addonName)
 
 	
 	HTT_LoadSettings()
+	HTT_LoadSettingsPremadeTrackers()
 	if HTTsavedVars[HTT_variables.currentlySelectedProfile].isStoneFistCustomIconOn then
 		StonefistStompIconHook()
 	end
