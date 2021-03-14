@@ -427,7 +427,7 @@ function HTT_LoadSettings()
         name = "Hyper Tanking Tools",
         displayName = "Hyper Tanking Tools",
         author = "Hyperioxes",
-        version = "1.13",
+        version = "1.14b",
 		website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
 		feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
 		donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
@@ -2614,7 +2614,7 @@ function HTT_LoadSettings()
                     HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey][#HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey]+1] = addNewIDToExistingCooldown 
                     IDdropdownCooldown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey]  or {"No IDs"}
                     IDdropdownCooldown:UpdateChoices()
-                    HTT_functions.initializeEventsCooldowns(addNewIDToExistingCooldown,currentlyEditedCooldownKey)
+                    HTT_functions.GenerateCooldownEvent(addNewIDToExistingCooldown,currentlyEditedCooldownKey)
                 end
                 end,
 				width = "half",

@@ -31,6 +31,24 @@ HTT_DodgeRollData = {
 		[135953] = {duration = 2,notOnlyPlayer = true,nameOverride = "Stomp", sourceNameOverride = "Exarch Kraglen",texture="esoui/art/icons/ability_u27_behemothtremor.dds",isOnByDefault = true}, -- Exarch Kraglen Stomp
 		[133440] = {duration = 0.25,sound = SOUNDS.DUEL_START,isOnByDefault = true}, -- Scalding Stab
 	},
-
+	["Asylum Sanctorium"] = {
+		[95428] = {duration = 1,isOnByDefault = true} --Swipe
+	},
+	["Black Drake Villa"] = {
+		[142717] = {duration = 2.15,isOnByDefault = true}, --Clobber, Kinras Ironeye
+		[142612] = {duration = 2,isOnByDefault = true}, --Fiery Blast, Kinras Ironeye
+		[141958] = {duration = 1.5,isOnByDefault = true}, --Knuckle Duster, Captain Geminus
+		[151647] = {duration = 1.8,isOnByDefault = true}, --Slice, Air Atronach
+		[141427] = {duration = 1.4,isOnByDefault = true}, --Heartsfire Spear, Pyroturge Encratis
+		[150380] = {duration = 0.6,isOnByDefault = true,sound = SOUNDS.DUEL_START}, --Glacial Gash, Sentinel Aksalaz
+		[150366] = {duration = 2,isOnByDefault = true}, --Ravaging Blow, Sentinel Aksalaz
+	},
+	["Icereach"] = {
+		[125690] = {duration = 1,isOnByDefault = true}, --Frigid Swing, Gohlla's Giant
+	},
+	["Cauldron"] = {
+		[146179] = {duration = 1,isOnByDefault = true}, --Galvanic Blow, Baron Zaudrus
+		[146142] = {duration = 2.5,isOnByDefault = true} --Hammer Down, Baron Zaudrus
+	},
 
 }

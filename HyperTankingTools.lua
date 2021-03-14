@@ -164,13 +164,17 @@ function OnAddOnLoaded(event, addonName)
 	for _,profile in pairs(HTTsavedVars["availableProfiles"]) do
 		if type(HTTsavedVars[profile].alertNotifications) ~= "table" then
 			HTTsavedVars[profile].alertNotifications = {}
-			for k,v in pairs(HTT_DodgeRollData) do
-				for k1,v1 in pairs(v) do
+		end
+		for k,v in pairs(HTT_DodgeRollData) do
+			for k1,v1 in pairs(v) do
+				if HTTsavedVars[profile].alertNotifications[k1] == nil then
 					HTTsavedVars[profile].alertNotifications[k1] = v1.isOnByDefault or false
 				end
 			end
 		end
+		
 	end
+
 
 	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
 		if HTTsavedVars[v].cooldownFont == nil then

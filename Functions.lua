@@ -868,7 +868,7 @@ function HTT_functions.addDebuff(nameOfTracker,abilityID,tableSlot,text,textWhen
 
 end
 
-function HTT_functions.addCooldown(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color)
+function HTT_functions.addCooldown(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,duration)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"][tableSlot] = nameOfTracker
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][tableSlot] = {[1] = abilityID}
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["icons"][tableSlot] = GetAbilityIcon(abilityID)

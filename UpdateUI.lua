@@ -97,7 +97,7 @@ function HTT_updateUI.UpdateAlways()
 		local stamina,maxStamina = GetUnitPower("player",POWERTYPE_STAMINA)
 		local dodgeRollDuration = HTT_functions.GetUnitInfo({29721},"player")
 		dodgeRollDuration = dodgeRollDuration - 2
-		if dodgeRollDuration < 0 then
+		if dodgeRollDuration < 0 and dodgeRollCost > 0 then
 			staminaLine:SetHidden(false)
 			local correction
 			if stamina>dodgeRollCost then
@@ -354,8 +354,10 @@ function HTT_updateUI.UpdateCombat()
 		end
 		local blockCost = HTTBlock:GetNamedChild("blockCost")
 		local blockMitigation = HTTBlock:GetNamedChild("blockMitigation")
-		blockCost:SetText(HTT_blockFormula.GetBlockCost())
-		blockMitigation:SetText(HTT_blockFormula.GetBlockMitigation().."%")
+		local _,blockCostValue = GetAdvancedStatValue(1)
+		local _,_,blockMitigationValue = GetAdvancedStatValue(7)
+		blockCost:SetText(blockCostValue)
+		blockMitigation:SetText(blockMitigationValue.."%")
 		if (GetItemWeaponType(BAG_WORN,EQUIP_SLOT_MAIN_HAND) == WEAPONTYPE_FROST_STAFF and GetActiveWeaponPairInfo() == ACTIVE_WEAPON_PAIR_MAIN) or (GetItemWeaponType(BAG_WORN,EQUIP_SLOT_BACKUP_MAIN) == WEAPONTYPE_FROST_STAFF and GetActiveWeaponPairInfo() == ACTIVE_WEAPON_PAIR_BACKUP) then
 			blockCost:SetColor(24/255,0,242/255)
 			blockMitigation:SetColor(24/255,0,242/255)
@@ -477,7 +479,6 @@ function HTT_updateUI.UpdateCombat()
 		local width = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffUIWidth
 		local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffUIHeight
 		local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffUIScale
-		local minorMaimEndingAt = 0
 		for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
 				local textInBar = HTT:GetNamedChild("TextInBarReticle"..v)
 				local durationTimer = HTT:GetNamedChild("DurationTimerReticle"..v)
@@ -490,9 +491,6 @@ function HTT_updateUI.UpdateCombat()
 						duration = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][v]
 					else
 						remainingTime,stacks,_,abilityID = HTT_functions.GetUnitInfo(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][v],"reticleover")
-						if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Minor Maim" then
-							minorMaimEndingAt = remainingTime+GetGameTimeSeconds()
-						end
 						duration = (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][v][GetUnitName("reticleover")] or 0)
 					end
 					if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Weapon Skill" then
@@ -540,16 +538,8 @@ function HTT_updateUI.UpdateCombat()
 					else
 						textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v])
 					end
-				
-					if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Minor Brittle" and (minorMaimEndingAt-4)>GetGameTimeSeconds() then
-						textInBar:SetText("Minor Brittle Impossible")
-						durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors2"][v]))
-					end
+
 				else
-					if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Minor Maim" then
-						remainingTime = HTT_functions.GetUnitInfo(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][v],"reticleover")
-						minorMaimEndingAt = remainingTime+GetGameTimeSeconds()
-					end
 					durationTimer:SetHidden(true)
 					durationBar:SetHidden(true)
 					icon:SetHidden(true)
@@ -580,9 +570,6 @@ function HTT_updateUI.UpdateCombat()
 				bossName:SetText(GetUnitName("boss"..i))
 				bossBackground:SetHidden(false)
 
-
-				local minorMaimEndingAt = 0
-				
 				for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
 					local textInBar = _G["HTTBoss"..i]:GetNamedChild("TextInBarBoss"..v..i)
 					local durationTimer = _G["HTTBoss"..i]:GetNamedChild("DurationTimerBoss"..v..i)
@@ -666,17 +653,7 @@ function HTT_updateUI.UpdateCombat()
 						else
 							textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v])
 					end
-				
-					if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Minor Brittle" and (minorMaimEndingAt-4)>GetGameTimeSeconds() then
-						textInBar:SetText("Minor Brittle Impossible")
-						durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors2"][v]))
-					end
-
 					else
-						if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Minor Maim" then
-							remainingTime = HTT_functions.GetUnitInfo(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][v],"reticleover")
-							minorMaimEndingAt = remainingTime+GetGameTimeSeconds()
-						end
 						durationTimer:SetHidden(true)
 						durationBar:SetHidden(true)
 						icon:SetHidden(true)

@@ -85,19 +85,19 @@ function HTT_DodgeRoll_Events()
 
 	EVENT_MANAGER:RegisterForEvent("DodgeRollCastBeginDebug", EVENT_COMBAT_EVENT, function( eventCode, result, isError, abilityName, abilityGraphic, 
 	abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
-	if (result == ACTION_RESULT_BEGIN) then
+	if (result == ACTION_RESULT_BEGIN and targetType == COMBAT_UNIT_TYPE_PLAYER) then
 		debugCounter[abilityId] = GetGameTimeSeconds()
-		--d(eventCode.."-"..result.."-"..abilityName.."-"..abilityId.."-"..targetType.."-"..hitValue)
+		d(eventCode.."-"..result.."-"..GetAbilityName(abilityId).."-"..abilityId.."-"..targetType.."-"..hitValue)
 	end
 	end)
-	--EVENT_MANAGER:AddFilterForEvent("DodgeRollCastBeginDebug", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,17046)
+	--EVENT_MANAGER:AddFilterForEvent("DodgeRollCastBeginDebug", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,95428)
 	EVENT_MANAGER:RegisterForEvent("DodgeRollCastCompleteDebug", EVENT_COMBAT_EVENT, function( eventCode, result, isError, abilityName, abilityGraphic, 
 	abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
-	if ((result == 2250 or result == 2151 or result == 2140) --[[and targetType == COMBAT_UNIT_TYPE_PLAYER]] and debugCounter[abilityId] ~= nil) then
-		--d(abilityName.." has a duration of:"..GetGameTimeSeconds()-debugCounter[abilityId])
+	if ((result == 2250 or result == 2151 or result == 2140) and targetType == COMBAT_UNIT_TYPE_PLAYER and debugCounter[abilityId] ~= nil) then
+		d(GetAbilityName(abilityId).." has a duration of:"..GetGameTimeSeconds()-debugCounter[abilityId])
 	end
 	end)
-	--EVENT_MANAGER:AddFilterForEvent("DodgeRollCastCompleteDebug", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,17046)
+	--EVENT_MANAGER:AddFilterForEvent("DodgeRollCastCompleteDebug", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,95428)
 	
 	--[[
 	2200 begin
