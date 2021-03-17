@@ -9,7 +9,11 @@ function HTT_events.generateEvents()
 	EVENT_MANAGER:AddFilterForEvent("AlkoshCheckName", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID,75753)
 
 	EVENT_MANAGER:RegisterForEvent("AlkoshApplied", EVENT_COMBAT_EVENT, function(_,_,_,_,_,_,_,_,_,_,hitValue,_,_,_,_,targetUnitID) 
-		HTT_variables.alkoshHits[targetUnitID] = hitValue 
+		local value = GetPlayerStat(STAT_POWER, STAT_BONUS_OPTION_APPLY_BONUS)
+		if value > 3000 then
+			value = 3000
+		end
+		HTT_variables.alkoshHits[targetUnitID] = value
 	end)
 	EVENT_MANAGER:AddFilterForEvent("AlkoshApplied", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,75752)
 
@@ -22,11 +26,7 @@ function HTT_events.generateEvents()
 	
 
 
-	EVENT_MANAGER:RegisterForEvent("DragonBlood", EVENT_COMBAT_EVENT, function()    -- Dragon Blood can't be tracked any other way and EVENT_COMBAT_EVENT has to be used
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["expiresAt"][3] = GetGameTimeSeconds() + HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][3]
-	end)
-	EVENT_MANAGER:AddFilterForEvent("DragonBlood", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,32745)
-	EVENT_MANAGER:AddFilterForEvent("DragonBlood", EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE ,1)
+
 
 
 
@@ -143,23 +143,35 @@ function HTT_events.generateEvents()
 
 
 	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"]) do -- generate all regular debuff events
-		if k~=5 then --  weapon skills (there's more than one)
-			if type(v) == "table" then
+		if type(v) == "table" then
+			if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][k] == "Weapon Skill" then
 				for _,v1 in pairs(v) do
-					HTT_functions.initializeEventsDebuffs(v1,k)
+					HTT_functions.GenerateWeaponEvent(v1,k)
 				end
 			else
-				HTT_functions.initializeEventsDebuffs(v,k)
+			for _,v1 in pairs(v) do
+				HTT_functions.initializeEventsDebuffs(v1,k)
 			end
+			end
+		else
+			HTT_functions.initializeEventsDebuffs(v,k)
 		end
 	end
 
 	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"]) do -- generate all regular buff events
-		if k~=3 then -- exclude dragon blood
-			if type(v) == "table" then
+		if type(v) == "table" then
+			if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][k] == "Dragon Blood" then
+				for _,v1 in pairs(v) do
+					HTT_functions.initializeEventsBuffsCombatEvent(v1,k,23)
+				end
+			else
 				for _,v1 in pairs(v) do
 					HTT_functions.initializeEventsBuffs(v1,k)
 				end
+			end
+		else
+			if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][k] == "Dragon Blood" then
+				HTT_functions.initializeEventsBuffsCombatEvent(v,k,23)
 			else
 				HTT_functions.initializeEventsBuffs(v,k)
 			end
@@ -167,10 +179,7 @@ function HTT_events.generateEvents()
 	end
 			
 
-	 -- generate events of all weapon skills
-	for k,v in pairs(HTT_variables.weaponSkills) do
-		HTT_functions.GenerateWeaponEvent(k,v)
-	end
+
 
 	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"]) do
 		for _,v1 in pairs(v) do
@@ -194,7 +203,7 @@ end
 
 function HTT_events.nullifyRemainingTimes()
 	for k,_ in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"]) do -- nullify all expiration times for debuffs
-		if k==5 then
+		if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][k] == "Weapon Skill" then
 			HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][k] = 0
 		else
 			HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][k] = {}
@@ -203,7 +212,7 @@ function HTT_events.nullifyRemainingTimes()
 	
 
 	for k,_ in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"]) do -- nullify all duration times for debuffs
-		if k==5 then
+		if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][k] == "Weapon Skill" then
 			HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][k] = 0
 		else
 			HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][k] = {}
@@ -211,7 +220,7 @@ function HTT_events.nullifyRemainingTimes()
 	end
 
 	for k,_ in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"]) do -- nullify all duration times for buffs
-		if k==3 then
+		if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][k] == "Dragon Blood" then
 			HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][k] = 23
 		else
 			HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][k] = 0
@@ -236,45 +245,35 @@ end
 
 
 function HTT_events.unregisterEvents()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"]) do -- generate all regular debuff events
-		if k~=5 then --  weapon skills (there's more than one)
-			if type(v) == "table" then
-				for _,v1 in pairs(v) do
-					EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
-				end
-			else
-				EVENT_MANAGER:UnregisterForEvent("HTT"..v, EVENT_EFFECT_CHANGED)
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"]) do 
+		if type(v) == "table" then
+			for _,v1 in pairs(v) do
+				EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
 			end
+		else
+			EVENT_MANAGER:UnregisterForEvent("HTT"..v, EVENT_EFFECT_CHANGED)
 		end
 	end
 
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"]) do -- generate all regular buff events
-		if k~=3 then -- exclude dragon blood
-			if type(v) == "table" then
-				for _,v1 in pairs(v) do
-					EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
-				end
-			else
-				EVENT_MANAGER:UnregisterForEvent("HTT"..v, EVENT_EFFECT_CHANGED)
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"]) do 
+		if type(v) == "table" then
+			for _,v1 in pairs(v) do
+				EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
 			end
+		else
+			EVENT_MANAGER:UnregisterForEvent("HTT"..v, EVENT_EFFECT_CHANGED)
 		end
 	end
 			
-
-	 --[[ --generate events of all weapon skills
-	for k,v in pairs(HTT_variables.weaponSkills) do
-		HTT_functions.GenerateWeaponEvent(k,v)
-	end
-	]]
 	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"]) do
 		for _,v1 in pairs(v) do
-			EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
+			EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_COMBAT_EVENT)
 		end
 	end
 
 	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["IDs"]) do
 		for _,v1 in pairs(v) do
-			EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
+			EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_COMBAT_EVENT)
 		end
 	end
 end

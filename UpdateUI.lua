@@ -356,8 +356,8 @@ function HTT_updateUI.UpdateCombat()
 		local blockMitigation = HTTBlock:GetNamedChild("blockMitigation")
 		local _,blockCostValue = GetAdvancedStatValue(1)
 		local _,_,blockMitigationValue = GetAdvancedStatValue(7)
-		blockCost:SetText(blockCostValue)
-		blockMitigation:SetText(blockMitigationValue.."%")
+		blockCost:SetText(math.floor(blockCostValue))
+		blockMitigation:SetText(math.floor(blockMitigationValue).."%")
 		if (GetItemWeaponType(BAG_WORN,EQUIP_SLOT_MAIN_HAND) == WEAPONTYPE_FROST_STAFF and GetActiveWeaponPairInfo() == ACTIVE_WEAPON_PAIR_MAIN) or (GetItemWeaponType(BAG_WORN,EQUIP_SLOT_BACKUP_MAIN) == WEAPONTYPE_FROST_STAFF and GetActiveWeaponPairInfo() == ACTIVE_WEAPON_PAIR_BACKUP) then
 			blockCost:SetColor(24/255,0,242/255)
 			blockMitigation:SetColor(24/255,0,242/255)
@@ -489,6 +489,7 @@ function HTT_updateUI.UpdateCombat()
 						remainingTime = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][v] - GetGameTimeSeconds()
 						stacks = 1
 						duration = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][v]
+						
 					else
 						remainingTime,stacks,_,abilityID = HTT_functions.GetUnitInfo(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][v],"reticleover")
 						duration = (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][v][GetUnitName("reticleover")] or 0)

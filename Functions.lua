@@ -514,6 +514,13 @@ function HTT_functions.pickAnyKey(array)
 	end
 end
 
+function HTT_functions.checkIfTableIsEmpty(table)
+	for _,_ in pairs(table) do
+		return false
+	end
+	return true
+end
+
 function HTT_functions.removeEmptySpacesInTable(array)
 	local holder = {}
 	for _,v in pairs(array) do
@@ -673,10 +680,10 @@ end
 
 
 
-function HTT_functions.TurnOnCooldownsForWornSets()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"]) do
-		if type(v[1]) == "string" and type(v[2]) == "number" then
-			if HTT_functions.CheckIfNumberOfPiecesIsWorn(v[2],v[1]) then
+function HTT_functions.adjustCooldowns()
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"]) do
+		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][k][1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][k]) then
+			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][k]) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][k][1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][k]) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][k])) then
 				HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isTurnedOn"][k] = true
 			else
 				HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isTurnedOn"][k] = false
@@ -685,10 +692,10 @@ function HTT_functions.TurnOnCooldownsForWornSets()
 	end
 end
 
-function HTT_functions.TurnOnDebuffsForWornSets()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"]) do
-		if type(v[1]) == "string" and type(v[2]) == "number" then
-			if HTT_functions.CheckIfNumberOfPiecesIsWorn(v[2],v[1]) then
+function HTT_functions.adjustDebuffs()
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"]) do
+		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][k][1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][k]) then
+			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][k]) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][k][1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][k]) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][k])) then
 				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][k] = true
 			else
 				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][k] = false
@@ -697,22 +704,10 @@ function HTT_functions.TurnOnDebuffsForWornSets()
 	end
 end
 
-function HTT_functions.TurnOnBossDebuffsForWornSets()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"]) do
-		if type(v[1]) == "string" and type(v[2]) == "number" then
-			if HTT_functions.CheckIfNumberOfPiecesIsWorn(v[2],v[1]) then
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"][k] = true
-			else
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"][k] = false
-			end
-		end
-	end
-end
-
-function HTT_functions.TurnOnBuffsForWornSets()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"]) do
-		if type(v[1]) == "string" and type(v[2]) == "number" then
-			if HTT_functions.CheckIfNumberOfPiecesIsWorn(v[2],v[1]) then
+function HTT_functions.adjustBuffs()
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"]) do
+		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][k][1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][k]) then
+			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][k]) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][k][1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][k]) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][k])) then
 				HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["isTurnedOn"][k] = true
 			else
 				HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["isTurnedOn"][k] = false
@@ -721,22 +716,10 @@ function HTT_functions.TurnOnBuffsForWornSets()
 	end
 end
 
-function HTT_functions.TurnOnDebuffsForEquipppedSkills()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"]) do
-		if next(v) ~= nil then
-			if HTT_functions.checkIfSkillSlotted(v) then
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][k] = true
-			else
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][k] = false
-			end
-		end
-	end
-end
-
-function HTT_functions.TurnOnBossDebuffsForEquipppedSkills()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"]) do
-		if next(v) ~= nil then
-			if HTT_functions.checkIfSkillSlotted(v) then
+function HTT_functions.adjustBoss()
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"]) do
+		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][k][1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][k]) then
+			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][k]) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][k][1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][k]) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][k])) then
 				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"][k] = true
 			else
 				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"][k] = false
@@ -745,31 +728,38 @@ function HTT_functions.TurnOnBossDebuffsForEquipppedSkills()
 	end
 end
 
-
-
-function HTT_functions.TurnOnBuffsForEquipppedSkills()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"]) do
-		if next(v) ~= nil then
-			if HTT_functions.checkIfSkillSlotted(v) then
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["isTurnedOn"][k] = true
-			else
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["isTurnedOn"][k] = false
+function HTT_functions.TurnOnForWornSets(itemSetTable)
+	local noCheckHaveHappened = true
+	if type(itemSetTable) == "table" then
+		if type(itemSetTable[1]) == "table" and type(itemSetTable[2]) == "number" then
+			for k1,v1 in pairs(itemSetTable[1]) do
+				noCheckHaveHappened = false
+				if HTT_functions.CheckIfNumberOfPiecesIsWorn(itemSetTable[2],v1) then
+					return true
+				end
 			end
 		end
 	end
+	return noCheckHaveHappened
 end
 
-function HTT_functions.TurnOnCooldownsForEquipppedSkills()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"]) do
-		if next(v) ~= nil then
-			if HTT_functions.checkIfSkillSlotted(v) then
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isTurnedOn"][k] = true
-			else
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isTurnedOn"][k] = false
+function HTT_functions.TurnOnForEquipppedSkills(skillTable)
+	if skillTable then
+		if type(skillTable) == "table" then
+			if skillTable == {} then
+				return true
+			end
+			if HTT_functions.checkIfSkillSlotted(skillTable) then
+				return true
 			end
 		end
+		return false
+	else
+		return true
 	end
 end
+
+
 
 
 function HTT_functions.crushersLeft(remainingTimeWall,remainingTimeCrusher)
@@ -816,10 +806,14 @@ end
 
 
 
-function HTT_functions.addBuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color)
+function HTT_functions.addBuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,skill,itemSet,itemSetNumber,icon)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][tableSlot] = nameOfTracker
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][tableSlot] = {[1] = abilityID}
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["icons"][tableSlot] = GetAbilityIcon(abilityID)
+	if type(abilityID) == "table" then
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][tableSlot] = abilityID
+	else
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][tableSlot] = {[1] = abilityID}
+	end
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["icons"][tableSlot] = icon or GetAbilityIcon(abilityID)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["texts"][tableSlot] = text
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][tableSlot] = 0
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][tableSlot] = {}
@@ -827,12 +821,14 @@ function HTT_functions.addBuff(nameOfTracker,abilityID,tableSlot,text,textWhenMi
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][tableSlot][2] = color[2]
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][tableSlot][3] = color[3]
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][tableSlot][4] = color[4]
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors2"][tableSlot] = {unpack(color2 or {})}
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors3"][tableSlot] = {unpack(color3 or {})}
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["isTurnedOn"][tableSlot] = true
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["textWhenMissing"][tableSlot] = textWhenMissing
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["expiresAt"][tableSlot] = 0
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["isPreMade"][tableSlot] = false
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][tableSlot] = {}
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][tableSlot] = {}
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][tableSlot] = skill or {}
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][tableSlot] = {[1] = itemSet,[2] = itemSetNumber} or {}
 	table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs,tableSlot)
 
 
@@ -842,13 +838,21 @@ function HTT_functions.AddIDtoDebuff(abilityID,tableSlot)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][tableSlot] = {[#HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][tableSlot]+1] = abilityID}
 end
 
-function HTT_functions.addDebuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,onlyCastByPlayer,skill,itemSet)
+function HTT_functions.addDebuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,onlyCastByPlayer,skill,itemSet,itemSetNumber,icon)
 
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][tableSlot] = nameOfTracker
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][tableSlot] = {[1] = abilityID}
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["icons"][tableSlot] = GetAbilityIcon(abilityID)
+	if type(abilityID) == "table" then
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][tableSlot] = abilityID
+	else
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][tableSlot] = {[1] = abilityID}
+	end
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["icons"][tableSlot] = icon or GetAbilityIcon(abilityID)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][tableSlot] = text
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][tableSlot] = {}
+	if nameOfTracker =="Weapon Skill" then
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][tableSlot] = 0
+	else
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][tableSlot] = {}
+	end
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][tableSlot] = {}
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][tableSlot][1] = color[1]
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][tableSlot][2] = color[2]
@@ -859,19 +863,27 @@ function HTT_functions.addDebuff(nameOfTracker,abilityID,tableSlot,text,textWhen
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][tableSlot] = true
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"][tableSlot] = true
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["textWhenMissing"][tableSlot] = textWhenMissing
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][tableSlot] = {}
+	if nameOfTracker =="Weapon Skill" then
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][tableSlot] = 0
+	else
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][tableSlot] = {}
+	end
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][tableSlot] = skill or {}
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][tableSlot] = itemSet or {}
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][tableSlot] = {[1] = itemSet,[2] = itemSetNumber} or {}
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["onlyCastByPlayer"][tableSlot] = onlyCastByPlayer
 	table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs,tableSlot)
 
 
 end
 
-function HTT_functions.addCooldown(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,duration)
+function HTT_functions.addCooldown(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,duration,skill,itemSet,itemSetNumber,icon)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"][tableSlot] = nameOfTracker
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][tableSlot] = {[1] = abilityID}
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["icons"][tableSlot] = GetAbilityIcon(abilityID)
+	if type(abilityID) == "table" then
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][tableSlot] = abilityID
+	else
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][tableSlot] = {[1] = abilityID}
+	end
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["icons"][tableSlot] = icon or GetAbilityIcon(abilityID)
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["texts"][tableSlot] = text
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["durations"][tableSlot] = duration
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["colors"][tableSlot] = {}
@@ -883,14 +895,26 @@ function HTT_functions.addCooldown(nameOfTracker,abilityID,tableSlot,text,textWh
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["textWhenMissing"][tableSlot] = textWhenMissing
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["expiresAt"][tableSlot] = 0
 	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isPreMade"][tableSlot] = false
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][tableSlot] = {}
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][tableSlot] = {}
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][tableSlot] = skill or {}
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][tableSlot] = {[1] = itemSet,[2] = itemSetNumber} or {}
 	table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns,tableSlot)
 
 
 end
 
+--1 debuff
+--2 buff
+--3 cooldown
 
+function HTT_functions.addTracker(type,nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,onlyCastByPlayer,skill,itemSet,itemSetNumber,duration,icon)
+	if type == 1 then
+		HTT_functions.addDebuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,onlyCastByPlayer,skill,itemSet,itemSetNumber,icon)
+	elseif type == 2 then
+		HTT_functions.addBuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,skill,itemSet,itemSetNumber,icon)
+	elseif type == 3 then
+		HTT_functions.addCooldown(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,duration,skill,itemSet,itemSetNumber,icon)
+	end
+end
 
 function HTT_functions.findPositionOfElementInTable(table,elementToFind)
 	for k,v in pairs(table) do
@@ -982,37 +1006,46 @@ function HTT_functions.initializeEventsBuffs(abilityID,tableSlot)
 	EVENT_MANAGER:AddFilterForEvent("HTT"..abilityID, EVENT_EFFECT_CHANGED, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE,1)
 end
 
-function HTT_functions.GenerateWeaponEvent(AbilityID,name)
-	EVENT_MANAGER:RegisterForEvent(name, EVENT_EFFECT_CHANGED, function(_,stage,_,_,_,_,_,_,iconName,_,_,_,_,_,_,abilityID) 
-	if stage == 1 and (GetGameTimeSeconds() + (GetAbilityDuration(abilityID)/1000)) > HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][5] then
-		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][5] = GetAbilityDuration(abilityID)/1000
-		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][5] = GetGameTimeSeconds() + (GetAbilityDuration(abilityID)/1000)
-		icon = HTT:GetNamedChild("IconReticle5")
+function HTT_functions.GenerateWeaponEvent(AbilityID,tableSlot)
+	EVENT_MANAGER:RegisterForEvent("HTT"..AbilityID, EVENT_EFFECT_CHANGED, function(_,stage,_,_,_,_,_,_,iconName,_,_,_,_,_,_,abilityID) 
+	if stage == 1 and (GetGameTimeSeconds() + (GetAbilityDuration(abilityID)/1000)) > HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][tableSlot] then
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][tableSlot] = GetAbilityDuration(abilityID)/1000
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][tableSlot] = GetGameTimeSeconds() + (GetAbilityDuration(abilityID)/1000)
+		icon = HTT:GetNamedChild("IconReticle"..tableSlot)
 		icon:SetTexture(iconName)
 	end
 	end)
-	EVENT_MANAGER:AddFilterForEvent(name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID,AbilityID)
-	EVENT_MANAGER:AddFilterForEvent(name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE ,1)
+	EVENT_MANAGER:AddFilterForEvent("HTT"..AbilityID, EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID,AbilityID)
+	EVENT_MANAGER:AddFilterForEvent("HTT"..AbilityID, EVENT_EFFECT_CHANGED, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE ,1)
 end
 
 function HTT_functions.GenerateCooldownEvent(abilityID,tableSlot)
-	EVENT_MANAGER:RegisterForEvent("HTTCooldown"..abilityID, EVENT_COMBAT_EVENT, function(_,_,_,name)   
+	EVENT_MANAGER:RegisterForEvent("HTT"..abilityID, EVENT_COMBAT_EVENT, function(_,_,_,name)   
 	if HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["expiresAt"][tableSlot] < GetGameTimeSeconds() then
 		HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["expiresAt"][tableSlot] = GetGameTimeSeconds() + HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["durations"][tableSlot]
 	end
 	end)
-	EVENT_MANAGER:AddFilterForEvent("HTTCooldown"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,abilityID)
-	EVENT_MANAGER:AddFilterForEvent("HTTCooldown"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE ,1)
+	EVENT_MANAGER:AddFilterForEvent("HTT"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,abilityID)
+	EVENT_MANAGER:AddFilterForEvent("HTT"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE ,1)
+end
+
+function HTT_functions.initializeEventsBuffsCombatEvent(abilityID,tableSlot,duration)
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][tableSlot] = duration
+	EVENT_MANAGER:RegisterForEvent("HTT"..abilityID, EVENT_COMBAT_EVENT, function() 
+	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["expiresAt"][tableSlot] = GetGameTimeSeconds() + HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][tableSlot]
+	end)
+	EVENT_MANAGER:AddFilterForEvent("HTT"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,abilityID)
+	EVENT_MANAGER:AddFilterForEvent("HTT"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE ,1)
 end
 
 function HTT_functions.GenerateSynergyEvent(abilityID,tableSlot)
-	EVENT_MANAGER:RegisterForEvent("HTTSynergy"..abilityID, EVENT_COMBAT_EVENT, function(_,_,_,name)   
+	EVENT_MANAGER:RegisterForEvent("HTT"..abilityID, EVENT_COMBAT_EVENT, function(_,_,_,name)   
 	if HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["expiresAt"][tableSlot] < GetGameTimeSeconds() then
 		HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["expiresAt"][tableSlot] = GetGameTimeSeconds() + 20
 	end
 	end)
-	EVENT_MANAGER:AddFilterForEvent("HTTSynergy"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,abilityID)
-	EVENT_MANAGER:AddFilterForEvent("HTTSynergy"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE ,1)
+	EVENT_MANAGER:AddFilterForEvent("HTT"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,abilityID)
+	EVENT_MANAGER:AddFilterForEvent("HTT"..abilityID, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE ,1)
 end
 
 

@@ -769,7 +769,7 @@
 		["IDs"] = {
 			[1] = {126583}, -- Immovable
 			[2] = {147417}, -- Minor Courage
-			[3] = {0}, -- Dragon Blood
+			[3] = {32745}, -- Dragon Blood
 			[4] = {61694}, -- Major Resolve
 			[5] = {86058}, -- Stamina Bull Netch
 			[6] = {90835}, -- Polar Wind
@@ -1139,7 +1139,7 @@
 			},
 			[3] = {31104}, -- Engulfing
 			[4] = {17906}, -- Crusher
-			[5] = {0}, -- Weapon Skill applying Crusher
+			[5] = {39018,39028,39012,38695,28876,38689,28807,28849,28854,39067,39073,39053}, -- Weapon Skill applying Crusher
 			[6] = {79717}, -- Minor Vulnerability
 			[7] = {88401}, -- Minor Magickasteal
 			[8] = {145975}, -- Minor Brittle

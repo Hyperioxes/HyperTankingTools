@@ -25,7 +25,6 @@ HTT_DodgeRollData = {
 	[137833] = {duration = 2.5,notOnlyPlayer = true,texture = "/esoui/art/icons/ability_u26_vampire_02_b.dds",isOnByDefault = true}, -- Rive (boss flying phase)
 	[140031] = {duration = 2,notOnlyPlayer = true,texture = "/esoui/art/icons/ability_u26_vampire_02_b.dds",isOnByDefault = true,resultOverride = 2240}, -- Rive
 	[140035] = {duration = 2,notOnlyPlayer = true,texture = "/esoui/art/icons/ability_u26_vampire_02_b.dds",isOnByDefault = true,resultOverride = 2240}, -- Rive
-	--missing rive id
 	},
 	["Stone Garden"] = {
 		[135953] = {duration = 2,notOnlyPlayer = true,nameOverride = "Stomp", sourceNameOverride = "Exarch Kraglen",texture="esoui/art/icons/ability_u27_behemothtremor.dds",isOnByDefault = true}, -- Exarch Kraglen Stomp
@@ -48,7 +47,10 @@ HTT_DodgeRollData = {
 	},
 	["Cauldron"] = {
 		[146179] = {duration = 1,isOnByDefault = true}, --Galvanic Blow, Baron Zaudrus
-		[146142] = {duration = 2.5,isOnByDefault = true} --Hammer Down, Baron Zaudrus
+		[146142] = {duration = 2.5,isOnByDefault = true}, --Hammer Down, Baron Zaudrus
+		[146747] = {duration = 2,isOnByDefault = true}, --Bludgeon, Oxblood the Depraved
+		[146677] = {duration = 1.6,isOnByDefault = true}, --Uppercut, Taskmaster Viccia
+		[146681] = {duration = 1.4, isOnByDefault = true}, --Crush, Molten Guardian
 	},
 
 }

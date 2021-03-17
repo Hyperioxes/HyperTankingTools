@@ -54,7 +54,8 @@ local barChoices = {
 local holdRemoveDebuffSkill, holdDebuffSwapValue1,holdDebuffSwapValue2,holdBuffSwapValue1,holdBuffSwapValue2,holdCooldownSwapValue1, 
     holdCooldownSwapValue2, holdRemoveDebuffID, holdRemoveBuffID, holdRemoveCooldownID, addNewIDToExistingDebuff,addNewIDToExistingBuff, addNewIDToExistingCooldown,
     addNewSkillToExistingSkills, currentlyEditedDebuffKey, holdRemoveDebuffItemSet, addNewItemSetToExistingItemSets, addNewItemSetToExistingItemSetsBuff, holdSynergySwapValue1,
-	holdSynergySwapValue2
+	holdSynergySwapValue2, holdRemoveCooldownItemSet, addNewItemSetsToExistingItemSetsCooldown, holdRemoveBuffItemSet, addNewItemSetsToExistingItemSetsBuff, holdRemoveDebuffItemSet,
+    addNewItemSetsToExistingItemSetsDebuff
 
 
 
@@ -370,6 +371,8 @@ local function refreshAllDebuffTrackerInfo()
     debuffSwapDropdown1:UpdateChoices()
     debuffSwapDropdown2.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs)  or {"Nothing to swap"}
     debuffSwapDropdown2:UpdateChoices()
+    ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"}
+    ItemSetDebuffdropdown:UpdateChoices()
     if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey]) ~= "table" then
         HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey] = {}
     end
@@ -391,6 +394,8 @@ local function refreshAllBuffTrackerInfo()
     buffSwapDropdown2:UpdateChoices()
     SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey] or {"No skills"}
     SkillBuffdropdown:UpdateChoices()
+    ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"}
+    ItemSetBuffdropdown:UpdateChoices()
     if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey]) ~= "table" then
         HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey] = {}
     end
@@ -411,6 +416,8 @@ local function refreshAllCooldownTrackerInfo()
     cooldownSwapDropdown1:UpdateChoices()
     cooldownSwapDropdown2.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) or {"Nothing to swap"}
     cooldownSwapDropdown2:UpdateChoices()
+    ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"}
+    ItemSetCooldowndropdown:UpdateChoices()
     SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey] or {"No skills"}
     SkillCooldowndropdown:UpdateChoices()
     if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey]) ~= "table" then
@@ -427,7 +434,7 @@ function HTT_LoadSettings()
         name = "Hyper Tanking Tools",
         displayName = "Hyper Tanking Tools",
         author = "Hyperioxes",
-        version = "1.14b",
+        version = "1.16",
 		website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
 		feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
 		donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
@@ -584,6 +591,7 @@ function HTT_LoadSettings()
                     rescaleSynergies()
                     rescaleSpecial()
                     HTT_events.nullifyRemainingTimes()
+                    HTT_events.generateEvents()
                     colorPicker2Debuff.data.disabled = ShowColor2(currentlyEditedDebuffKey)
                     colorPicker3Debuff.data.disabled = ShowColor3(currentlyEditedDebuffKey)
                     local reflectiveControl = HTTReflect:GetNamedChild("reflectFill")
@@ -1535,6 +1543,8 @@ function HTT_LoadSettings()
                          IDdropdownDebuff:UpdateChoices()
                          SkillDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey]  or {"No skills"}
                          SkillDebuffdropdown:UpdateChoices()
+                         ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"}
+                         ItemSetDebuffdropdown:UpdateChoices()
                          if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey]) ~= "table" then
                             HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey] = {}
                          end
@@ -1743,15 +1753,57 @@ function HTT_LoadSettings()
                 default = "",	--(optional)
             })
            table.insert(optionsTable[positionCounter].controls, {
+                         type = "dropdown",
+                         name = "List of tracked item sets",
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"},
+                         getFunc = function() return holdRemoveDebuffItemSet end,
+                         setFunc = function(var) holdRemoveDebuffItemSet = var end,
+                         width = "half",	--or "half" (optional)
+                         reference = "ItemSetDebuffdropdown",
+                         tooltip = "If you want the tracker to automatically turn on/off based on if you have certain item set equipped, add the item set to this dropdown using the Add new item set checkbox(right click on any item from item set you want,choose Link in Chat and paste the item link here). Tracker will turn on if ANY of the added item sets is equipped",
+                    })
+
+                    table.insert(optionsTable[positionCounter].controls, {
+				type = "button",
+				name = "Delete Item Set",
+				func = function() if holdRemoveDebuffItemSet ~= nil then
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1],holdRemoveDebuffItemSet))
+                        ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"}
+                        ItemSetDebuffdropdown:UpdateChoices()
+                    end
+                end,
+				width = "half",
+
+			})
+
+				table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
-                name = "Item set",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or "No item set" end,
-                setFunc = function(text)  HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] = text end,
+                name = "Add new Item Set",
+                getFunc = function() return addNewItemSetsToExistingItemSetsDebuff end,
+                setFunc = function(text) addNewItemSetsToExistingItemSetsDebuff = text end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-                tooltip = "If you want the tracker to automatically turn on/off based on if you have certain item set equipped, paste an item link in this editbox (right click on any item from item set you want,choose Link in Chat and paste the item link here)",
+
                 default = "",	--(optional)
-            })
+				})
+
+				table.insert(optionsTable[positionCounter].controls, {
+				type = "button",
+				name = "Add Item Set",
+				func = function() 
+                    if addNewItemSetsToExistingItemSetsDebuff ~= nil then
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1]) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] = {}
+                        end
+                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1],addNewItemSetsToExistingItemSetsDebuff)
+                        ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"}
+                        ItemSetDebuffdropdown:UpdateChoices()
+                    end
+                    --editbox.container:SetHidden(true)
+                end,
+				width = "half",
+                })
+
             table.insert(optionsTable[positionCounter].controls, {
                 type = "slider",
                 name = "Required item set pieces",
@@ -1762,7 +1814,8 @@ function HTT_LoadSettings()
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][2] or 0 end,
                 setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][2] = value end,
                -- end,
-                width = "half",	--or "half" (optional)
+                width = "full",	--or "half" (optional)
+                default = 5,	--(optional)
             })
 
 
@@ -1932,7 +1985,7 @@ function HTT_LoadSettings()
 				type = "button",
 				name = "Create Debuff Tracker",
 				func = function() local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
-                HTT_functions.addDebuff(createNewDebuffSavedVariables["name"],createNewDebuffSavedVariables["ID"],freeSlot, createNewDebuffSavedVariables["text"],createNewDebuffSavedVariables["textWhenMissing"],createNewDebuffSavedVariables["color"],nil,nil,createNewDebuffSavedVariables["onlyPlayer"],nil,nil)  
+                HTT_functions.addDebuff(createNewDebuffSavedVariables["name"],createNewDebuffSavedVariables["ID"],freeSlot, createNewDebuffSavedVariables["text"],createNewDebuffSavedVariables["textWhenMissing"],createNewDebuffSavedVariables["color"],nil,nil,createNewDebuffSavedVariables["onlyPlayer"],{},{})  
 				currentlyEditedDebuffKey = freeSlot
                 refreshAllDebuffTrackerInfo()
                 if HTT:GetNamedChild("DurationTimerReticle"..freeSlot) == nil then
@@ -2064,6 +2117,8 @@ function HTT_LoadSettings()
                          IDdropdownBuff:UpdateChoices()
                          SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey] or {"No skills"}
                          SkillBuffdropdown:UpdateChoices()
+                         ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"}
+                         ItemSetBuffdropdown:UpdateChoices()
                          if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey]) ~= "table" then
                              HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey] = {}
                          end
@@ -2206,28 +2261,70 @@ function HTT_LoadSettings()
             })
            
 
-            table.insert(optionsTable[positionCounter].controls, {
+           table.insert(optionsTable[positionCounter].controls, {
+                         type = "dropdown",
+                         name = "List of tracked item sets",
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"},
+                         getFunc = function() return holdRemoveBuffItemSet end,
+                         setFunc = function(var) holdRemoveBuffItemSet = var end,
+                         width = "half",	--or "half" (optional)
+                         reference = "ItemSetBuffdropdown",
+                         tooltip = "If you want the tracker to automatically turn on/off based on if you have certain item set equipped, add the item set to this dropdown using the Add new item set checkbox(right click on any item from item set you want,choose Link in Chat and paste the item link here). Tracker will turn on if ANY of the added item sets is equipped",
+                    })
+
+                    table.insert(optionsTable[positionCounter].controls, {
+				type = "button",
+				name = "Delete Item Set",
+				func = function() if holdRemoveBuffItemSet ~= nil then
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1],holdRemoveBuffItemSet))
+                        ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"}
+                        ItemSetBuffdropdown:UpdateChoices()
+                    end
+                end,
+				width = "half",
+
+			})
+
+				table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
-                name = "Item set",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or "No item set being tracked" end,
-                setFunc = function(text)  HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] = text end,
+                name = "Add new Item Set",
+                getFunc = function() return addNewItemSetsToExistingItemSetsBuff end,
+                setFunc = function(text) addNewItemSetsToExistingItemSetsBuff = text end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-                tooltip = "If you want the tracker to automatically turn on/off based on if you have certain item set equipped, paste an item link in this editbox (right click on any item from item set you want,choose Link in Chat and paste the item link here)",
+
                 default = "",	--(optional)
-            })
+				})
+
+				table.insert(optionsTable[positionCounter].controls, {
+				type = "button",
+				name = "Add Item Set",
+				func = function() 
+                    if addNewItemSetsToExistingItemSetsBuff ~= nil then
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1]) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] = {}
+                        end
+                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1],addNewItemSetsToExistingItemSetsBuff)
+                        ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"}
+                        ItemSetBuffdropdown:UpdateChoices()
+                    end
+                    --editbox.container:SetHidden(true)
+                end,
+				width = "half",
+                })
+
             table.insert(optionsTable[positionCounter].controls, {
                 type = "slider",
                 name = "Required item set pieces",
+                tooltip = "Choose number of pieces that have to be equipped in order to turn on the tracker. The addon doesn't check your backbar so for 5-piece item sets that you have one-barred, choose 3 so the tracker gets turned on even if you start combat on the other bar",
                 min = 0,
                 max = 5,
                 step = 1,	--(optional)
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][2] or 0 end,
                 setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][2] = value end,
                -- end,
-                width = "half",	--or "half" (optional)
+                width = "full",	--or "half" (optional)
                 default = 5,	--(optional)
-                tooltip = "Choose number of pieces that have to be equipped in order to turn on the tracker. The addon doesn't check your backbar so for 5-piece item sets that you have one-barred, choose 3 so the tracker gets turned on even if you start combat on the other bar",
             })
 
 
@@ -2378,7 +2475,7 @@ function HTT_LoadSettings()
 				name = "Create Buff Tracker",
 				func = function() if createNewBuffSavedVariables["name"] ~= nil then
                     local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])
-                    HTT_functions.addBuff(createNewBuffSavedVariables["name"],createNewBuffSavedVariables["ID"],freeSlot,createNewBuffSavedVariables["text"],createNewBuffSavedVariables["textWhenMissing"],createNewBuffSavedVariables["color"])  
+                    HTT_functions.addBuff(createNewBuffSavedVariables["name"],createNewBuffSavedVariables["ID"],freeSlot,createNewBuffSavedVariables["text"],createNewBuffSavedVariables["textWhenMissing"],createNewBuffSavedVariables["color"],nil,nil,{},{},nil,nil)  
 				    currentlyEditedBuffKey = freeSlot
                     refreshAllBuffTrackerInfo()
                     if HTTSelfBuffs:GetNamedChild("SelfBuffDurationTimer"..freeSlot) == nil then
@@ -2505,6 +2602,8 @@ function HTT_LoadSettings()
                          IDdropdownCooldown:UpdateChoices()
                          SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey] or {"No skills"}
                          SkillCooldowndropdown:UpdateChoices()
+                         ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"}
+                         ItemSetCooldowndropdown:UpdateChoices()
                          if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey]) ~= "table" then
                              HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey] = {}
                          end
@@ -2645,16 +2744,61 @@ function HTT_LoadSettings()
             })
            
 
+
+            
+
             table.insert(optionsTable[positionCounter].controls, {
+                         type = "dropdown",
+                         name = "List of tracked item sets",
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"},
+                         getFunc = function() return holdRemoveCooldownItemSet end,
+                         setFunc = function(var) holdRemoveCooldownItemSet = var end,
+                         width = "half",	--or "half" (optional)
+                         reference = "ItemSetCooldowndropdown",
+                         tooltip = "If you want the tracker to automatically turn on/off based on if you have certain item set equipped, add the item set to this dropdown using the Add new item set checkbox(right click on any item from item set you want,choose Link in Chat and paste the item link here). Tracker will turn on if ANY of the added item sets is equipped",
+                    })
+
+                    table.insert(optionsTable[positionCounter].controls, {
+				type = "button",
+				name = "Delete Item Set",
+				func = function() if holdRemoveCooldownItemSet ~= nil then
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1],holdRemoveCooldownItemSet))
+                        ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"}
+                        ItemSetCooldowndropdown:UpdateChoices()
+                    end
+                end,
+				width = "half",
+
+			})
+
+				table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
-                name = "Item set",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or "No item set being tracked" end,
-                setFunc = function(text)  HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] = text end,
+                name = "Add new Item Set",
+                getFunc = function() return addNewItemSetsToExistingItemSetsCooldown end,
+                setFunc = function(text) addNewItemSetsToExistingItemSetsCooldown = text end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-                tooltip = "If you want the tracker to automatically turn on/off based on if you have certain item set equipped, paste an item link in this editbox (right click on any item from item set you want,choose Link in Chat and paste the item link here)",
+
                 default = "",	--(optional)
-            })
+				})
+
+				table.insert(optionsTable[positionCounter].controls, {
+				type = "button",
+				name = "Add Item Set",
+				func = function() 
+                    if addNewItemSetsToExistingItemSetsCooldown ~= nil then
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1]) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] = {}
+                        end
+                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1],addNewItemSetsToExistingItemSetsCooldown)
+                        ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"}
+                        ItemSetCooldowndropdown:UpdateChoices()
+                    end
+                    --editbox.container:SetHidden(true)
+                end,
+				width = "half",
+                })
+
             table.insert(optionsTable[positionCounter].controls, {
                 type = "slider",
                 name = "Required item set pieces",
@@ -2665,9 +2809,10 @@ function HTT_LoadSettings()
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][2] or 0 end,
                 setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][2] = value end,
                -- end,
-                width = "half",	--or "half" (optional)
+                width = "full",	--or "half" (optional)
                 default = 5,	--(optional)
             })
+
 
 
             table.insert(optionsTable[positionCounter].controls, {
@@ -2827,7 +2972,7 @@ function HTT_LoadSettings()
 				name = "Create Tracker",
 				func = function() if createNewCooldownSavedVariables["name"] ~= nil then
                     local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])
-                    HTT_functions.addCooldown(createNewCooldownSavedVariables["name"],createNewCooldownSavedVariables["ID"],freeSlot,createNewCooldownSavedVariables["text"],createNewCooldownSavedVariables["textWhenMissing"],createNewCooldownSavedVariables["color"],createNewCooldownSavedVariables["duration"])  
+                    HTT_functions.addCooldown(createNewCooldownSavedVariables["name"],createNewCooldownSavedVariables["ID"],freeSlot,createNewCooldownSavedVariables["text"],createNewCooldownSavedVariables["textWhenMissing"],createNewCooldownSavedVariables["color"],nil,nil,createNewCooldownSavedVariables["duration"],{},{})  
 				    currentlyEditedCooldownKey = freeSlot
                     refreshAllCooldownTrackerInfo()
                     if HTTCooldowns:GetNamedChild("CooldownDurationTimer"..freeSlot) == nil then
@@ -3318,15 +3463,30 @@ end
 
 
 local function createList(table)
-    if table then
+    if type(table) == "table" then
         local holder = ""
         for _,text in pairs(table) do
             holder = holder.."-"..text.." - "..GetAbilityName(text).."\n"
         end
         return holder
-    else
-        return "-none"
+    elseif table then
+        return "-"..table.." - "..GetAbilityName(table)
     end
+    return "none"
+end
+
+
+local typeToNumber = {
+    ["Debuffs"] = 1,
+    ["Buffs"] = 2,
+    ["Cooldowns"] = 3,
+}
+
+local function getFirstElementIfTable(variable)
+    if type(variable) == "table" then
+        return variable[1]
+    end
+    return variable
 end
 
 
@@ -3336,7 +3496,7 @@ function HTT_LoadSettingsPremadeTrackers()
         name = "Hyper Tanking Tools - Premade Trackers",
         displayName = "Hyper Tanking Tools - Premade Trackers",
         author = "Hyperioxes",
-        version = "1.13",
+        version = "1.16",
 		website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
 		feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
 		donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
@@ -3347,8 +3507,9 @@ function HTT_LoadSettingsPremadeTrackers()
     LibAddonMenu2:RegisterAddonPanel("Hyper Tanking Tools - Premade Trackers", panelData)
 
     local optionsTable = {}
+    local submenuCounter = 1
     for nameOfSubmenu,tableOfTrackers in pairs(HTTPremadeTrackersData) do
-        local submenuCounter = 1
+        
         table.insert(optionsTable, {
                 type = "submenu",
                 name = nameOfSubmenu,
@@ -3360,13 +3521,13 @@ function HTT_LoadSettingsPremadeTrackers()
              
              table.insert(optionsTable[submenuCounter].controls, {
                 type = "submenu",
-                name = "|t32:32:"..GetAbilityIcon(trackerVariables.ID).."|t   "..trackerName,
+                name = "|t32:32:"..(trackerVariables.icon or GetAbilityIcon(getFirstElementIfTable(trackerVariables.ID))).."|t   "..trackerName,
                 --tooltip = "My submenu tooltip",	--(optional)
                 controls = {},
             })
             table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
                 type = "texture",
-                image = GetAbilityIcon(trackerVariables.ID),
+                image = (trackerVariables.icon or GetAbilityIcon(getFirstElementIfTable(trackerVariables.ID))),
                 imageWidth = 100,	--max of 250 for half width, 510 for full
                 imageHeight = 100,	--max of 100
                 --tooltip = "Image's tooltip text.",	--(optional)
@@ -3392,8 +3553,8 @@ function HTT_LoadSettingsPremadeTrackers()
             })
             table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
                 type = "description",
-                title = "|cffd769Tracked ID:|r",	--(optional)
-                text = trackerVariables.ID.."",
+                title = "|cffd769List of effect IDs:|r",	--(optional)
+                text = createList(trackerVariables.ID),
                 width = "half",	--or "half" (optional)
             })
             table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
@@ -3404,7 +3565,7 @@ function HTT_LoadSettingsPremadeTrackers()
             })
             table.insert(optionsTable[submenuCounter].controls[trackerCounter].controls, {
                 type = "description",
-                title = "|cffd769List of tracked skills:|r",	--(optional)
+                title = "|cffd769List of skill IDs:|r",	--(optional)
                 text = createList(trackerVariables.skills or nil),
                 width = "half",	--or "half" (optional)
             })
@@ -3421,24 +3582,78 @@ function HTT_LoadSettingsPremadeTrackers()
                 name = "Add to current profile",
                 --tooltip = "Button's tooltip text.",
                 func = function() 
-                	        if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],trackerName) then
-		                        d("Duplicate tracker name")
-	                        else
-                               local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
-                               HTT_functions.addDebuff(trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills,trackerVariables.itemSet)  
-                                refreshAllDebuffTrackerInfo()
-                                if HTT:GetNamedChild("DurationTimerReticle"..freeSlot) == nil then
-                                    HTT_functions.createDebuffControl(freeSlot)
-                                    HTT_functions.createBossDebuffControl(freeSlot)
+                           if typeToNumber[nameOfSubmenu] == 1 then
+                	            if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],trackerName) then
+		                            d("Duplicate tracker name")
+	                            else
+                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
+                                   HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
+                                    refreshAllDebuffTrackerInfo()
+                                    if HTT:GetNamedChild("DurationTimerReticle"..freeSlot) == nil then
+                                        HTT_functions.createDebuffControl(freeSlot)
+                                        HTT_functions.createBossDebuffControl(freeSlot)
+                                    end
+                                    if trackerName == "Weapon Skill" then
+                                        for _,abilityID in pairs(trackerVariables.ID) do
+                                            HTT_functions.GenerateWeaponEvent(abilityID,freeSlot)
+                                        end
+                                    else
+                                        if type(trackerVariables.ID) == "table" then
+                                            for _,abilityID in pairs(trackerVariables.ID) do
+                                                HTT_functions.initializeEventsDebuffs(abilityID,freeSlot)
+                                            end
+                                        else
+                                            HTT_functions.initializeEventsDebuffs(trackerVariables.ID,freeSlot)
+                                        end
+                                    end
+                                    HTT_functions.reanchorReticle()
+                                    HTT_functions.reanchorBoss()
                                 end
-                                if trackerName == "Weapon Skill" then
-                                    HTT_functions.GenerateWeaponEvent(trackerVariables.ID,freeSlot)
-                                else
-                                    HTT_functions.initializeEventsDebuffs(trackerVariables.ID,freeSlot)
+                           elseif typeToNumber[nameOfSubmenu] == 2 then
+                                if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],trackerName) then
+		                            d("Duplicate tracker name")
+	                            else
+                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])
+                                   HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
+                                    refreshAllBuffTrackerInfo()
+                                    if HTTSelfBuffs:GetNamedChild("SelfBuffDurationTimer"..freeSlot) == nil then
+                                        HTT_functions.createBuffControl(freeSlot)
+                                    end
+                                    if type(trackerVariables.ID) == "table" then
+                                        for _,abilityID in pairs(trackerVariables.ID) do
+                                             HTT_functions.initializeEventsBuffs(abilityID,freeSlot)
+                                        end
+                                    else
+                                        if trackerName == "Dragon Blood" then
+				                            HTT_functions.initializeEventsBuffsCombatEvent(trackerVariables.ID,freeSlot,23)
+			                            else
+                                            HTT_functions.initializeEventsBuffs(trackerVariables.ID,freeSlot)
+                                        end
+                                    end
+
+                                    HTT_functions.reanchorBuffs()
                                 end
-                                HTT_functions.reanchorReticle()
-                                HTT_functions.reanchorBoss()
-                            end
+                           elseif typeToNumber[nameOfSubmenu] == 3 then
+                                if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],trackerName) then
+		                            d("Duplicate tracker name")
+	                            else
+                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])
+                                   HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
+                                    refreshAllCooldownTrackerInfo()
+                                    if HTTCooldowns:GetNamedChild("CooldownDurationTimer"..freeSlot) == nil then
+                                        HTT_functions.createCooldownControl(freeSlot)
+                                    end
+                                    if type(trackerVariables.ID) == "table" then
+                                        for _,abilityID in pairs(trackerVariables.ID) do
+                                            HTT_functions.GenerateCooldownEvent(abilityID,freeSlot)
+                                        end
+                                    else
+                                        HTT_functions.GenerateCooldownEvent(trackerVariables.ID,freeSlot)
+                                    end
+
+                                    HTT_functions.reanchorCooldowns()
+                                end
+                           end
 				        end,
                 width = "half",	--or "half" (optional)
                 --warning = "Will need to reload the UI.",	--(optional)

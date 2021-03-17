@@ -1,8 +1,10 @@
 HTT_variables = {
 	isUIPreviewOn = false,
+
 	immovableOn = false,
 	isBoundAegisOn = false,
 	isSacredGroundOn = false,
+
 	eventWindowVisibility = false,
 	buffWindowVisibility = false,
 	debuffWindowVisibility = false,

@@ -930,9 +930,7 @@ function HTT_initializeUI.generateUI()
 	for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
 
 			
-
-		HTT_functions.createDebuffControl(v)
-
+			HTT_functions.createDebuffControl(v)
 
 
 

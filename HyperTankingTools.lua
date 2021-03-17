@@ -107,11 +107,6 @@ function OnAddOnLoaded(event, addonName)
 		end
 	end
 
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].debuffTable["colors2"][HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Minor Brittle")]) ~= "table" then
-			HTTsavedVars[v].debuffTable["colors2"][HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Minor Brittle")] = {1,0,0,1}
-		end
-	end
 
 
 	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
@@ -211,6 +206,109 @@ function OnAddOnLoaded(event, addonName)
 	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
 		if HTTsavedVars[v].specialFont == nil then
 			HTTsavedVars[v].specialFont = "ZoFontGameSmall"
+		end
+	end
+
+	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
+		for k,_ in pairs(HTTsavedVars[v].cooldownTable["names"]) do
+			if type(HTTsavedVars[v].cooldownTable["itemSet"][k]) ~= "table" then
+				HTTsavedVars[v].cooldownTable["itemSet"][k] = {}
+			end
+			if type(HTTsavedVars[v].cooldownTable["itemSet"][k][1] or nil) == "string" then
+				HTTsavedVars[v].cooldownTable["itemSet"][k][1] = {HTTsavedVars[v].cooldownTable["itemSet"][k][1]}
+			end
+			if type(HTTsavedVars[v].cooldownTable["itemSet"][k][1] or nil) == "nil" then
+				HTTsavedVars[v].cooldownTable["itemSet"][k][1] = {}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
+			if type(HTTsavedVars[v].debuffTable["itemSet"][k]) ~= "table" then
+				HTTsavedVars[v].debuffTable["itemSet"][k] = {}
+			end
+			if type(HTTsavedVars[v].debuffTable["itemSet"][k][1] or nil) == "string" then
+				HTTsavedVars[v].debuffTable["itemSet"][k][1] = {HTTsavedVars[v].debuffTable["itemSet"][k][1]}
+			end
+			if type(HTTsavedVars[v].debuffTable["itemSet"][k][1] or nil) == "nil" then
+				HTTsavedVars[v].debuffTable["itemSet"][k][1] = {}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
+			if type(HTTsavedVars[v].buffTable["itemSet"][k]) ~= "table" then
+				HTTsavedVars[v].buffTable["itemSet"][k] = {}
+			end
+			if type(HTTsavedVars[v].buffTable["itemSet"][k][1] or nil) == "string" then
+				HTTsavedVars[v].buffTable["itemSet"][k][1] = {HTTsavedVars[v].buffTable["itemSet"][k][1]}
+			end
+			if type(HTTsavedVars[v].buffTable["itemSet"][k][1] or nil) == "nil" then
+				HTTsavedVars[v].buffTable["itemSet"][k][1] = {}
+			end
+		end
+	end
+
+	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
+		for k,_ in pairs(HTTsavedVars[v].cooldownTable["names"]) do
+			if type(HTTsavedVars[v].cooldownTable["skill"][k]) ~= "table" then
+				HTTsavedVars[v].cooldownTable["skill"][k] = {}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
+			if type(HTTsavedVars[v].debuffTable["skill"][k]) ~= "table" then
+				HTTsavedVars[v].debuffTable["skill"][k] = {}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
+			if type(HTTsavedVars[v].buffTable["skill"][k]) ~= "table" then
+				HTTsavedVars[v].buffTable["skill"][k] = {}
+			end
+		end
+	end
+
+
+
+	
+	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
+		for k,_ in pairs(HTTsavedVars[v].cooldownTable["names"]) do
+			if type(HTTsavedVars[v].cooldownTable["colors2"]) ~= "table" then
+				HTTsavedVars[v].cooldownTable["colors2"] = {}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
+			if type(HTTsavedVars[v].buffTable["colors2"]) ~= "table" then
+				HTTsavedVars[v].buffTable["colors2"] = {}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
+			if type(HTTsavedVars[v].debuffTable["colors2"]) ~= "table" then
+				HTTsavedVars[v].debuffTable["colors2"] = {}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].cooldownTable["names"]) do
+			if type(HTTsavedVars[v].cooldownTable["colors3"]) ~= "table" then
+				HTTsavedVars[v].cooldownTable["colors3"] = {}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
+			if type(HTTsavedVars[v].buffTable["colors3"]) ~= "table" then
+				HTTsavedVars[v].buffTable["colors3"] = {}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
+			if type(HTTsavedVars[v].debuffTable["colors3"]) ~= "table" then
+				HTTsavedVars[v].debuffTable["colors3"] = {}
+			end
+		end
+	end
+
+	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
+		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
+			if HTTsavedVars[v].debuffTable["names"][k] == "Weapon Skill" then
+				HTTsavedVars[v].debuffTable["IDs"][k] = {39018,39028,39012,38695,28876,38689,28807,28849,28854,39067,39073,39053}
+			end
+		end
+		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
+			if HTTsavedVars[v].buffTable["names"][k] == "Dragon Blood" then
+				HTTsavedVars[v].buffTable["IDs"][k] = {32745}
+			end
 		end
 	end
 
@@ -595,12 +693,10 @@ EVENT_MANAGER:RegisterForEvent(HTT.name, EVENT_PLAYER_COMBAT_STATE, function()
 			EVENT_MANAGER:RegisterForUpdate("HTT_AlertUpdate", 100,HTT_Alerts.UpdateDuration)
 		end
 		if HTTsavedVars[HTT_variables.currentlySelectedProfile].isAutoCooldownTurnedOn then
-			HTT_functions.TurnOnCooldownsForWornSets()
-			HTT_functions.TurnOnCooldownsForEquipppedSkills()
-			HTT_functions.TurnOnDebuffsForWornSets()
-			HTT_functions.TurnOnDebuffsForEquipppedSkills()
-			HTT_functions.TurnOnBuffsForWornSets()
-			HTT_functions.TurnOnBuffsForEquipppedSkills()
+			HTT_functions.adjustCooldowns()
+			HTT_functions.adjustDebuffs()
+			HTT_functions.adjustBuffs()
+			HTT_functions.adjustBoss()
 			HTT_functions.reanchorCooldowns()
 			HTT_functions.reanchorReticle()
 			HTT_functions.reanchorBoss()
