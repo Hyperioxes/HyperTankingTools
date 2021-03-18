@@ -499,7 +499,7 @@ function HTT_functions.ProcessAnchors()
 	HTTSynergies:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,HTTsavedVars[HTT_variables.currentlySelectedProfile].xOffsetSynergies,HTTsavedVars[HTT_variables.currentlySelectedProfile].yOffsetSynergies)
 	HTTReflect:ClearAnchors()
 	HTTReflect:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,0,0)
-	
+
 end
 
 function HTT_functions.pickAnyElement(array)

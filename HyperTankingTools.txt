@@ -24,3 +24,4 @@ Events.lua
 Alerts.lua
 TextureList.lua
 DodgeRoll.lua
+ResourceBars.lua

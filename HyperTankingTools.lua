@@ -644,13 +644,13 @@ function OnAddOnLoaded(event, addonName)
 
 
 
-
 	-------- In case of old saved variables --------
 
 
-
+	
 
 	HTT_initializeUI.generateUI()
+	--HTT_InitializeStraightUI()
 	HTT_DodgeRoll_Initialize()
 	HTT_DodgeRoll_Events()
 	HTT_functions.reanchorReticle() -- remove later by doing changes in Initialize

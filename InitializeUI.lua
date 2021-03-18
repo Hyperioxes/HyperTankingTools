@@ -22,8 +22,6 @@ function HTT_initializeUI.generateUI()
 	local HTTSynergies = WM:CreateTopLevelWindow("HTTSynergies")
 	local HTTReflect = WM:CreateTopLevelWindow("HTTReflect")
 
-	
-	
 
 	
 
@@ -86,6 +84,8 @@ function HTT_initializeUI.generateUI()
     HTTMagicka:SetMovable(false)
     HTTMagicka:SetMouseEnabled(true)
 	HTTMagicka:SetHidden(false)
+
+
 
 	HTTSynergies:SetResizeToFitDescendents(true)
     HTTSynergies:SetMovable(true)
