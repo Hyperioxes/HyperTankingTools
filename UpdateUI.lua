@@ -1,15 +1,24 @@
 HTT_updateUI = {}
 
 
+local function GetTrueEngulfingValue()
+	local fullText = GetAbilityDescription(20930)
+	fullText = string.gsub(fullText,"%D","")
+	fullText = string.sub(fullText,-2)
+	if string.sub(fullText,1,1) == "0" then
+		return string.sub(fullText,-1)
+	end
+	return fullText
+end
+
+
 function HTT_updateUI.UpdateAlways()
 
 	if HTT_variables.scene~=SCENE_HIDDEN and HTTsavedVars[HTT_variables.currentlySelectedProfile].isAltResourceUIOn then
 		HTTHealth:SetHidden(false)
 		HTTStamina:SetHidden(false)
 		HTTMagicka:SetHidden(false)
-
 		-- HEALTH AND DAMAGE SHIELDS
-
 		local healthBar = HTTHealth:GetNamedChild("healthBar")
 		local healthText = HTTHealth:GetNamedChild("healthText")
 		local healthTextPercentage = HTTHealth:GetNamedChild("healthTextPercentage")
@@ -30,7 +39,6 @@ function HTT_updateUI.UpdateAlways()
 		-- HEALTH AND DAMAGE SHIELDS
 
 		-- BALANCE 
-
 		local balanceBarIcon = HTTHealth:GetNamedChild("balanceBarIcon")
 		local balanceBar = HTTHealth:GetNamedChild("balanceBar")
 		local balanceBarOutline = HTTHealth:GetNamedChild("balanceBarOutline")
@@ -40,7 +48,6 @@ function HTT_updateUI.UpdateAlways()
 		local balanceSkillID = HTT_variables.slotToAbilityID[balanceSlotID]
 		local balanceRemainingDuration = HTT_functions.GetUnitInfo({balanceSkillID},"player")
 		balanceRemainingDuration = balanceRemainingDuration/4
-
 		if isBalanceSlotted then
 			balanceBar:SetHidden(false)
 			balanceBarIcon:SetHidden(false)
@@ -57,20 +64,16 @@ function HTT_updateUI.UpdateAlways()
 			balanceBarOutlineOpaque:SetHidden(true)
 			balanceBarIconFrame:SetHidden(true)
 		end
-
 		-- BALANCE
 
 		-- MAJOR MENDING 
-
 		local majorMendingIcon = HTTHealth:GetNamedChild("majorMendingIcon")
 		local majorMending = HTTHealth:GetNamedChild("majorMending")
 		local majorMendingOutline = HTTHealth:GetNamedChild("majorMendingOutline")
 		local majorMendingOutlineOpaque = HTTHealth:GetNamedChild("majorMendingOutlineOpaque")
 		local majorMendingIconFrame = HTTHealth:GetNamedChild("majorMendingIconFrame")
 		local isIgneousSlotted = HTT_functions.checkIfSkillSlotted({32673,29071,29224})
-		local majorMendingRemainingDuration = HTT_functions.GetUnitInfo({61711},"player")
-		majorMendingRemainingDuration = majorMendingRemainingDuration/HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][19]
-
+		local majorMendingRemainingDuration = (HTT_variables.majorMendingExpiresAt - GetGameTimeSeconds())/HTT_variables.majorMendingDuration
 		if isIgneousSlotted then
 			majorMending:SetHidden(false)
 			majorMendingIcon:SetHidden(false)
@@ -86,7 +89,6 @@ function HTT_updateUI.UpdateAlways()
 			majorMendingOutlineOpaque:SetHidden(true)
 			majorMendingIconFrame:SetHidden(true)
 		end
-
 		-- MAJOR MENDING
 		local staminaBarOutline = HTTStamina:GetNamedChild("staminaBarOutline")
 		local staminaBar = HTTStamina:GetNamedChild("staminaBarFill")
@@ -116,9 +118,7 @@ function HTT_updateUI.UpdateAlways()
 		staminaBar:SetTextureCoords(0,1,1-(stamina/maxStamina),1)
 		staminaText:SetText(stamina)
 		staminaTextPercentage:SetText(math.floor((stamina/maxStamina)*100).."%")
-
 		-- DODGE ROLL
-
 		local dodgeRollBar = HTTStamina:GetNamedChild("dodgeRollBarFill")
 		local dodgeRollStackCounter = HTTStamina:GetNamedChild("dodgeRollStackCounter")
 		local dodgeRollRemainingDuration,dodgeRollStacks = HTT_functions.GetUnitInfo({69143},"player")
@@ -132,7 +132,6 @@ function HTT_updateUI.UpdateAlways()
 			dodgeRollStackCounter:SetHidden(true)
 		end
 		-- DODGE ROLL
-
 		local magickaBar = HTTMagicka:GetNamedChild("magickaBarFill")
 		local magickaText = HTTMagicka:GetNamedChild("magickaText")
 		local magickaTextPercentage = HTTMagicka:GetNamedChild("magickaTextPercentage")
@@ -141,10 +140,6 @@ function HTT_updateUI.UpdateAlways()
 		magickaBar:SetTextureCoords(0,1,0,magicka/maxMagicka)
 		magickaText:SetText(magicka)
 		magickaTextPercentage:SetText(math.floor((magicka/maxMagicka)*100).."%")
-
-
-
-
 		local horseStaminaBar = HTTHealth:GetNamedChild("horseStamina")
 		local horseStaminaOutline = HTTHealth:GetNamedChild("horseStaminaOutline")
 		local horseStaminaOutlineOpaque = HTTHealth:GetNamedChild("horseStaminaOutlineOpaque")
@@ -166,14 +161,6 @@ function HTT_updateUI.UpdateAlways()
 			horseStaminaIconFrame:SetHidden(true)
 			horseStaminaIcon:SetHidden(true)
 		end
-
-
-
-
-
-
-
-
 	else
 		HTTHealth:SetHidden(true)
 		HTTStamina:SetHidden(true)
@@ -185,37 +172,21 @@ function HTT_updateUI.UpdateAlways()
 		reflect:SetHidden(true)
 		reflectFill:SetHidden(true)
 	elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].isReflectIndicatorOn then
-		reflect:SetHidden(not HTT_variables.isReflectActive)
-		reflectFill:SetHidden(not HTT_variables.isReflectActive)
+		if HTT_variables.reflectExpiresAt < GetGameTimeSeconds() then
+			reflect:SetHidden(true)
+			reflectFill:SetHidden(true)
+		else
+			reflect:SetHidden(false)
+			reflectFill:SetHidden(false)
+		end
 		reflectFill:SetDimensions(128*((HTT_variables.reflectExpiresAt-GetGameTimeSeconds())/6),64)
 		reflectFill:SetTextureCoords(0.5+(HTT_variables.reflectExpiresAt-GetGameTimeSeconds())/12,0.5-((HTT_variables.reflectExpiresAt-GetGameTimeSeconds())/12),0,1)
 	end
-	
-
 end
 
-function HTT_updateUI.UpdateCombat()
-
-	
-	--d(GetPlayerStat(STAT_ARMOR_RATING, STAT_BONUS_OPTION_APPLY_BONUS))
-
-
-
-
-
-
-
-
-
-
-	------------------- Initialize backgrounds --------------------
-	currentBar,_ = GetActiveWeaponPairInfo()
-	_,HTT_variables.maxMag = GetUnitPower("player",POWERTYPE_MAGICKA)
-	engulfingPower = HTT_functions.GetTrueEngulfingValue()
-
+function HTT_combatUpdate()
 	local reticleName = HTT:GetNamedChild("TextReticle")
 	local reticleBackground = HTT:GetNamedChild("BackgroundReticle")
-
 	if DoesUnitExist("reticleover") and IsUnitAttackable("reticleover") then
 		reticleName:SetHidden(false)
 		reticleName:SetText(GetUnitName("reticleover"))
@@ -224,126 +195,7 @@ function HTT_updateUI.UpdateCombat()
 		reticleName:SetHidden(true)
 		reticleBackground:SetHidden(true)
 	end
-
-
-	------------------- Initialize backgrounds --------------------
-
-
-
-	------------------ Self Buffs --------------------------------
-	if HTTsavedVars[HTT_variables.currentlySelectedProfile].isBuffUIOn and HTT_variables.scene~=SCENE_HIDDEN  then
-		local width = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffUIWidth
-		local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffUIHeight
-		local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffUIScale
-		HTTSelfBuffs:SetHidden(false)
-
-
-
-
-		for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs) do
-			local textInBar = HTTSelfBuffs:GetNamedChild("SelfBuffTextInBar"..v)
-			local durationTimer = HTTSelfBuffs:GetNamedChild("SelfBuffDurationTimer"..v)
-			local durationBar = HTTSelfBuffs:GetNamedChild("SelfBuffDurationBar"..v)
-			local icon = HTTSelfBuffs:GetNamedChild("SelfBuffIcon"..v)
-			if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["isTurnedOn"][v] then
-			if v==3 then
-				remainingTime = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["expiresAt"][3] - GetGameTimeSeconds()
-				if remainingTime > 0 then
-					isActive = true
-				else
-					isActive = false
-				end
-			else
-				remainingTime,_,isActive = HTT_functions.GetUnitInfo(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][v],"player")
-			end
-			duration = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][n]
-
-
-			
-
-				 
-			
-				durationTimer:SetHidden(false)
-				durationBar:SetHidden(false)
-				icon:SetHidden(false)
-				textInBar:SetHidden(false)
-
-
-			
-			
-
-			if remainingTime > 0 then
-				durationTimer:SetText(HTT_functions.HTT_processTimer((math.floor(remainingTime*10)/10)).."s")
-			else
-				durationTimer:SetText("0.0s")
-			end
-
-			if isActive then
-				if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][v] == "Immovable" then
-					HTT_variables.immovableOn = true
-				end
-				if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][v] == "Bound Aegis" then
-					HTT_variables.isBoundAegisOn = true
-				end
-				if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][v] == "Sacred Ground" then
-					HTT_variables.isSacredGroundOn = true
-				end
-				durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][v]))
-				if remainingTime > 0 then
-					durationBar:SetDimensions(width*0.75*(remainingTime/HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][v]),height)
-					durationBar:SetTextureCoords(0,remainingTime/HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][v],0,1)
-				else
-					durationBar:SetDimensions(width*0.75,height)
-				end
-			end
-
-			if  remainingTime <= 0 and not isActive then
-				if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][v] == "Immovable" then
-					HTT_variables.immovableOn = false
-				end
-				if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][v] == "Bound Aegis" then
-					HTT_variables.isBoundAegisOn = false
-				end
-				if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][v] == "Sacred Ground" then
-					HTT_variables.isSacredGroundOn = false
-				end
-				textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["textWhenMissing"][v])
-				durationBar:SetColor(50,50,51,0.5)
-				durationBar:SetTextureCoords(0,1,0,1)
-				durationBar:SetDimensions(width*0.75,height)
-			else
-				if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][v] == "Puncturing Remedy" and HTT_variables.masterSnB ~= nil then
-					textInBar:SetText("+"..HTT_variables.masterSnB.." armor")
-				else
-					textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["texts"][v])
-				end
-			end
-
-
-			else
-				durationTimer:SetHidden(true)
-				durationBar:SetHidden(true)
-				icon:SetHidden(true)
-				textInBar:SetHidden(true)
-			end
-
-
-		end
-
-
-	else
-		HTTSelfBuffs:SetHidden(true)
-	end
-		
-
-
-
-
-	------------------ Self Buffs --------------------------------
-
-
 	---------------- Block UI -------------------------------------------
-
 	if HTTsavedVars[HTT_variables.currentlySelectedProfile].isBlockUIOn and HTT_variables.scene~=SCENE_HIDDEN  then
 		HTTBlock:SetHidden(false)
 		local block = HTTBlock:GetNamedChild("Block")
@@ -365,11 +217,16 @@ function HTT_updateUI.UpdateCombat()
 			blockCost:SetColor(52/255, 235/255, 70/255)
 			blockMitigation:SetColor(52/255, 235/255, 70/255)
 		end
+		if HTTsavedVars[HTT_variables.currentlySelectedProfile].isBlockCostOn then
+			blockCost:SetHidden(false)
+			blockMitigation:SetHidden(false)
+		else
+			blockCost:SetHidden(true)
+			blockMitigation:SetHidden(true)
+		end
 	else
 		HTTBlock:SetHidden(true)
 	end
-	
-
 
 	-------------------- Block UI ----------------------------------------
 
@@ -392,7 +249,6 @@ function HTT_updateUI.UpdateCombat()
 			ownRemainingTime = 0
 		end
 		ownStacksTimerText:SetText(HTT_functions.HTT_processTimer((math.floor(ownRemainingTime*10)/10)).."s")
-
 		if ownRemainingTime ~= 0 then
 			ownStacksTimerBar:SetDimensions(math.floor(width * 0.77)*(ownRemainingTime/HTT_variables.specialDuration[GetUnitClassId("player")]),10)
 			ownStacksTimerBar:SetTextureCoords(0,ownRemainingTime/HTT_variables.specialDuration[GetUnitClassId("player")],0,1)
@@ -415,9 +271,6 @@ function HTT_updateUI.UpdateCombat()
 		else
 			circle1:SetHidden(true)
 		end
-
-
-
 	elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].classSpecialIsOn and GetUnitClassId("player") == 5 and HTT_variables.scene~=SCENE_HIDDEN  then
 		HTTOwnStacks:SetHidden(false)
 		local width = HTTsavedVars[HTT_variables.currentlySelectedProfile].specialUIWidth
@@ -467,92 +320,87 @@ function HTT_updateUI.UpdateCombat()
 	else
 		HTTOwnStacks:SetHidden(true)
 	end
-
-
 	--------------- Stonefist stacks on yourself --------------------- 
 
-	--------------- Reticle Debuffs ----------------------------
-
-
+	---------------- Debuffs -------------------
 	if HTTsavedVars[HTT_variables.currentlySelectedProfile].isDebuffUIOn and HTT_variables.scene~=SCENE_HIDDEN  then
 		HTT:SetHidden(false)
 		local width = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffUIWidth
 		local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffUIHeight
 		local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffUIScale
-		for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
-				local textInBar = HTT:GetNamedChild("TextInBarReticle"..v)
-				local durationTimer = HTT:GetNamedChild("DurationTimerReticle"..v)
-				local durationBar = HTT:GetNamedChild("DurationBarReticle"..v)
-				local icon = HTT:GetNamedChild("IconReticle"..v)
-				if DoesUnitExist("reticleover") and IsUnitAttackable("reticleover") and HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][v] then
-					if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Weapon Skill" then
-						remainingTime = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][v] - GetGameTimeSeconds()
-						stacks = 1
-						duration = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][v]
-						
-					else
-						remainingTime,stacks,_,abilityID = HTT_functions.GetUnitInfo(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][v],"reticleover")
-						duration = (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][v][GetUnitName("reticleover")] or 0)
-					end
-					if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Weapon Skill" then
-						if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Crusher") ~= nil and (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Crusher")][GetUnitName("reticleover")] or 0) > GetGameTimeSeconds() then
-							HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v] = HTT_functions.crushersLeft(remainingTime,(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Crusher")][GetUnitName("reticleover")] or 0) - GetGameTimeSeconds()).." crushers left"
-						else
-							HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v] = HTT_functions.crushersLeft(remainingTime,0).." crushers left"
-						end
-					end	
-					durationTimer:SetHidden(false)
-					durationBar:SetHidden(false)
-					icon:SetHidden(false)
-					textInBar:SetHidden(false)
-					if remainingTime > 0 then
-						durationTimer:SetText(HTT_functions.HTT_processTimer((math.floor(remainingTime*10)/10)).."s")
-					else
-						durationTimer:SetText("0.0s")
-					end
-					if remainingTime ~= 0 then
-						durationBar:SetDimensions(width*0.75*(remainingTime/duration),height)
-						durationBar:SetTextureCoords(0,remainingTime/duration,0,1)
-						if stacks == 3 then
-							durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors3"][v]))
-						elseif stacks == 2 or (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Off-Balance/Off-Balance Immunity" and abilityID==134599) then
-							durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors2"][v]))
-						else
-							durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][v]))
-						end
-					end
-					if  remainingTime <= 0 then
-						textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["textWhenMissing"][v])
-						durationBar:SetColor(50,50,51,0.5)
-						durationBar:SetTextureCoords(0,1,0,1)
-						durationBar:SetDimensions(width*0.75,height)
-					elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Engulfing Flames" then
-						textInBar:SetText(engulfingPower.."% fire damage")
-					elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Alkosh" and HTT_variables.alkoshHits[HTT_variables.targetNameUnitID[GetUnitName("reticleover")]] then
-						textInBar:SetText(HTT_variables.alkoshHits[HTT_variables.targetNameUnitID[GetUnitName("reticleover")]].." penetration")
-					elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Alkosh" then
-						textInBar:SetText("unknown penetration")
-					elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Stagger" then
-						textInBar:SetText((stacks*65).." damage increase")
-					elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Off-Balance/Off-Balance Immunity" and abilityID==134599 then
-						textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].offBalanceImmunityText)
-					else
-						textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v])
-					end
-
+		for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
+			local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[trackerID]
+			local textInBar = HTT:GetNamedChild("TextInBarReticle"..trackerID)
+			local durationTimer = HTT:GetNamedChild("DurationTimerReticle"..trackerID)
+			local durationBar = HTT:GetNamedChild("DurationBarReticle"..trackerID)
+			local icon = HTT:GetNamedChild("IconReticle"..trackerID)
+			if DoesUnitExist("reticleover") and IsUnitAttackable("reticleover") and tracker.turnedOn then
+				if tracker.name == "Weapon Skill" then
+					remainingTime = tracker.expiresAt - GetGameTimeSeconds()
+					stacks = 1
+					duration = tracker.duration	
 				else
-					durationTimer:SetHidden(true)
-					durationBar:SetHidden(true)
-					icon:SetHidden(true)
-					textInBar:SetHidden(true)
+					remainingTime,stacks,_,abilityID = HTT_functions.GetUnitInfo(tracker.IDs,"reticleover")
+					duration = (tracker.duration[GetUnitName("reticleover")] or 0)
 				end
+				if tracker.name == "Weapon Skill" then
+					local crusher = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["Crusher"] or nil
+					if crusher ~= nil and (crusher.expiresAt[GetUnitName("reticleover")] or 0) > GetGameTimeSeconds() then
+						tracker.text = HTT_functions.crushersLeft(remainingTime,(crusher.expiresAt[GetUnitName("reticleover")] or 0) - GetGameTimeSeconds()).." crushers left"
+					else
+						tracker.text = HTT_functions.crushersLeft(remainingTime,0).." crushers left"
+					end
+				end	
+				durationTimer:SetHidden(false)
+				durationBar:SetHidden(false)
+				icon:SetHidden(false)
+				textInBar:SetHidden(false)
+				if remainingTime > 0 then
+					durationTimer:SetText(HTT_functions.HTT_processTimer((math.floor(remainingTime*10)/10)).."s")
+				else
+					durationTimer:SetText("0.0s")
+				end
+				if remainingTime ~= 0 then
+					durationBar:SetDimensions(width*0.75*(remainingTime/duration),height)
+					durationBar:SetTextureCoords(0,remainingTime/duration,0,1)
+					if stacks == 3 then
+						durationBar:SetColor(unpack(tracker.color3))
+					elseif stacks == 2 or (tracker.name == "Off-Balance/Off-Balance Immunity" and abilityID==134599) then
+						durationBar:SetColor(unpack(tracker.color2))
+					else
+						durationBar:SetColor(unpack(tracker.color))
+					end
+				end
+				if  remainingTime <= 0 then
+					textInBar:SetText(tracker.textWhenMissing)
+					durationBar:SetColor(50,50,51,0.5)
+					durationBar:SetTextureCoords(0,1,0,1)
+					durationBar:SetDimensions(width*0.75,height)
+				elseif tracker.name == "Engulfing Flames" then
+					textInBar:SetText(GetTrueEngulfingValue().."% fire damage")
+				elseif tracker.name == "Alkosh" and HTT_variables.alkoshHits[HTT_variables.targetNameUnitID[GetUnitName("reticleover")]] then
+					textInBar:SetText(HTT_variables.alkoshHits[HTT_variables.targetNameUnitID[GetUnitName("reticleover")]].." penetration")
+				elseif tracker.name == "Alkosh" then
+					textInBar:SetText("unknown penetration")
+				elseif tracker.name == "Stagger" then
+					textInBar:SetText((stacks*65).." damage increase")
+				elseif tracker.name == "Off-Balance/Off-Balance Immunity" and abilityID==134599 then
+					textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].offBalanceImmunityText)
+				else
+					textInBar:SetText(tracker.text)
+				end
+			else
+				durationTimer:SetHidden(true)
+				durationBar:SetHidden(true)
+				icon:SetHidden(true)
+				textInBar:SetHidden(true)
+			end
 		end
 	else
 		HTT:SetHidden(true)
 	end
-	
+	---------------- Debuffs -------------------
 
-	--------------- Reticle Debuffs ----------------------------
 
 	--------------- Boss Debuffs ----------------------
 
@@ -560,7 +408,6 @@ function HTT_updateUI.UpdateCombat()
 		local width = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffBossUIWidth
 		local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffBossUIHeight
 		local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffBossUIScale
-
 		for i=1, MAX_BOSSES do
 			_G["HTTBoss"..i]:SetHidden(false)
 			local bossName = _G["HTTBoss"..i]:GetNamedChild("TextBoss"..i)
@@ -571,183 +418,195 @@ function HTT_updateUI.UpdateCombat()
 				bossName:SetText(GetUnitName("boss"..i))
 				bossBackground:SetHidden(false)
 
-				for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
-					local textInBar = _G["HTTBoss"..i]:GetNamedChild("TextInBarBoss"..v..i)
-					local durationTimer = _G["HTTBoss"..i]:GetNamedChild("DurationTimerBoss"..v..i)
-					local durationBar = _G["HTTBoss"..i]:GetNamedChild("DurationBarBoss"..v..i)
-					local icon = _G["HTTBoss"..i]:GetNamedChild("IconBoss"..v..i)
-					if  HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"][v] then
-
-
-
-					if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Weapon Skill" then
-						remainingTime = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][v] - GetGameTimeSeconds()
-						stacks = 1
-						duration = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][v]
+			for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
+			local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[trackerID]
+			local textInBar = _G["HTTBoss"..i]:GetNamedChild("TextInBarBoss"..trackerID..i)
+			local durationTimer = _G["HTTBoss"..i]:GetNamedChild("DurationTimerBoss"..trackerID..i)
+			local durationBar = _G["HTTBoss"..i]:GetNamedChild("DurationBarBoss"..trackerID..i)
+			local icon = _G["HTTBoss"..i]:GetNamedChild("IconBoss"..trackerID..i)
+			if tracker.turnedOnBoss then
+				if tracker.name == "Weapon Skill" then
+					remainingTime = tracker.expiresAt - GetGameTimeSeconds()
+					stacks = 1
+					duration = tracker.duration		
+				else
+					
+					remainingTime,stacks,_,abilityID = HTT_functions.GetUnitInfo(tracker.IDs,"boss"..i)
+					duration = (tracker.duration[GetUnitName("boss"..i)] or 0)
+				end
+				if tracker.name == "Weapon Skill" then
+					local crusher = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["Crusher"] or nil
+					if crusher ~= nil and (crusher.expiresAt[GetUnitName("boss"..i)] or 0) > GetGameTimeSeconds() then
+						tracker.text = HTT_functions.crushersLeft(remainingTime,(crusher.expiresAt[GetUnitName("boss"..i)] or 0) - GetGameTimeSeconds()).." crushers left"
 					else
-						remainingTime,stacks,_,abilityID = HTT_functions.GetUnitInfo(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][v],"boss"..i)
-						duration = (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][v][GetUnitName("boss"..i)] or 0)
+						tracker.text = HTT_functions.crushersLeft(remainingTime,0).." crushers left"
 					end
-					if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Weapon Skill" then
-						if (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Crusher")][GetUnitName("boss"..i)] or 0) > GetGameTimeSeconds() then
-							HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v] = HTT_functions.crushersLeft(remainingTime,(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],"Crusher")][GetUnitName("boss"..i)] or 0) - GetGameTimeSeconds()).." crushers left"
-						else
-							HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v] = HTT_functions.crushersLeft(remainingTime,0).." crushers left"
-						end
-					end
-					
-
-				
-
-		
-		
-					
-					durationTimer:SetHidden(false)
-					durationBar:SetHidden(false)
-					icon:SetHidden(false)
-					textInBar:SetHidden(false)
-
-
-					
-					
-
-			
-					if remainingTime > 0 then
-						durationTimer:SetText(HTT_functions.HTT_processTimer((math.floor(remainingTime*10)/10)).."s")
-					else
-						durationTimer:SetText("0.0s")
-					end
-
-		
-
-			
-
-					if remainingTime ~= 0 then
+				end	
+				durationTimer:SetHidden(false)
+				durationBar:SetHidden(false)
+				icon:SetHidden(false)
+				textInBar:SetHidden(false)
+				if remainingTime > 0 then
+					durationTimer:SetText(HTT_functions.HTT_processTimer((math.floor(remainingTime*10)/10)).."s")
+				else
+					durationTimer:SetText("0.0s")
+				end
+				if remainingTime ~= 0 then
 					durationBar:SetDimensions(width*0.75*(remainingTime/duration),height)
 					durationBar:SetTextureCoords(0,remainingTime/duration,0,1)
-						if stacks == 3 then
-							durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors3"][v]))
-
-						elseif stacks == 2 or (HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Off-Balance/Off-Balance Immunity" and abilityID==134599) then
-							durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors2"][v]))
-						else
-							durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][v]))
-
-						end
-					end
-
-					if  remainingTime <= 0 then
-						textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["textWhenMissing"][v])
-						durationBar:SetTextureCoords(0,1,0,1)
-						durationBar:SetColor(50,50,51,0.5)
-						durationBar:SetDimensions(width*0.75,height)
-						elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Engulfing Flames" then
-							textInBar:SetText(engulfingPower.."% fire damage")
-						elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Alkosh" and HTT_variables.alkoshHits[HTT_variables.targetNameUnitID[GetUnitName("boss"..i)]] then
-							textInBar:SetText(HTT_variables.alkoshHits[HTT_variables.targetNameUnitID[GetUnitName("boss"..i)]].." penetration")
-						elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Alkosh" then
-							textInBar:SetText("unknown penetration")
-						elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Stagger" then
-							textInBar:SetText((stacks*65).." damage increase")
-						elseif HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v] == "Off-Balance/Off-Balance Immunity" and abilityID==134599 then
-							textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].offBalanceImmunityText)
-						else
-							textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][v])
-					end
+					if stacks == 3 then
+						durationBar:SetColor(unpack(tracker.color3))
+					elseif stacks == 2 or (tracker.name == "Off-Balance/Off-Balance Immunity" and abilityID==134599) then
+						durationBar:SetColor(unpack(tracker.color2))
 					else
-						durationTimer:SetHidden(true)
-						durationBar:SetHidden(true)
-						icon:SetHidden(true)
-						textInBar:SetHidden(true)
+						durationBar:SetColor(unpack(tracker.color))
 					end
-
 				end
-
-
-
-			
+				if  remainingTime <= 0 then
+					textInBar:SetText(tracker.textWhenMissing)
+					durationBar:SetColor(50,50,51,0.5)
+					durationBar:SetTextureCoords(0,1,0,1)
+					durationBar:SetDimensions(width*0.75,height)
+				elseif tracker.name == "Engulfing Flames" then
+					textInBar:SetText(GetTrueEngulfingValue().."% fire damage")
+				elseif tracker.name == "Alkosh" and HTT_variables.alkoshHits[HTT_variables.targetNameUnitID[GetUnitName("boss"..i)]] then
+					textInBar:SetText(HTT_variables.alkoshHits[HTT_variables.targetNameUnitID[GetUnitName("boss"..i)]].." penetration")
+				elseif tracker.name == "Alkosh" then
+					textInBar:SetText("unknown penetration")
+				elseif tracker.name == "Stagger" then
+					textInBar:SetText((stacks*65).." damage increase")
+				elseif tracker.name == "Off-Balance/Off-Balance Immunity" and abilityID==134599 then
+					textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].offBalanceImmunityText)
+				else
+					textInBar:SetText(tracker.text)
+				end
+			else
+				durationTimer:SetHidden(true)
+				durationBar:SetHidden(true)
+				icon:SetHidden(true)
+				textInBar:SetHidden(true)
+			end
+		end	
 			else
 				bossName:SetHidden(true)
 				bossBackground:SetHidden(true)
 				_G["HTTBoss"..i]:SetHidden(true)
 			end
-		
-
-
-
-			
-			
-			
-
-
-
-		end
-		
+		end	
 	else
 		for i=1, MAX_BOSSES do
 			_G["HTTBoss"..i]:SetHidden(true)
 		end
 	end
 
-
 	--------------- Boss Debuffs ----------------------
 
 
+	------------------ Self Buffs --------------------------------
+	if HTTsavedVars[HTT_variables.currentlySelectedProfile].isBuffUIOn and HTT_variables.scene~=SCENE_HIDDEN  then
+		local width = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffUIWidth
+		local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffUIHeight
+		local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffUIScale
+		HTTSelfBuffs:SetHidden(false)
+		for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs) do
+			local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[trackerID]
+			local textInBar = HTTSelfBuffs:GetNamedChild("SelfBuffTextInBar"..trackerID)
+			local durationTimer = HTTSelfBuffs:GetNamedChild("SelfBuffDurationTimer"..trackerID)
+			local durationBar = HTTSelfBuffs:GetNamedChild("SelfBuffDurationBar"..trackerID)
+			local icon = HTTSelfBuffs:GetNamedChild("SelfBuffIcon"..trackerID)
+			if tracker.turnedOn then
+				if tracker.name == "Dragon Blood" then
+					remainingTime = tracker.expiresAt - GetGameTimeSeconds()
+					if remainingTime > 0 then
+						isActive = true
+					else
+						isActive = false
+					end
+				else
+					remainingTime,_,isActive = HTT_functions.GetUnitInfo(tracker.IDs,"player")
+				end
+				duration = tracker.duration
+				durationTimer:SetHidden(false)
+				durationBar:SetHidden(false)
+				icon:SetHidden(false)
+				textInBar:SetHidden(false)
+				if remainingTime > 0 then
+					durationTimer:SetText(HTT_functions.HTT_processTimer((math.floor(remainingTime*10)/10)).."s")
+				else
+					durationTimer:SetText("0.0s")
+				end
+				if isActive then
+					durationBar:SetColor(unpack(tracker.color))
+					if remainingTime > 0 then
+						durationBar:SetDimensions(width*0.75*(remainingTime/tracker.duration),height)
+						durationBar:SetTextureCoords(0,remainingTime/tracker.duration,0,1)
+					else
+						durationBar:SetDimensions(width*0.75,height)
+					end
+				end
+				if  remainingTime <= 0 and not isActive then
+					textInBar:SetText(tracker.textWhenMissing)
+					durationBar:SetColor(50,50,51,0.5)
+					durationBar:SetTextureCoords(0,1,0,1)
+					durationBar:SetDimensions(width*0.75,height)
+				else
+					if tracker.name == "Puncturing Remedy" and HTT_variables.masterSnB ~= nil then
+						textInBar:SetText("+"..HTT_variables.masterSnB.." armor")
+					else
+						textInBar:SetText(tracker.text)
+					end
+				end
+				else
+					durationTimer:SetHidden(true)
+					durationBar:SetHidden(true)
+					icon:SetHidden(true)
+					textInBar:SetHidden(true)
+				end
+			end
+	else
+		HTTSelfBuffs:SetHidden(true)
+	end
 
+	------------------ Self Buffs --------------------------------
 
 	------------------ Cooldowns --------------------------------
 	if HTTsavedVars[HTT_variables.currentlySelectedProfile].isCooldownUIOn and HTT_variables.scene~=SCENE_HIDDEN  then
 		local width = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownUIWidth
 		local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownUIHeight
 		local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownUIScale
-		HTTCooldowns:SetHidden(false)
-		
-		for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) do
-			local textInBar = HTTCooldowns:GetNamedChild("CooldownTextInBar"..v)
-			local durationTimer = HTTCooldowns:GetNamedChild("CooldownDurationTimer"..v)
-			local durationBar = HTTCooldowns:GetNamedChild("CooldownsDurationBar"..v)
-			local icon = HTTCooldowns:GetNamedChild("CooldownIcon"..v)
-			if HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isTurnedOn"][v] then
-			remainingTime = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["expiresAt"][v] - GetGameTimeSeconds()
-			duration = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["durations"][v]
-
-
-			
-
-				 
-			
+		HTTCooldowns:SetHidden(false)	
+		for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) do
+			local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[trackerID]
+			local textInBar = HTTCooldowns:GetNamedChild("CooldownTextInBar"..trackerID)
+			local durationTimer = HTTCooldowns:GetNamedChild("CooldownDurationTimer"..trackerID)
+			local durationBar = HTTCooldowns:GetNamedChild("CooldownsDurationBar"..trackerID)
+			local icon = HTTCooldowns:GetNamedChild("CooldownIcon"..trackerID)
+			if tracker.turnedOn then
+			remainingTime = tracker.expiresAt - GetGameTimeSeconds()
+			duration = tracker.duration
 			durationTimer:SetHidden(false)
 			durationBar:SetHidden(false)
 			icon:SetHidden(false)
 			textInBar:SetHidden(false)
-
-
-
-			
-
 			if remainingTime > 0 then
 				durationTimer:SetText(HTT_functions.HTT_processTimer((math.floor(remainingTime*10)/10)).."s")
 			else
 				durationTimer:SetText("0.0s")
-			end
-
-			
-			durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["colors"][v]))
+			end	
+			durationBar:SetColor(unpack(tracker.color))
 			if remainingTime > 0 then
-				durationBar:SetTextureCoords(0,remainingTime/HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["durations"][v],0,1)
-				durationBar:SetDimensions(width*0.75*(remainingTime/HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["durations"][v]),height)
+				durationBar:SetTextureCoords(0,remainingTime/duration,0,1)
+				durationBar:SetDimensions(width*0.75*(remainingTime/duration),height)
 			else
 				durationBar:SetDimensions(width*0.75,height)
 			end
-
-
 			if  remainingTime <= 0 then
-				textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["textWhenMissing"][v])
+				textInBar:SetText(tracker.textWhenMissing)
 				durationBar:SetTextureCoords(0,1,0,1)
 				durationBar:SetColor(50,50,51,0.5)
 				durationBar:SetDimensions(width*0.75,height)
 			else
-				textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["texts"][v])
+				textInBar:SetText(tracker.text)
 			end
 			else
 				durationTimer:SetHidden(true)
@@ -756,17 +615,11 @@ function HTT_updateUI.UpdateCombat()
 				textInBar:SetHidden(true)
 			end
 		end
-
 	else
 		HTTCooldowns:SetHidden(true)
 	end
-		
-
-
-
 
 	------------------ Cooldowns --------------------------------
-
 
 	------------------- Synergies ----------------------------------
 
@@ -775,52 +628,37 @@ function HTT_updateUI.UpdateCombat()
 		local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesUIHeight
 		local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesUIScale
 		HTTSynergies:SetHidden(false)
-
-		for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies) do
-			local textInBar = HTTSynergies:GetNamedChild("SynergiesTextInBar"..v)
-			local durationTimer = HTTSynergies:GetNamedChild("SynergiesDurationTimer"..v)
-			local durationBar = HTTSynergies:GetNamedChild("SynergiesDurationBar"..v)
-			local icon = HTTSynergies:GetNamedChild("SynergiesIcon"..v)
-			if HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["isTurnedOn"][v] then
-			remainingTime = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["expiresAt"][v] - GetGameTimeSeconds()
-
-
-			
-
-				 
-			
+		for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies) do
+			local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[trackerID]
+			local textInBar = HTTSynergies:GetNamedChild("SynergiesTextInBar"..trackerID)
+			local durationTimer = HTTSynergies:GetNamedChild("SynergiesDurationTimer"..trackerID)
+			local durationBar = HTTSynergies:GetNamedChild("SynergiesDurationBar"..trackerID)
+			local icon = HTTSynergies:GetNamedChild("SynergiesIcon"..trackerID)
+			if tracker.turnedOn then
+			remainingTime = tracker.expiresAt - GetGameTimeSeconds()
 			durationTimer:SetHidden(false)
 			durationBar:SetHidden(false)
 			icon:SetHidden(false)
 			textInBar:SetHidden(false)
-
-
-			
-			
-
 			if remainingTime > 0 then
 				durationTimer:SetText(HTT_functions.HTT_processTimer((math.floor(remainingTime*10)/10)).."s")
 			else
 				durationTimer:SetText("0.0s")
 			end
-
-			
-			durationBar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["colors"][v]))
+			durationBar:SetColor(unpack(tracker.color))
 			if remainingTime > 0 then
 				durationBar:SetTextureCoords(0,remainingTime/20,0,1)
 				durationBar:SetDimensions(width*0.75*(remainingTime/20),height)
 			else
 				durationBar:SetDimensions(width*0.75,height)
 			end
-
-
 			if  remainingTime <= 0 then
-				textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["textWhenMissing"][v])
+				textInBar:SetText(tracker.textWhenMissing)
 				durationBar:SetTextureCoords(0,1,0,1)
 				durationBar:SetColor(50,50,51,0.5)
 				durationBar:SetDimensions(width*0.75,height)
 			else
-				textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["texts"][v])
+				textInBar:SetText(tracker.text)
 			end
 			else
 				durationTimer:SetHidden(true)
@@ -829,14 +667,15 @@ function HTT_updateUI.UpdateCombat()
 				textInBar:SetHidden(true)
 			end
 		end
-
 	else
 		HTTSynergies:SetHidden(true)
 	end
-
 
 	----------------------- Synergies -----------------------------------
 
 
 
+
+
 end
+

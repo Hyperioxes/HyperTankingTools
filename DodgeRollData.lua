@@ -31,7 +31,10 @@ HTT_DodgeRollData = {
 		[133440] = {duration = 0.25,sound = SOUNDS.DUEL_START,isOnByDefault = true}, -- Scalding Stab
 	},
 	["Asylum Sanctorium"] = {
-		[95428] = {duration = 1,isOnByDefault = true} --Swipe
+		[95428] = {duration = 1,isOnByDefault = true}, --Swipe
+		[95545] = {duration = 2,isOnByDefault = true,alertRepeat = {2000,4000},preventDouble = 2000,onlyBlock = true}, --Llothis Cone
+		[98895] = {duration = 1,notOnlyPlayer = true},
+		[99974] = {duration = 2.5,notOnlyPlayer = true,resultOverride=2240}
 	},
 	["Black Drake Villa"] = {
 		[142717] = {duration = 2.15,isOnByDefault = true}, --Clobber, Kinras Ironeye
@@ -52,5 +55,14 @@ HTT_DodgeRollData = {
 		[146677] = {duration = 1.6,isOnByDefault = true}, --Uppercut, Taskmaster Viccia
 		[146681] = {duration = 1.4, isOnByDefault = true}, --Crush, Molten Guardian
 	},
+	["Sunspire"] = {
+		[119283] = {duration = 2.9,windup = 1300,texture = "/esoui/art/icons/achievement_els_sunspire_flavor_2.dds"}, --Lokkestiz Breath
+		[115723] = {duration = 1.32}, --Lokkestiz Bite
+		[123099] = {duration = 0.27}, --Lokkestiz Snap
+		[121723] = {duration = 2.9,windup = 2933,texture = "/esoui/art/icons/achievement_els_sunspire_flavor_1.dds"}, --Yolnahkriin Breath
+		[122124] = {duration = 1.32}, --Yolnahkriin Bite
+		[115589] = {duration = 0.27}, --Yolnahkriin Snap
+		[121833] = {duration = 1}, --Yolnahkriin Wing Slap
 
+	}
 }

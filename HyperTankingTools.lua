@@ -19,24 +19,12 @@ local function StonefistStompIconHook()
 end
 
 
-local function resetSkillTables()
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
-			 HTTsavedVars[v].debuffTable["skill"][k] = {}
-		end
-	end
+local function test()
+	convertTrackerToString(3,0)
 end
 
-local function resetItemSetTables()
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		for k,_ in pairs(HTTsavedVars[v].cooldownTable["names"]) do
-			 HTTsavedVars[v].cooldownTable["itemSet"][k] = {}
-		end
-	end
-end
+SLASH_COMMANDS["/htttest"] = test
 
-SLASH_COMMANDS["/httresetskills"] = resetSkillTables
-SLASH_COMMANDS["/httresetitemsets"] = resetItemSetTables
 
 
 function OnAddOnLoaded(event, addonName)
@@ -55,65 +43,7 @@ function OnAddOnLoaded(event, addonName)
 	
 	-------- In case of old saved variables --------
 	
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].debuffTable["skill"]) ~= "table" then
-			HTTsavedVars[v].debuffTable["skill"] = {}
-		end
-	end
-
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].buffTable["skill"]) ~= "table" then
-			HTTsavedVars[v].buffTable["skill"] = {}
-		end
-	end
-
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].cooldownTable["skill"]) ~= "table" then
-			HTTsavedVars[v].cooldownTable["skill"] = {}
-		end
-	end
-
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].debuffTable["itemSet"]) ~= "table" then
-			HTTsavedVars[v].debuffTable["itemSet"] = {}
-		end
-	end
-
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].buffTable["itemSet"]) ~= "table" then
-			HTTsavedVars[v].buffTable["itemSet"] = {}
-		end
-	end
-
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].cooldownTable["itemSet"]) ~= "table" then
-			HTTsavedVars[v].cooldownTable["itemSet"] = {}
-		end
-	end
-
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].cooldownTable["itemSet"]) == "table" then
-			for k,_ in pairs(HTTsavedVars[v].cooldownTable["itemSet"]) do
-				if type(HTTsavedVars[v].cooldownTable["itemSet"][k][2]) ~= "number" then
-					HTTsavedVars[v].cooldownTable["itemSet"][k][2] = 0
-				end
-			end
-		end
-	end
 	
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].debuffTable["colors2"]) ~= "table" then
-			HTTsavedVars[v].debuffTable["colors2"] = {}
-		end
-	end
-
-
-
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].debuffTable["colors3"]) ~= "table" then
-			HTTsavedVars[v].debuffTable["colors3"] = {}
-		end
-	end
 
 	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
 		if HTTsavedVars[v].currentlySelectedBarTexture == nil then
@@ -209,108 +139,20 @@ function OnAddOnLoaded(event, addonName)
 		end
 	end
 
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		for k,_ in pairs(HTTsavedVars[v].cooldownTable["names"]) do
-			if type(HTTsavedVars[v].cooldownTable["itemSet"][k]) ~= "table" then
-				HTTsavedVars[v].cooldownTable["itemSet"][k] = {}
-			end
-			if type(HTTsavedVars[v].cooldownTable["itemSet"][k][1] or nil) == "string" then
-				HTTsavedVars[v].cooldownTable["itemSet"][k][1] = {HTTsavedVars[v].cooldownTable["itemSet"][k][1]}
-			end
-			if type(HTTsavedVars[v].cooldownTable["itemSet"][k][1] or nil) == "nil" then
-				HTTsavedVars[v].cooldownTable["itemSet"][k][1] = {}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
-			if type(HTTsavedVars[v].debuffTable["itemSet"][k]) ~= "table" then
-				HTTsavedVars[v].debuffTable["itemSet"][k] = {}
-			end
-			if type(HTTsavedVars[v].debuffTable["itemSet"][k][1] or nil) == "string" then
-				HTTsavedVars[v].debuffTable["itemSet"][k][1] = {HTTsavedVars[v].debuffTable["itemSet"][k][1]}
-			end
-			if type(HTTsavedVars[v].debuffTable["itemSet"][k][1] or nil) == "nil" then
-				HTTsavedVars[v].debuffTable["itemSet"][k][1] = {}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
-			if type(HTTsavedVars[v].buffTable["itemSet"][k]) ~= "table" then
-				HTTsavedVars[v].buffTable["itemSet"][k] = {}
-			end
-			if type(HTTsavedVars[v].buffTable["itemSet"][k][1] or nil) == "string" then
-				HTTsavedVars[v].buffTable["itemSet"][k][1] = {HTTsavedVars[v].buffTable["itemSet"][k][1]}
-			end
-			if type(HTTsavedVars[v].buffTable["itemSet"][k][1] or nil) == "nil" then
-				HTTsavedVars[v].buffTable["itemSet"][k][1] = {}
-			end
-		end
-	end
-
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		for k,_ in pairs(HTTsavedVars[v].cooldownTable["names"]) do
-			if type(HTTsavedVars[v].cooldownTable["skill"][k]) ~= "table" then
-				HTTsavedVars[v].cooldownTable["skill"][k] = {}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
-			if type(HTTsavedVars[v].debuffTable["skill"][k]) ~= "table" then
-				HTTsavedVars[v].debuffTable["skill"][k] = {}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
-			if type(HTTsavedVars[v].buffTable["skill"][k]) ~= "table" then
-				HTTsavedVars[v].buffTable["skill"][k] = {}
-			end
-		end
-	end
-
-
-
 	
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		for k,_ in pairs(HTTsavedVars[v].cooldownTable["names"]) do
-			if type(HTTsavedVars[v].cooldownTable["colors2"]) ~= "table" then
-				HTTsavedVars[v].cooldownTable["colors2"] = {}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
-			if type(HTTsavedVars[v].buffTable["colors2"]) ~= "table" then
-				HTTsavedVars[v].buffTable["colors2"] = {}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
-			if type(HTTsavedVars[v].debuffTable["colors2"]) ~= "table" then
-				HTTsavedVars[v].debuffTable["colors2"] = {}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].cooldownTable["names"]) do
-			if type(HTTsavedVars[v].cooldownTable["colors3"]) ~= "table" then
-				HTTsavedVars[v].cooldownTable["colors3"] = {}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
-			if type(HTTsavedVars[v].buffTable["colors3"]) ~= "table" then
-				HTTsavedVars[v].buffTable["colors3"] = {}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
-			if type(HTTsavedVars[v].debuffTable["colors3"]) ~= "table" then
-				HTTsavedVars[v].debuffTable["colors3"] = {}
-			end
-		end
-	end
 
 	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		for k,_ in pairs(HTTsavedVars[v].debuffTable["names"]) do
-			if HTTsavedVars[v].debuffTable["names"][k] == "Weapon Skill" then
-				HTTsavedVars[v].debuffTable["IDs"][k] = {39018,39028,39012,38695,28876,38689,28807,28849,28854,39067,39073,39053}
-			end
-		end
-		for k,_ in pairs(HTTsavedVars[v].buffTable["names"]) do
-			if HTTsavedVars[v].buffTable["names"][k] == "Dragon Blood" then
-				HTTsavedVars[v].buffTable["IDs"][k] = {32745}
-			end
+		if HTTsavedVars[HTT_variables.currentlySelectedProfile].xOffsetMagickaStraight==nil then
+			HTTsavedVars[HTT_variables.currentlySelectedProfile].xOffsetHealthStraight = 0
+			HTTsavedVars[HTT_variables.currentlySelectedProfile].yOffsetHealthStraight = 0
+			HTTsavedVars[HTT_variables.currentlySelectedProfile].xOffsetStaminaStraight = 0
+			HTTsavedVars[HTT_variables.currentlySelectedProfile].yOffsetStaminaStraight = 0
+			HTTsavedVars[HTT_variables.currentlySelectedProfile].xOffsetMagickaStraight = 0
+			HTTsavedVars[HTT_variables.currentlySelectedProfile].yOffsetMagickaStraight = 0
 		end
 	end
+	
+
 
 	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
 		if type(HTTsavedVars[v].synergiesBackgroundColor) ~= "table" then
@@ -342,303 +184,224 @@ function OnAddOnLoaded(event, addonName)
 				[16] = 16,
 				[17] = 17,
 			}
-			HTTsavedVars[v].synergiesTable = {
-		["names"] = {
-			[1] = "Sanguine Burst",
-			[2] = "Resource Restore",
-			[3] = "Hidden Refresh",
-			[4] = "Spiders",
-			[5] = "Bone Shield",
-			[6] = "Blood Altar",
-			[7] = "Radiate",
-			[8] = "Soul Leech",
-			[9] = "Conduit",
-			[10] = "Attronach",
-			[11] = "Supernova",
-			[12] = "Ignite",
-			[13] = "Shackle",
-			[14] = "Harvest",
-			[15] = "Gate",
-			[16] = "Grave Robber",
-			[17] = "Pure Agony",
-		},
-		["icons"] = {
-			[1] = GetAbilityIcon(142305),
-			[2] = GetAbilityIcon(39301),
-			[3] = GetAbilityIcon(37729),
-			[4] = GetAbilityIcon(39429),
-			[5] = GetAbilityIcon(39379),
-			[6] = "/esoui/art/icons/ability_undaunted_001.dds",
-			[7] = GetAbilityIcon(41838),
-			[8] = GetAbilityIcon(25170),
-			[9] = "/esoui/art/icons/ability_sorcerer_lightning_splash.dds",
-			[10] = "/esoui/art/icons/ability_sorcerer_storm_atronach.dds",
-			[11] = "/esoui/art/icons/ability_templar_nova.dds",
-			[12] = GetAbilityIcon(32974),
-			[13] = GetAbilityIcon(32910),
-			[14] = GetAbilityIcon(85572),
-			[15] = GetAbilityIcon(88892),
-			[16] = "/esoui/art/icons/ability_necromancer_004.dds",
-			[17] = "/esoui/art/icons/ability_necromancer_010_b.dds",
-		},
-		["IDs"] = {
-			[1] = {142305}, -- Lady Thorn
-			[2] = { -- Resource Restore
+		end
+	end
 
-				[1] = 63507, -- Healing Combustion
-				[2] = 39301, -- Combustion
-				[3] = 94973, -- Blessed Shards
-				[4] = 95928, -- Holy Shards
+	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
+		for k1,v1 in pairs(HTTsavedVars[v].orderOfDebuffs) do
+			if type(HTTsavedVars[v].debuffTable[v1].itemSet) ~= "table" then
+				HTTsavedVars[v].debuffTable[v1].itemSet = {[1] = {},[2] = 0}
+			end
+		end
+	end
 
-			}, 
-			[3] = {37729}, -- Hidden Refresh
-			[4] = { -- Spids
 
-				[1] = 41994, -- Black Widow
-				[2] = 39429, -- Spawn Broodling
-				[3] = 42016, -- Arachnophobia
+	for k,v in pairs(HTTsavedVars["availableProfiles"]) do
+		if type(HTTsavedVars[v].debuffTable["names"]) == "table" then
+			HTTsavedVars[v].debuffNameToID = {}
+			for k1,v1 in pairs(HTTsavedVars[v].debuffTable["names"]) do
+				HTTsavedVars[v].debuffTable[k1] = {
+					name = v1,
+					turnedOn = HTTsavedVars[v].debuffTable["isTurnedOn"][k1],
+					turnedOnBoss = HTTsavedVars[v].debuffTable["isTurnedOnBoss"][k1],
+					color = HTTsavedVars[v].debuffTable["colors"][k1],
+					color2 = HTTsavedVars[v].debuffTable["colors2"][k1],
+					color3 = HTTsavedVars[v].debuffTable["colors3"][k1],
+					IDs = HTTsavedVars[v].debuffTable["IDs"][k1],
+					icon = HTTsavedVars[v].debuffTable["icons"][k1],
+					duration = HTTsavedVars[v].debuffTable["durations"][k1],
+					expiresAt = HTTsavedVars[v].debuffTable["expiresAt"][k1],
+					skill = HTTsavedVars[v].debuffTable["skill"][k1],
+					itemSet = HTTsavedVars[v].debuffTable["itemSet"][k1],
+					text = HTTsavedVars[v].debuffTable["texts"][k1],
+					textWhenMissing = HTTsavedVars[v].debuffTable["textWhenMissing"][k1],
+					onlyCastByPlayer = HTTsavedVars[v].debuffTable["onlyCastByPlayer"][k1]
+				}
+				HTTsavedVars[v].debuffNameToID[v1] = k1
+			end
+		end
+			HTTsavedVars[v].debuffTable["none"] = {
+				name = "none",
+				turnedOn = false,
+				turnedOnBoss = false,
+				color = {0,0,0,0},
+				color2 = {0,0,0,0},
+				color3 = {0,0,0,0},
+				IDs = {},
+				icon = "none",
+				duration = {},
+				expiresAt = {},
+				skill = {},
+				itemSet = {},
+				text = "none",
+				textWhenMissing = "none",
+				onlyCastByPlayer = false
+			}
+			HTTsavedVars[v].debuffTable["names"] = nil
+			HTTsavedVars[v].debuffTable["isTurnedOn"] = nil
+			HTTsavedVars[v].debuffTable["isTurnedOnBoss"] = nil
+			HTTsavedVars[v].debuffTable["colors"] = nil
+			HTTsavedVars[v].debuffTable["colors2"] = nil
+			HTTsavedVars[v].debuffTable["colors3"] = nil
+			HTTsavedVars[v].debuffTable["IDs"] = nil
+			HTTsavedVars[v].debuffTable["icons"] = nil
+			HTTsavedVars[v].debuffTable["durations"] = nil
+			HTTsavedVars[v].debuffTable["expiresAt"] = nil
+			HTTsavedVars[v].debuffTable["skill"] = nil
+			HTTsavedVars[v].debuffTable["itemSet"] = nil
+			HTTsavedVars[v].debuffTable["texts"] = nil
+			HTTsavedVars[v].debuffTable["textWhenMissing"] = nil
+			HTTsavedVars[v].debuffTable["onlyCastByPlayer"] = nil
+			HTTsavedVars[v].debuffTable["isPreMade"] = nil
+	end
 
-			},
-			[5] = { -- Bone Shield
-			
-				[1] = 39379, -- Bone Wall
-				[2] = 42198, -- Spinal Surge
+	for k,v in pairs(HTTsavedVars["availableProfiles"]) do
+		if type(HTTsavedVars[v].buffTable["names"]) == "table" then
+			HTTsavedVars[v].buffNameToID = {}
+			for k1,v1 in pairs(HTTsavedVars[v].buffTable["names"]) do
+				HTTsavedVars[v].buffTable[k1] = {
+					name = v1,	
+					turnedOn = HTTsavedVars[v].buffTable["isTurnedOn"][k1],
+					color = HTTsavedVars[v].buffTable["colors"][k1],
+					color2 = HTTsavedVars[v].buffTable["colors2"][k1],
+					color3 = HTTsavedVars[v].buffTable["colors3"][k1],
+					IDs = HTTsavedVars[v].buffTable["IDs"][k1],
+					icon = HTTsavedVars[v].buffTable["icons"][k1],
+					duration = HTTsavedVars[v].buffTable["durations"][k1],
+					expiresAt = HTTsavedVars[v].buffTable["expiresAt"][k1],
+					skill = HTTsavedVars[v].buffTable["skill"][k1],
+					itemSet = HTTsavedVars[v].buffTable["itemSet"][k1],
+					text = HTTsavedVars[v].buffTable["texts"][k1],
+					textWhenMissing = HTTsavedVars[v].buffTable["textWhenMissing"][k1],
+				}
+				HTTsavedVars[v].buffNameToID[v1] = k1
+			end
+		end
+		HTTsavedVars[v].buffTable["none"] = {
+				name = "none",
+				turnedOn = false,
+				color = {0,0,0,0},
+				IDs = {},
+				icon = "none",
+				duration = 0,
+				expiresAt = 0,
+				skill = {},
+				itemSet = {},
+				text = "none",
+				textWhenMissing = "none",
+			}
+		HTTsavedVars[v].buffTable["names"] = nil
+		HTTsavedVars[v].buffTable["isTurnedOn"] = nil
+		HTTsavedVars[v].buffTable["colors"] = nil
+		HTTsavedVars[v].buffTable["colors2"] = nil
+		HTTsavedVars[v].buffTable["colors3"] = nil
+		HTTsavedVars[v].buffTable["IDs"] = nil
+		HTTsavedVars[v].buffTable["icons"] = nil
+		HTTsavedVars[v].buffTable["durations"] = nil
+		HTTsavedVars[v].buffTable["expiresAt"] = nil
+		HTTsavedVars[v].buffTable["skill"] = nil
+		HTTsavedVars[v].buffTable["itemSet"] = nil
+		HTTsavedVars[v].buffTable["texts"] = nil
+		HTTsavedVars[v].buffTable["textWhenMissing"] = nil
+		HTTsavedVars[v].buffTable["isPreMade"] = nil
+	end
 
-			},
-			[6] = {
-			
-				[1] = 41964, -- Blood Feast
-				[2] = 39501, -- Blood Funnel
+	for k,v in pairs(HTTsavedVars["availableProfiles"]) do
+		if type(HTTsavedVars[v].cooldownTable["names"]) == "table" then
+			HTTsavedVars[v].cooldownNameToID = {}
+			for k1,v1 in pairs(HTTsavedVars[v].cooldownTable["names"]) do
+				HTTsavedVars[v].cooldownTable[k1] = {
+					name = v1,	
+					turnedOn = HTTsavedVars[v].cooldownTable["isTurnedOn"][k1],
+					color = HTTsavedVars[v].cooldownTable["colors"][k1],
+					color2 = HTTsavedVars[v].cooldownTable["colors2"][k1],
+					color3 = HTTsavedVars[v].cooldownTable["colors3"][k1],
+					IDs = HTTsavedVars[v].cooldownTable["IDs"][k1],
+					icon = HTTsavedVars[v].cooldownTable["icons"][k1],
+					duration = HTTsavedVars[v].cooldownTable["durations"][k1],
+					expiresAt = HTTsavedVars[v].cooldownTable["expiresAt"][k1],
+					skill = HTTsavedVars[v].cooldownTable["skill"][k1],
+					itemSet = HTTsavedVars[v].cooldownTable["itemSet"][k1],
+					text = HTTsavedVars[v].cooldownTable["texts"][k1],
+					textWhenMissing = HTTsavedVars[v].cooldownTable["textWhenMissing"][k1],
+				}
+				HTTsavedVars[v].cooldownNameToID[v1] = k1
+			end
+		end
+		HTTsavedVars[v].cooldownTable["none"] = {
+				name = "none",
+				turnedOn = false,
+				color = {0,0,0,0},
+				IDs = {},
+				icon = "none",
+				duration = 0,
+				expiresAt = 0,
+				skill = {},
+				itemSet = {},
+				text = "none",
+				textWhenMissing = "none",
+			}
+		HTTsavedVars[v].cooldownTable["names"] = nil
+		HTTsavedVars[v].cooldownTable["isTurnedOn"] = nil
+		HTTsavedVars[v].cooldownTable["colors"] = nil
+		HTTsavedVars[v].cooldownTable["colors2"] = nil
+		HTTsavedVars[v].cooldownTable["colors3"] = nil
+		HTTsavedVars[v].cooldownTable["IDs"] = nil
+		HTTsavedVars[v].cooldownTable["icons"] = nil
+		HTTsavedVars[v].cooldownTable["durations"] = nil
+		HTTsavedVars[v].cooldownTable["expiresAt"] = nil
+		HTTsavedVars[v].cooldownTable["skill"] = nil
+		HTTsavedVars[v].cooldownTable["itemSet"] = nil
+		HTTsavedVars[v].cooldownTable["texts"] = nil
+		HTTsavedVars[v].cooldownTable["textWhenMissing"] = nil
+		HTTsavedVars[v].cooldownTable["isPreMade"] = nil
+	end
 
-			},
-			[7] = {41838}, -- Radiate
-			[8] = {25170}, -- Soul Leech
-			[9] = {43769}, -- Conduit
-			[10] = {121059}, -- Charged Lightning
-			[11] = { -- Nut
-			
-				[1] = 48939, -- Supernova
-				[2] = 48938, -- Gravity Nut
+	for k,v in pairs(HTTsavedVars["availableProfiles"]) do
+		if type(HTTsavedVars[v].synergiesTable["names"]) == "table" then
+			HTTsavedVars[v].synergyNameToID = {}
+			for k1,v1 in pairs(HTTsavedVars[v].synergiesTable["names"]) do
+				HTTsavedVars[v].synergiesTable[k1] = {
+					name = v1,	
+					turnedOn = HTTsavedVars[v].synergiesTable["isTurnedOn"][k1],
+					color = HTTsavedVars[v].synergiesTable["colors"][k1],
+					IDs = HTTsavedVars[v].synergiesTable["IDs"][k1],
+					icon = HTTsavedVars[v].synergiesTable["icons"][k1],
+					expiresAt = HTTsavedVars[v].synergiesTable["expiresAt"][k1],
+					text = HTTsavedVars[v].synergiesTable["texts"][k1],
+					textWhenMissing = HTTsavedVars[v].synergiesTable["textWhenMissing"][k1],
+				}
+				HTTsavedVars[v].synergyNameToID[v1] = k1
+			end
+		end
+		HTTsavedVars[v].synergiesTable["none"] = {
+				name = "none",
+				turnedOn = false,
+				color = {0,0,0,0},
+				IDs = {},
+				icon = "none",
+				expiresAt = 0,
+				text = "none",
+				textWhenMissing = "none",
+			}
+		HTTsavedVars[v].synergiesTable["names"] = nil
+		HTTsavedVars[v].synergiesTable["isTurnedOn"] = nil
+		HTTsavedVars[v].synergiesTable["colors"] = nil
+		HTTsavedVars[v].synergiesTable["IDs"] = nil
+		HTTsavedVars[v].synergiesTable["icons"] = nil
+		HTTsavedVars[v].synergiesTable["expiresAt"] = nil
+		HTTsavedVars[v].synergiesTable["texts"] = nil
+		HTTsavedVars[v].synergiesTable["textWhenMissing"] = nil
+		HTTsavedVars[v].synergiesTable["isPreMade"] = nil
+	end
 
-			},
-			[12] = {32974}, -- Ignite
-			[13] = {32910}, -- Shackle
-			[14] = {85572}, -- Harvest
-			[15] = {88892}, -- Gate
-			[16] = {115567}, -- Grave Robber
-			[17] = {118610}, -- Pure Agony
-		},
-		["texts"] = {
-			[1] = "Sanguine Burst on cooldown",
-			[2] = "Resource Restore on cooldown",
-			[3] = "Hidden Refresh on cooldown",
-			[4] = "Spiders on cooldown",
-			[5] = "Bone Shield on cooldown",
-			[6] = "Blood Altar on cooldown",
-			[7] = "Radiate on cooldown",
-			[8] = "Soul Leech on cooldown",
-			[9] = "Conduit on cooldown",
-			[10] = "Attronach on cooldown",
-			[11] = "Supernova on cooldown",
-			[12] = "Ignite on cooldown",
-			[13] = "Shackle on cooldown",
-			[14] = "Harvest on cooldown",
-			[15] = "Gate on cooldown",
-			[16] = "Grave Robber on cooldown",
-			[17] = "Pure Agony on cooldown",
-		},
-		["colors"] = 
-        {
-            [1] = 
-            {
-                [4] = 1,
-                [1] = 0.8117647171,
-                [2] = 0,
-                [3] = 0.2000000030,
-            },
-            [2] = 
-            {
-                [4] = 1,
-                [1] = 0.2235294133,
-                [2] = 0.8117647171,
-                [3] = 0,
-            },
-            [3] = 
-            {
-                [4] = 1,
-                [1] = 0.4666666687,
-                [2] = 0,
-                [3] = 0.1137254909,
-            },
-            [4] = 
-            {
-                [4] = 1,
-                [1] = 0.9568627477,
-                [2] = 1,
-                [3] = 0.3607843220,
-            },
-            [5] = 
-            {
-                [4] = 1,
-                [1] = 0.8235294223,
-                [2] = 1,
-                [3] = 0.6156862974,
-            },
-            [6] = 
-            {
-                [4] = 1,
-                [1] = 1,
-                [2] = 0,
-                [3] = 0.1607843190,
-            },
-            [7] = 
-            {
-                [4] = 1,
-                [1] = 1,
-                [2] = 0.5019608140,
-                [3] = 0,
-            },
-            [8] = 
-            {
-                [4] = 1,
-                [1] = 1,
-                [2] = 0.5176470876,
-                [3] = 0.5098039508,
-            },
-            [9] = 
-            {
-                [4] = 1,
-                [1] = 0.1294117719,
-                [2] = 0.4823529422,
-                [3] = 0.8117647171,
-            },
-            [10] = 
-            {
-                [4] = 1,
-                [1] = 0.1450980455,
-                [2] = 0,
-                [3] = 1,
-            },
-            [11] = 
-            {
-                [4] = 1,
-                [1] = 1,
-                [2] = 0.9686274529,
-                [3] = 0.4078431427,
-            },
-            [12] = 
-            {
-                [4] = 1,
-                [1] = 1,
-                [2] = 0.2666666806,
-                [3] = 0,
-            },
-            [13] = 
-            {
-                [4] = 1,
-                [1] = 1,
-                [2] = 0.4470588267,
-                [3] = 0,
-            },
-            [14] = 
-            {
-                [4] = 1,
-                [1] = 0.3882353008,
-                [2] = 0.8313725591,
-                [3] = 0.4196078479,
-            },
-            [15] = 
-            {
-                [4] = 1,
-                [1] = 0.6156862974,
-                [2] = 0.9647058845,
-                [3] = 1,
-            },
-            [16] = 
-            {
-                [4] = 1,
-                [1] = 0.4078431427,
-                [2] = 0.2392156869,
-                [3] = 0.8117647171,
-            },
-            [17] = 
-            {
-                [4] = 1,
-                [1] = 0.1529411823,
-                [2] = 0,
-                [3] = 1,
-            },
-        },
-		["isTurnedOn"] = {
-			[1] = false,
-			[2] = true,
-			[3] = false,
-			[4] = false,
-			[5] = false,
-			[6] = true,
-			[7] = false,
-			[8] = false,
-			[9] = true,
-			[10] = false,
-			[11] = false,
-			[12] = false,
-			[13] = false,
-			[14] = true,
-			[15] = false,
-			[16] = true,
-			[17] = false,
-		},
-		["textWhenMissing"] = {
-			[1] = "Sanguine Burst ready",
-			[2] = "Resource Restore ready",
-			[3] = "Hidden Refresh ready",
-			[4] = "Spiders ready",
-			[5] = "Bone Shield ready",
-			[6] = "Blood Altar ready",
-			[7] = "Radiate ready",
-			[8] = "Soul Leech ready",
-			[9] = "Conduit ready",
-			[10] = "Attronach ready",
-			[11] = "Supernova ready",
-			[12] = "Ignite ready",
-			[13] = "Shackle ready",
-			[14] = "Harvest ready",
-			[15] = "Gate ready",
-			[16] = "Grave Robber ready",
-			[17] = "Pure Agony ready",
-		},
-		["expiresAt"] = {
-			[1] = 0,
-			[2] = 0,
-			[3] = 0,
-			[4] = 0,
-			[5] = 0,
-			[6] = 0,
-			[7] = 0,
-			[8] = 0,
-			[9] = 0,
-			[10] = 0,
-			[11] = 0,
-			[12] = 0,
-			[13] = 0,
-			[14] = 0,
-			[15] = 0,
-			[16] = 0,
-			[17] = 0,
-		},
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	}
+	for k,v in pairs(HTTsavedVars["availableProfiles"]) do
+		if type(HTTsavedVars[v].xOffsetFelms) ~= "number" then
+			HTTsavedVars[v].xOffsetLlothis = 0
+			HTTsavedVars[v].yOffsetLlothis = 0
+			HTTsavedVars[v].xOffsetFelms = 0
+			HTTsavedVars[v].yOffsetFelms = 0
 		end
 	end
 
@@ -650,7 +413,7 @@ function OnAddOnLoaded(event, addonName)
 	
 
 	HTT_initializeUI.generateUI()
-	--HTT_InitializeStraightUI()
+	HTT_InitializeStraightUI()
 	HTT_DodgeRoll_Initialize()
 	HTT_DodgeRoll_Events()
 	HTT_functions.reanchorReticle() -- remove later by doing changes in Initialize
@@ -659,7 +422,7 @@ function OnAddOnLoaded(event, addonName)
 	HTT_functions.reanchorCooldowns()
 	HTT_functions.reanchorSynergies()
 
-	
+	AsylumInitializeUI()
 	HTT_LoadSettings()
 	HTT_LoadSettingsPremadeTrackers()
 	if HTTsavedVars[HTT_variables.currentlySelectedProfile].isStoneFistCustomIconOn then
@@ -688,7 +451,7 @@ EVENT_MANAGER:RegisterForEvent(HTT.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
 EVENT_MANAGER:RegisterForEvent(HTT.name, EVENT_PLAYER_COMBAT_STATE, function() 
 
 	if IsUnitInCombat("player") then
-		EVENT_MANAGER:RegisterForUpdate(HTT.name, 100,HTT_updateUI.UpdateCombat)
+		EVENT_MANAGER:RegisterForUpdate(HTT.name, 100,HTT_combatUpdate)
 		if GetUnitName("boss1") == "Arkasis the Mad Alchemist" and HTTsavedVars[HTT_variables.currentlySelectedProfile].isAlertUIOn then
 			EVENT_MANAGER:RegisterForUpdate("HTT_AlertUpdate", 100,HTT_Alerts.UpdateDuration)
 		end

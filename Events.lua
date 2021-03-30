@@ -18,22 +18,15 @@ function HTT_events.generateEvents()
 	EVENT_MANAGER:AddFilterForEvent("AlkoshApplied", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,75752)
 
 	EVENT_MANAGER:RegisterForEvent("MasterSnB", EVENT_COMBAT_EVENT, function(_, _, _, _, _, _, _, _, _, _, hitValue, _, _, _, _, _, _, overflow) 
-		HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["expiresAt"][100] = GetGameTimeSeconds() + 5
 		HTT_variables.masterSnB = hitValue+overflow
-		HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][100] = 5
 	end)
 	EVENT_MANAGER:AddFilterForEvent("MasterSnB", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,99761)
 	
 
-
-
-
-
-
 	EVENT_MANAGER:RegisterForEvent("MajorMendingBackup", EVENT_EFFECT_CHANGED, function(_,_,_,_,_,_,expireTime) 
-	if expireTime > HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["expiresAt"][19] then
-		HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["expiresAt"][19] = expireTime
-		HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][19] = expireTime-GetGameTimeSeconds()
+	if expireTime > HTT_variables.majorMendingExpiresAt then
+		HTT_variables.majorMendingExpiresAt = expireTime
+		HTT_variables.majorMendingDuration = expireTime-GetGameTimeSeconds()
 	end
 	end)
 	EVENT_MANAGER:AddFilterForEvent("MajorMendingBackup", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID,61711)
@@ -124,16 +117,15 @@ function HTT_events.generateEvents()
 	EVENT_MANAGER:AddFilterForEvent("Stonefist", EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID,31816)
 	EVENT_MANAGER:AddFilterForEvent("Stonefist", EVENT_EFFECT_CHANGED, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE ,1)
 
-	EVENT_MANAGER:RegisterForEvent("DefensiveStanceDebug", EVENT_COMBAT_EVENT, function(eventCode, result, _, name, _, _, _, _, _, _, hitValue, _, _, _, _, _, abilityName, overflow) 
+	EVENT_MANAGER:RegisterForEvent("DefensiveStanceDebug", EVENT_COMBAT_EVENT, function(eventCode, result, _, name, _, _, sourceName, sourceType, targetName, targetType, hitValue, _, _, _, _, _, abilityName, overflow) 
 	if result == 2250 then
-		HTT_variables.isReflectActive = false
 		HTT_variables.reflectExpiresAt = GetGameTimeSeconds()
 	else
-		HTT_variables.isReflectActive = true
 		HTT_variables.reflectExpiresAt = GetGameTimeSeconds()+6
 	end
 	end)
 	EVENT_MANAGER:AddFilterForEvent("DefensiveStanceDebug", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,126608)
+	EVENT_MANAGER:AddFilterForEvent("DefensiveStanceDebug", EVENT_COMBAT_EVENT, REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE ,1)
 
 	
 
@@ -142,56 +134,53 @@ function HTT_events.generateEvents()
 
 
 
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"]) do -- generate all regular debuff events
-		if type(v) == "table" then
-			if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][k] == "Weapon Skill" then
-				for _,v1 in pairs(v) do
-					HTT_functions.GenerateWeaponEvent(v1,k)
-				end
-			else
-			for _,v1 in pairs(v) do
-				HTT_functions.initializeEventsDebuffs(v1,k)
-			end
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do -- generate all regular debuff events
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[trackerID]
+		if tracker.name == "Weapon Skill" then
+			for _,ID in pairs(tracker.IDs) do
+				HTT_functions.GenerateWeaponEvent(ID,trackerID)
 			end
 		else
-			HTT_functions.initializeEventsDebuffs(v,k)
+			for _,ID in pairs(tracker.IDs) do
+				HTT_functions.initializeEventsDebuffs(ID,trackerID)
+			end
 		end
 	end
 
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"]) do -- generate all regular buff events
-		if type(v) == "table" then
-			if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][k] == "Dragon Blood" then
-				for _,v1 in pairs(v) do
-					HTT_functions.initializeEventsBuffsCombatEvent(v1,k,23)
-				end
-			else
-				for _,v1 in pairs(v) do
-					HTT_functions.initializeEventsBuffs(v1,k)
-				end
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs) do -- generate all regular buff events
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[trackerID]
+		if tracker.name == "Dragon Blood" then
+			for _,ID in pairs(tracker.IDs) do
+				HTT_functions.initializeEventsBuffsCombatEvent(ID,trackerID,23)
+			end
+		elseif tracker.name == "Puncturing Remedy" then
+			for _,ID in pairs(tracker.IDs) do
+				HTT_functions.initializeEventsBuffsCombatEvent(ID,trackerID,5)
 			end
 		else
-			if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][k] == "Dragon Blood" then
-				HTT_functions.initializeEventsBuffsCombatEvent(v,k,23)
-			else
-				HTT_functions.initializeEventsBuffs(v,k)
+			for _,ID in pairs(tracker.IDs) do
+				HTT_functions.initializeEventsBuffs(ID,trackerID)
 			end
+		end
+	end
+
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) do -- generate all regular cooldown events
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[trackerID]
+		for _,ID in pairs(tracker.IDs) do
+			HTT_functions.GenerateCooldownEvent(ID,trackerID)
+		end
+	end
+
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies) do -- generate all regular synergy events
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[trackerID]
+		for _,ID in pairs(tracker.IDs) do
+			HTT_functions.GenerateSynergyEvent(ID,trackerID)
 		end
 	end
 			
 
 
 
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"]) do
-		for _,v1 in pairs(v) do
-			HTT_functions.GenerateCooldownEvent(v1,k)
-		end
-	end
-
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["IDs"]) do
-		for _,v1 in pairs(v) do
-			HTT_functions.GenerateSynergyEvent(v1,k)
-		end
-	end
 
 
 	HTT_events.nullifyRemainingTimes()
@@ -202,77 +191,67 @@ end
 
 
 function HTT_events.nullifyRemainingTimes()
-	for k,_ in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"]) do -- nullify all expiration times for debuffs
-		if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][k] == "Weapon Skill" then
-			HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][k] = 0
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[trackerID]
+		if tracker.name == "Weapon Skill" then
+			tracker.expiresAt = 0
+			tracker.duration = 0
 		else
-			HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["expiresAt"][k] = {}
+			tracker.expiresAt = {}
+			tracker.duration = {}
 		end
 	end
 	
-
-	for k,_ in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"]) do -- nullify all duration times for debuffs
-		if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][k] == "Weapon Skill" then
-			HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][k] = 0
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs) do 
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[trackerID]
+		if tracker.name == "Dragon Blood" then
+			tracker.expiresAt = 0
+			tracker.duration = 23
 		else
-			HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["durations"][k] = {}
+			tracker.expiresAt = 0
+			tracker.duration = 0
 		end
 	end
 
-	for k,_ in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"]) do -- nullify all duration times for buffs
-		if HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][k] == "Dragon Blood" then
-			HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][k] = 23
-		else
-			HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["durations"][k] = 0
-		end
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) do
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[trackerID]
+		tracker.expiresAt = 0
 	end
 
-	for k,_ in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["expiresAt"]) do -- nullify all expiration times for buffs
-		HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["expiresAt"][k] = 0
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies) do 
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[trackerID]
+		tracker.expiresAt = 0
 	end
-
-	for k,_ in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["expiresAt"]) do -- nullify all expiration times for cooldowns
-		HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["expiresAt"][k] = 0
-	end
-
-	for k,_ in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["expiresAt"]) do -- nullify all expiration times for synergies
-		HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["expiresAt"][k] = 0
-	end
-
 
 end
 
 
 
 function HTT_events.unregisterEvents()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"]) do 
-		if type(v) == "table" then
-			for _,v1 in pairs(v) do
-				EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
-			end
-		else
-			EVENT_MANAGER:UnregisterForEvent("HTT"..v, EVENT_EFFECT_CHANGED)
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[trackerID]
+		for _,v1 in pairs(tracker.IDs) do
+			EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
 		end
 	end
 
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"]) do 
-		if type(v) == "table" then
-			for _,v1 in pairs(v) do
-				EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
-			end
-		else
-			EVENT_MANAGER:UnregisterForEvent("HTT"..v, EVENT_EFFECT_CHANGED)
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs) do 
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[trackerID]
+		for _,v1 in pairs(tracker.IDs) do
+			EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_EFFECT_CHANGED)
 		end
 	end
 			
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"]) do
-		for _,v1 in pairs(v) do
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) do
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[trackerID]
+		for _,v1 in pairs(tracker.IDs) do
 			EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_COMBAT_EVENT)
 		end
 	end
 
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["IDs"]) do
-		for _,v1 in pairs(v) do
+	for _,trackerID in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies) do 
+		local tracker = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[trackerID]
+		for _,v1 in pairs(tracker.IDs) do
 			EVENT_MANAGER:UnregisterForEvent("HTT"..v1, EVENT_COMBAT_EVENT)
 		end
 	end

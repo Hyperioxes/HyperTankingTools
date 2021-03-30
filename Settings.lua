@@ -59,13 +59,20 @@ local holdRemoveDebuffSkill, holdDebuffSwapValue1,holdDebuffSwapValue2,holdBuffS
 
 
 
+local function checkIfNone(key)
+    if key == "none" then
+        return true
+    end
+    return false
+end
+
 
 local function rescaleCooldowns()
 	local width = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownUIWidth
 	local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownUIHeight
 	local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownUIScale
     local background = HTTCooldowns:GetNamedChild("CooldownsBackground")
-	background:SetDimensions(width, ((height*1.13)*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isTurnedOn"]))+height)
+	background:SetDimensions(width, ((height*1.13)*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable))+height)
     local text = HTTCooldowns:GetNamedChild("CooldownsText")		
 	text:SetAnchor(TOPLEFT, background, TOPLEFT,(width*(3/100))*scale, 0)
 	text:SetDimensions((HTT_variables.fontMultipliers[HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownFont][1]/20)*width, 1)
@@ -156,7 +163,7 @@ local function rescaleBuffs()
 	local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffUIHeight
 	local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffUIScale
     local SelfBuffsBackground = HTTSelfBuffs:GetNamedChild("SelfBuffsBackground")
-	SelfBuffsBackground:SetDimensions(width, ((height*1.13)*HTT_functions.GetNumberOfBuffs())+height)
+	SelfBuffsBackground:SetDimensions(width, ((height*1.13)*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable))+height)
     local SelfBuffsText = HTTSelfBuffs:GetNamedChild("SelfBuffsText")
 	SelfBuffsText:SetAnchor(TOPLEFT, SelfBuffsBackground, TOPLEFT,(width*(3/100))*scale, 0)
 	SelfBuffsText:SetDimensions((HTT_variables.fontMultipliers[HTTsavedVars[HTT_variables.currentlySelectedProfile].buffFont][1]/20)*width, 1)
@@ -183,7 +190,7 @@ local function rescaleSynergies()
 	local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesUIHeight
 	local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesUIScale
     local background = HTTSynergies:GetNamedChild("SynergiesBackground")
-	background:SetDimensions(width, ((height*1.13)*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["isTurnedOn"]))+height)
+	background:SetDimensions(width, ((height*1.13)*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable))+height)
     local text = HTTSynergies:GetNamedChild("SynergiesText")		
 	text:SetAnchor(TOPLEFT, background, TOPLEFT,(width*(3/100))*scale, 0)
 	text:SetDimensions((HTT_variables.fontMultipliers[HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesFont][1]/20)*width, 1)
@@ -212,7 +219,7 @@ local function rescaleBoss()
 	local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffBossUIScale
 	for i=1, MAX_BOSSES do
 		local background = _G["HTTBoss"..i]:GetNamedChild("BackgroundBoss"..i)
-		background:SetDimensions(width, ((height*1.13)*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"]))+height)
+		background:SetDimensions(width, ((height*1.13)*HTT_functions.CountTurnedOnBoss(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable))+height)
 		local text = _G["HTTBoss"..i]:GetNamedChild("TextBoss"..i)		
 		text:SetAnchor(TOPLEFT, background, TOPLEFT,(width*(3/100))*scale, 0)
 		text:SetDimensions((HTT_variables.fontMultipliers[HTTsavedVars[HTT_variables.currentlySelectedProfile].bossFont][1]/20)*width, 1)
@@ -240,7 +247,7 @@ local function rescaleDebuffs()
 	local height = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffUIHeight
 	local scale = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffUIScale
     local BackgroundReticle = HTT:GetNamedChild("BackgroundReticle")
-	BackgroundReticle:SetDimensions(width, ((height*1.13)*HTT_functions.GetNumberOfDebuffs())+height)
+	BackgroundReticle:SetDimensions(width, ((height*1.13)*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable))+height)
     local TextReticle = HTT:GetNamedChild("TextReticle")		
 	TextReticle:SetAnchor(TOPLEFT, BackgroundReticle, TOPLEFT,(width*(3/100))*scale, 0)
 	TextReticle:SetDimensions((HTT_variables.fontMultipliers[HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffFont][1]/20)*width, 1)
@@ -263,14 +270,14 @@ local function rescaleDebuffs()
 end
 
 local function ShowColor2(number)
-    if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][number] == "Off-Balance/Off-Balance Immunity" or HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][number] == "Stagger" or HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][number] == "Minor Brittle" then
+    if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[number].name == "Off-Balance/Off-Balance Immunity" or HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[number].name == "Stagger" or HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[number].name == "Minor Brittle" then
         return false
     end
     return true
 end
 
 local function ShowColor3(number)
-    if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][number] == "Stagger" then
+    if HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[number].name == "Stagger" then
         return false
     end
     return true
@@ -320,17 +327,18 @@ local function generateDebuffOrderList()
     local counter = 1
     local text = ""
     for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
-        text = text..counter..".|t16:16:"..HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["icons"][v].."|t"..HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][v].."\n"
+        text = text..counter..".|t16:16:"..HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].icon.."|t"..HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].name.."\n"
         counter = counter + 1
     end
     return text
 end
 
+
 local function generateBuffOrderList()
     local counter = 1
     local text = ""
     for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs) do
-        text = text..counter..".|t16:16:"..HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["icons"][v].."|t"..HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][v].."\n"
+        text = text..counter..".|t16:16:"..HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].icon.."|t"..HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].name.."\n"
         counter = counter + 1
     end
     return text
@@ -340,7 +348,7 @@ local function generateCooldownOrderList()
     local counter = 1
     local text = ""
     for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) do
-        text = text..counter..".|t16:16:"..HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["icons"][v].."|t"..HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"][v].."\n"
+        text = text..counter..".|t16:16:"..HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].icon.."|t"..HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].name.."\n"
         counter = counter + 1
     end
     return text
@@ -350,82 +358,272 @@ local function generateSynergyOrderList()
     local counter = 1
     local text = ""
     for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies) do
-        text = text..counter..".|t16:16:"..HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["icons"][v].."|t"..HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"][v].."\n"
+        text = text..counter..".|t16:16:"..HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[v].icon.."|t"..HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[v].name.."\n"
         counter = counter + 1
     end
     return text
 end
 
+
+
+local function createTableOfNames(table)
+    local tableHolder = {}
+    for trackerID,tracker in pairs(table) do
+        if tracker.name ~= "none" then
+            tableHolder[#tableHolder+1] = tracker.name
+        end
+    end
+    return tableHolder
+end
+
 local function refreshAllDebuffTrackerInfo()
-    pickDropdownDebuff.data.choices = HTT_functions.removeEmptySpacesInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])  or {"No profiles"}
+    if currentlyEditedDebuffKey == "none" then
+        iconpickerDebuff.data.disabled = true
+        swapDebuffsButton.data.disabled = true
+        colorPicker1Debuff.data.disabled = true
+        debuffDeleteIDButton.data.disabled = true
+        debuffDeleteItemSetButton.data.disabled = true
+        debuffDeleteSkillButton.data.disabled = true
+        debuffDeleteTrackerButton.data.disabled = true
+        debuffAddIDButton.data.disabled = true
+        debuffAddItemSetButton.data.disabled = true
+        debuffAddSkillButton.data.disabled = true
+        pickDropdownDebuff.data.disabled = true
+        IDdropdownDebuff.data.disabled = true
+        SkillDebuffdropdown.data.disabled = true
+        ItemSetDebuffdropdown.data.disabled = true
+        debuffTrackingOnCurrentTargetCheckbox.data.disabled = true
+        debuffTrackingOnBossCheckbox.data.disabled = true
+        debuffAddNewIDEditbox.data.disabled = true
+        debuffAddNewItemSetEditbox.data.disabled = true
+        debuffAddNewSkillEditbox.data.disabled = true
+        debuffSlider.data.disabled = true
+        debuffTextEditbox.data.disabled = true
+        debuffTextWhenMissingEditbox.data.disabled = true
+        debuffSwapDropdown1.data.disabled = true
+        debuffSwapDropdown2.data.disabled = true
+    else
+        iconpickerDebuff.data.disabled = false
+        swapDebuffsButton.data.disabled = false
+        colorPicker1Debuff.data.disabled = false
+        debuffDeleteIDButton.data.disabled = false
+        debuffDeleteItemSetButton.data.disabled = false
+        debuffDeleteSkillButton.data.disabled = false
+        debuffDeleteTrackerButton.data.disabled = false
+        debuffAddIDButton.data.disabled = false
+        debuffAddItemSetButton.data.disabled = false
+        debuffAddSkillButton.data.disabled = false
+        pickDropdownDebuff.data.disabled = false
+        IDdropdownDebuff.data.disabled = false
+        SkillDebuffdropdown.data.disabled = false
+        ItemSetDebuffdropdown.data.disabled = false
+        debuffTrackingOnCurrentTargetCheckbox.data.disabled = false
+        debuffTrackingOnBossCheckbox.data.disabled = false
+        debuffAddNewIDEditbox.data.disabled = false
+        debuffAddNewItemSetEditbox.data.disabled = false
+        debuffAddNewSkillEditbox.data.disabled = false
+        debuffSlider.data.disabled = false
+        debuffTextEditbox.data.disabled = false
+        debuffTextWhenMissingEditbox.data.disabled = false
+        debuffSwapDropdown1.data.disabled = false
+        debuffSwapDropdown2.data.disabled = false
+    end
+    pickDropdownDebuff.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)  or {"No profiles"}
     pickDropdownDebuff:UpdateChoices()
-    headerDebuff.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][currentlyEditedDebuffKey].." (ID:"..currentlyEditedDebuffKey..")")
+    headerDebuff.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].name.." (ID:"..currentlyEditedDebuffKey ..")")
 	headerDebuff:UpdateValue()
-    IDdropdownDebuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey]  or {"No IDs"}
+    IDdropdownDebuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs  or {"No IDs"}
     IDdropdownDebuff:UpdateChoices()
-    SkillDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey]  or {"No skills"}
+    SkillDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill  or {"No skills"}
     SkillDebuffdropdown:UpdateChoices()
     ListOfOrder.data.text = generateDebuffOrderList()
     ListOfOrder:UpdateValue()
-    debuffSwapDropdown1.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) or {"Nothing to swap"}
+    debuffSwapDropdown1.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable) or {"Nothing to swap"}
     debuffSwapDropdown1:UpdateChoices()
-    debuffSwapDropdown2.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs)  or {"Nothing to swap"}
+    debuffSwapDropdown2.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)  or {"Nothing to swap"}
     debuffSwapDropdown2:UpdateChoices()
-    ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"}
+    ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1] or {"No item sets"}
     ItemSetDebuffdropdown:UpdateChoices()
-    if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey]) ~= "table" then
-        HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey] = {}
-    end
-
+    colorPicker2Debuff.data.disabled = ShowColor2(currentlyEditedDebuffKey)
+    colorPicker3Debuff.data.disabled = ShowColor3(currentlyEditedDebuffKey)
 end
 
 local function refreshAllBuffTrackerInfo()
-    pickDropdownBuff.data.choices = HTT_functions.removeEmptySpacesInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])  or {"No trackers"}
+    if currentlyEditedBuffKey == "none" then
+        iconpickerBuff.data.disabled = true
+        swapBuffsButton.data.disabled = true
+        buffColor.data.disabled = true
+        buffDeleteIDButton.data.disabled = true
+        buffDeleteItemSetButton.data.disabled = true
+        buffDeleteSkillButton.data.disabled = true
+        buffDeleteTrackerButton.data.disabled = true
+        buffAddIDButton.data.disabled = true
+        buffAddItemSetButton.data.disabled = true
+        buffAddSkillButton.data.disabled = true
+        pickDropdownBuff.data.disabled = true
+        IDdropdownBuff.data.disabled = true
+        SkillBuffdropdown.data.disabled = true
+        ItemSetBuffdropdown.data.disabled = true
+        buffTracking.data.disabled = true
+        buffAddNewIDEditbox.data.disabled = true
+        buffAddNewItemSetEditbox.data.disabled = true
+        buffAddNewSkillEditbox.data.disabled = true
+        buffSlider.data.disabled = true
+        buffTextEditbox.data.disabled = true
+        buffTextWhenMissingEditbox.data.disabled = true
+        buffSwapDropdown1.data.disabled = true
+        buffSwapDropdown2.data.disabled = true
+    else
+        iconpickerBuff.data.disabled = false
+        swapBuffsButton.data.disabled = false
+        buffColor.data.disabled = false
+        buffDeleteIDButton.data.disabled = false
+        buffDeleteItemSetButton.data.disabled = false
+        buffDeleteSkillButton.data.disabled = false
+        buffDeleteTrackerButton.data.disabled = false
+        buffAddIDButton.data.disabled = false
+        buffAddItemSetButton.data.disabled = false
+        buffAddSkillButton.data.disabled = false
+        pickDropdownBuff.data.disabled = false
+        IDdropdownBuff.data.disabled = false
+        SkillBuffdropdown.data.disabled = false
+        ItemSetBuffdropdown.data.disabled = false
+        buffTracking.data.disabled = false
+        buffAddNewIDEditbox.data.disabled = false
+        buffAddNewItemSetEditbox.data.disabled = false
+        buffAddNewSkillEditbox.data.disabled = false
+        buffSlider.data.disabled = false
+        buffTextEditbox.data.disabled = false
+        buffTextWhenMissingEditbox.data.disabled = false
+        buffSwapDropdown1.data.disabled = false
+        buffSwapDropdown2.data.disabled = false
+    end
+    pickDropdownBuff.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)  or {"No trackers"}
     pickDropdownBuff:UpdateChoices()
-	headerBuff.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][currentlyEditedBuffKey].." (ID:"..currentlyEditedBuffKey..")")
+	headerBuff.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].name.." (ID:"..currentlyEditedBuffKey..")")
 	headerBuff:UpdateValue()
-    IDdropdownBuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey]  or {"No IDs"}
+    IDdropdownBuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs  or {"No IDs"}
     IDdropdownBuff:UpdateChoices()
     ListOfOrderBuffs.data.text = generateBuffOrderList()
     ListOfOrderBuffs:UpdateValue()
-    buffSwapDropdown1.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs) or {"Nothing to swap"}
+    buffSwapDropdown1.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable) or {"Nothing to swap"}
     buffSwapDropdown1:UpdateChoices()
-    buffSwapDropdown2.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs) or {"Nothing to swap"}
+    buffSwapDropdown2.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable) or {"Nothing to swap"}
     buffSwapDropdown2:UpdateChoices()
-    SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey] or {"No skills"}
+    SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill or {"No skills"}
     SkillBuffdropdown:UpdateChoices()
-    ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"}
+    ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1] or {"No item sets"}
     ItemSetBuffdropdown:UpdateChoices()
-    if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey]) ~= "table" then
-        HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey] = {}
-    end
-
-
 end
 
 local function refreshAllCooldownTrackerInfo()
-    pickDropdownCooldown.data.choices = HTT_functions.removeEmptySpacesInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])  or {"No trackers"}
+	if currentlyEditedCooldownKey == "none" then
+        iconpickerCooldown.data.disabled = true
+        swapCooldownsButton.data.disabled = true
+        cooldownColorPicker.data.disabled = true
+        cooldownDeleteIDButton.data.disabled = true
+        cooldownDeleteItemSetButton.data.disabled = true
+        cooldownDeleteSkillButton.data.disabled = true
+        cooldownDeleteTrackerButton.data.disabled = true
+        cooldownAddIdButton.data.disabled = true
+        cooldownAddItemSetButton.data.disabled = true
+        cooldownAddSkillButton.data.disabled = true
+        pickDropdownCooldown.data.disabled = true
+        IDdropdownCooldown.data.disabled = true
+        SkillCooldowndropdown.data.disabled = true
+        ItemSetCooldowndropdown.data.disabled = true
+        cooldownTracking.data.disabled = true
+        cooldownAddNewIDEditbox.data.disabled = true
+        cooldownAddNewItemSetEditbox.data.disabled = true
+        cooldownAddNewSkillEditbox.data.disabled = true
+        cooldownSlider.data.disabled = true
+        cooldownText.data.disabled = true
+        cooldownTextWhenMissing.data.disabled = true
+        cooldownSwapDropdown1.data.disabled = true
+        cooldownSwapDropdown2.data.disabled = true
+	else
+		iconpickerCooldown.data.disabled = false
+        swapCooldownsButton.data.disabled = false
+        cooldownColorPicker.data.disabled = false
+        cooldownDeleteIDButton.data.disabled = false
+        cooldownDeleteItemSetButton.data.disabled = false
+        cooldownDeleteSkillButton.data.disabled = false
+        cooldownDeleteTrackerButton.data.disabled = false
+        cooldownAddIdButton.data.disabled = false
+        cooldownAddItemSetButton.data.disabled = false
+        cooldownAddSkillButton.data.disabled = false
+        pickDropdownCooldown.data.disabled = false
+        IDdropdownCooldown.data.disabled = false
+        SkillCooldowndropdown.data.disabled = false
+        ItemSetCooldowndropdown.data.disabled = false
+        cooldownTracking.data.disabled = false
+        cooldownAddNewIDEditbox.data.disabled = false
+        cooldownAddNewItemSetEditbox.data.disabled = false
+        cooldownAddNewSkillEditbox.data.disabled = false
+        cooldownSlider.data.disabled = false
+        cooldownText.data.disabled = false
+        cooldownTextWhenMissing.data.disabled = false
+        cooldownSwapDropdown1.data.disabled = false
+        cooldownSwapDropdown2.data.disabled = false
+    end
+    pickDropdownCooldown.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)  or {"No trackers"}
     pickDropdownCooldown:UpdateChoices()
-	headerCooldown.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"][currentlyEditedCooldownKey].." (ID:"..currentlyEditedCooldownKey..")")
+	headerCooldown.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].name.." (ID:"..currentlyEditedCooldownKey..")")
 	headerCooldown:UpdateValue()
-    IDdropdownCooldown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey]  or {"No IDs"}
+    IDdropdownCooldown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs  or {"No IDs"}
     IDdropdownCooldown:UpdateChoices()
     ListOfOrderCooldowns.data.text = generateCooldownOrderList()
     ListOfOrderCooldowns:UpdateValue()
-    cooldownSwapDropdown1.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) or {"Nothing to swap"}
+    cooldownSwapDropdown1.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable) or {"Nothing to swap"}
     cooldownSwapDropdown1:UpdateChoices()
-    cooldownSwapDropdown2.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) or {"Nothing to swap"}
+    cooldownSwapDropdown2.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable) or {"Nothing to swap"}
     cooldownSwapDropdown2:UpdateChoices()
-    ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"}
+    ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1] or {"No item sets"}
     ItemSetCooldowndropdown:UpdateChoices()
-    SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey] or {"No skills"}
+    SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill or {"No skills"}
     SkillCooldowndropdown:UpdateChoices()
-    if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey]) ~= "table" then
-        HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey] = {}
-    end
-
-
 end
+
+
+
+local function refreshAllSynergyTrackerInfo()
+	if currentlyEditedSynergyKey == "none" then
+        pickDropdownSynergies.data.disabled = true
+        headerSynergy.data.disabled = true
+        ListOfOrderSynergies.data.disabled = true
+        synergySwapDropdown1.data.disabled = true
+        synergySwapDropdown2.data.disabled = true
+        swapSynergiesButton.data.disabled = true
+        synergyIconPicker.data.disabled = true
+        synergyTrackingCheckbox.data.disabled = true
+        synergyColorPicker.data.disabled = true
+        synergyTextEditbox.data.disabled = true
+        synergyTextWhenMissingEditbox.data.disabled = true
+	else
+        pickDropdownSynergies.data.disabled = false
+        headerSynergy.data.disabled = false
+        ListOfOrderSynergies.data.disabled = false
+        synergySwapDropdown1.data.disabled = false
+        synergySwapDropdown2.data.disabled = false
+        swapSynergiesButton.data.disabled = false
+        synergyIconPicker.data.disabled = false
+        synergyTrackingCheckbox.data.disabled = false
+        synergyColorPicker.data.disabled = false
+        synergyTextEditbox.data.disabled = false
+        synergyTextWhenMissingEditbox.data.disabled = false
+    end
+    pickDropdownSynergies.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable)  or {"No trackers"}
+    pickDropdownSynergies:UpdateChoices()
+	headerSynergy.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].name.." (ID:"..currentlyEditedSynergyKey..")")
+	headerSynergy:UpdateValue()
+    ListOfOrderSynergies.data.text = generateSynergyOrderList()
+    ListOfOrderSynergies:UpdateValue()
+    synergySwapDropdown1.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable) or {"Nothing to swap"}
+    synergySwapDropdown1:UpdateChoices()
+    synergySwapDropdown2.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable) or {"Nothing to swap"}
+    synergySwapDropdown2:UpdateChoices()
+end
+
 
 
 function HTT_LoadSettings()
@@ -434,7 +632,7 @@ function HTT_LoadSettings()
         name = "Hyper Tanking Tools",
         displayName = "Hyper Tanking Tools",
         author = "Hyperioxes",
-        version = "1.16",
+        version = "1.17",
 		website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
 		feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
 		donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
@@ -476,13 +674,13 @@ function HTT_LoadSettings()
                 HTT_events.unregisterEvents()
                 HTT_variables.currentlySelectedProfile = var
                 HTTsavedVarsCharacterSpecific["currentlySelectedProfile"] = var
-                currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
-                currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])
-                currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])
+                currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
+                currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
+                currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
                 refreshAllDebuffTrackerInfo()
                 refreshAllBuffTrackerInfo()
                 refreshAllCooldownTrackerInfo()
-                
+                refreshAllSynergyTrackerInfo()
                 HTT_functions.recreateControls()
 				HTT_functions.ProcessAnchors()
                 HTT_functions.reanchorReticle() 
@@ -499,10 +697,9 @@ function HTT_LoadSettings()
                 rescaleSpecial()
                 HTT_events.nullifyRemainingTimes()
                 HTT_events.generateEvents()
-                colorPicker2Debuff.data.disabled = ShowColor2(currentlyEditedDebuffKey)
-                colorPicker3Debuff.data.disabled = ShowColor3(currentlyEditedDebuffKey)
                 local reflectiveControl = HTTReflect:GetNamedChild("reflectFill")
                 reflectiveControl:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].reflectIndicatorColor))
+                HTT_switchStraightUI(HTTsavedVars[HTT_variables.currentlySelectedProfile].isStraightResourceOn)
                 end,
                 width = "half",	--or "half" (optional)
                 reference = "profileDropdown",
@@ -516,15 +713,20 @@ function HTT_LoadSettings()
                 HTT_functions.deleteProfile(HTT_variables.currentlySelectedProfile)
                 HTTsavedVarsCharacterSpecific["currentlySelectedProfile"] = HTT_functions.pickAnyElement(HTTsavedVars["availableProfiles"])
                 HTT_variables.currentlySelectedProfile = HTT_functions.pickAnyElement(HTTsavedVars["availableProfiles"])
-                currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
-                currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])
-                currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])
+                currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
+                currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
+                currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
                 profileDropdown.data.choices =  HTT_functions.removeEmptySpacesInTable(HTTsavedVars["availableProfiles"]) or {"No profiles"}
                 profileDropdown:UpdateChoices()
+                
+                currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
+                currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
+                currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
+                currentlyEditedSynergyKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable)
                 refreshAllDebuffTrackerInfo()
                 refreshAllBuffTrackerInfo()
                 refreshAllCooldownTrackerInfo()
-                
+                refreshAllSynergyTrackerInfo()
                 HTT_functions.recreateControls()
                 HTT_functions.ProcessAnchors()
                 HTT_functions.reanchorReticle() 
@@ -539,10 +741,9 @@ function HTT_LoadSettings()
                 rescaleSynergies()
                 rescaleSpecial()
                 HTT_events.nullifyRemainingTimes()
-                colorPicker2Debuff.data.disabled = ShowColor2(currentlyEditedDebuffKey)
-                colorPicker3Debuff.data.disabled = ShowColor3(currentlyEditedDebuffKey)
                 local reflectiveControl = HTTReflect:GetNamedChild("reflectFill")
                 reflectiveControl:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].reflectIndicatorColor))
+                HTT_switchStraightUI(HTTsavedVars[HTT_variables.currentlySelectedProfile].isStraightResourceOn)
                 end,
 				width = "half",
                 })
@@ -569,12 +770,57 @@ function HTT_LoadSettings()
                     HTT_variables.currentlySelectedProfile = createNewProfileSavedVariables["name"]
                     profileDropdown.data.choices =  HTT_functions.removeEmptySpacesInTable(HTTsavedVars["availableProfiles"]) or {"No profiles"}
                     profileDropdown:UpdateChoices()
-                    currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
-                    currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])
-                    currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])
+                    currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
+                    currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
+                    currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
+                    currentlyEditedSynergyKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable)
                     refreshAllDebuffTrackerInfo()
                     refreshAllBuffTrackerInfo()
                     refreshAllCooldownTrackerInfo()
+                    refreshAllSynergyTrackerInfo()
+                    HTT_functions.recreateControls()
+                    HTT_functions.ProcessAnchors()
+                    HTT_functions.reanchorReticle() 
+                    HTT_functions.reanchorBuffs()
+                    HTT_functions.reanchorBoss()
+                    HTT_functions.reanchorCooldowns()
+                    HTT_functions.reanchorSynergies()
+
+                    rescaleDebuffs()
+                    rescaleBuffs()
+                    rescaleBoss()
+                    rescaleCooldowns()
+                    rescaleSynergies()
+                    rescaleSpecial()
+                    HTT_events.nullifyRemainingTimes()
+                    HTT_events.generateEvents()
+                    local reflectiveControl = HTTReflect:GetNamedChild("reflectFill")
+                    reflectiveControl:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].reflectIndicatorColor))
+                    HTT_switchStraightUI(HTTsavedVars[HTT_variables.currentlySelectedProfile].isStraightResourceOn)
+                end
+                end,
+				width = "half",
+                })
+
+    table.insert(optionsTable, {
+				type = "button",
+				name = "Create New Empty Profile",
+				func = function()  if createNewProfileSavedVariables["name"] ~= nil then
+                    HTT_events.unregisterEvents()
+                    HTT_functions.hideEverythingOnSwitch()
+                    HTT_functions.createEmptyProfile(createNewProfileSavedVariables["name"])
+                    HTTsavedVarsCharacterSpecific["currentlySelectedProfile"] = createNewProfileSavedVariables["name"]
+                    HTT_variables.currentlySelectedProfile = createNewProfileSavedVariables["name"]
+                    profileDropdown.data.choices =  HTT_functions.removeEmptySpacesInTable(HTTsavedVars["availableProfiles"]) or {"No profiles"}
+                    profileDropdown:UpdateChoices()
+                    currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
+                    currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
+                    currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
+                    currentlyEditedSynergyKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable)
+                    refreshAllDebuffTrackerInfo()
+                    refreshAllBuffTrackerInfo()
+                    refreshAllCooldownTrackerInfo()
+                    refreshAllSynergyTrackerInfo()
                     
                     HTT_functions.recreateControls()
                     HTT_functions.ProcessAnchors()
@@ -592,10 +838,9 @@ function HTT_LoadSettings()
                     rescaleSpecial()
                     HTT_events.nullifyRemainingTimes()
                     HTT_events.generateEvents()
-                    colorPicker2Debuff.data.disabled = ShowColor2(currentlyEditedDebuffKey)
-                    colorPicker3Debuff.data.disabled = ShowColor3(currentlyEditedDebuffKey)
                     local reflectiveControl = HTTReflect:GetNamedChild("reflectFill")
                     reflectiveControl:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].reflectIndicatorColor))
+                    HTT_switchStraightUI(HTTsavedVars[HTT_variables.currentlySelectedProfile].isStraightResourceOn)
                 end
                 end,
 				width = "half",
@@ -617,13 +862,21 @@ function HTT_LoadSettings()
             },
             [2] = {
                 type = "checkbox",
+                name = "Block Cost UI",
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isBlockCostOn end,
+                setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].isBlockCostOn = value end,
+                width = "half",	--or "half" (optional)
+                tooltip = "Turns ON/OFF the block cost and block mitigation number next to shield icon",
+            },
+            [3] = {
+                type = "checkbox",
                 name = "Debuff UI on current target",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isDebuffUIOn end,
                 setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].isDebuffUIOn = value end,
                 width = "half",	--or "half" (optional)
                 tooltip = "Turns ON/OFF the window with debuffs on your current target",
             },
-            [3] = {
+            [4] = {
                 type = "checkbox",
                 name = "Buff UI",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isBuffUIOn end,
@@ -631,7 +884,7 @@ function HTT_LoadSettings()
                 width = "half",	--or "half" (optional)
                 tooltip = "Turns ON/OFF the windows with your buffs"
             },
-            [4] = {
+            [5] = {
                 type = "checkbox",
                 name = "Debuff UI on bosses",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isBossDebuffUIOn end,
@@ -642,7 +895,7 @@ function HTT_LoadSettings()
 
 
 
-            [5] = {
+            [6] = {
                 type = "checkbox",
                 name = "Cooldown UI",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isCooldownUIOn end,
@@ -650,7 +903,7 @@ function HTT_LoadSettings()
                 width = "half",	--or "half" (optional)
                 tooltip = "Turns ON/OFF the window with cooldowns",
             },
-			[6] = {
+			[7] = {
                 type = "checkbox",
                 name = "Synergy UI",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isSynergiesUIOn end,
@@ -658,7 +911,7 @@ function HTT_LoadSettings()
                 width = "half",	--or "half" (optional)
                 tooltip = "Turns ON/OFF the window with synergies",
             },
-            [7] = {
+            [8] = {
                 type = "checkbox",
                 name = "Auto Adjustments",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isAutoCooldownTurnedOn end,
@@ -667,7 +920,7 @@ function HTT_LoadSettings()
                 tooltip = "Automatically turns ON/OFF trackers if you added conditions in tracker's settings (like skills and item sets)",	--(optional)
             },
 
-            [8] = {
+            [9] = {
                 type = "checkbox",
                 name = "(BETA) Attack Pattern UI visibility",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isAlertUIOn end,
@@ -675,7 +928,7 @@ function HTT_LoadSettings()
                 width = "half",	--or "half" (optional)
                 tooltip = "Turns ON/OFF the window with cooldowns of enemy's mechanics (currently only works on Arkasis)",
             },
-            [9] = {
+            [10] = {
                 type = "checkbox",
                 name = "Custom Stonefist Icon",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isStoneFistCustomIconOn end,
@@ -684,7 +937,7 @@ function HTT_LoadSettings()
                 tooltip = "Turns ON/OFF custom Stonefist icon (stomp)",
                 warning = "Will need to reload UI"
             },
-            [10] = {
+            [11] = {
                 type = "checkbox",
                 name = "Defensive Stance Reflect Indicator",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isReflectIndicatorOn end,
@@ -697,7 +950,7 @@ function HTT_LoadSettings()
                 width = "half",	--or "half" (optional)
                 tooltip = "Turns ON/OFF defensive stance reflect indicator above your reticle",
             },
-            [11] = {
+            [12] = {
                 type = "colorpicker",
                 name = "Defensive Stance Reflect Color",
                 getFunc = function() return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].reflectIndicatorColor) end,	--(alpha is optional)
@@ -711,7 +964,7 @@ function HTT_LoadSettings()
                 end,	--(alpha is optional)
                 width = "half",	--or "half" (optional)
             },
-            [12] = {
+            [13] = {
                 type = "iconpicker",
                 name = "Shield Texture Icon",
                 choices = shieldChoices,
@@ -725,7 +978,7 @@ function HTT_LoadSettings()
                 end,
                 width = "half",	--or "half" (optional)
             },
-            [13] = {
+            [14] = {
                 type = "slider",
                 name = "Shield Texture Height",
                 --tooltip = "Slider's tooltip text.",
@@ -744,7 +997,7 @@ function HTT_LoadSettings()
                 width = "half",	--or "half" (optional)
 
             },
-            [14] = {
+            [15] = {
                 type = "slider",
                 name = "Shield Texture Width",
                 --tooltip = "Slider's tooltip text.",
@@ -763,7 +1016,7 @@ function HTT_LoadSettings()
                 width = "half",	--or "half" (optional)
 
             },
-            [15] = {
+            [16] = {
                 type = "dropdown",
                 name = "Bar Texture",
                 choices = barChoices,
@@ -799,7 +1052,7 @@ function HTT_LoadSettings()
 
         },
     })
-	local positionCounter = 9
+	local positionCounter = 10
 
 	table.insert(optionsTable, {
         type = "submenu",
@@ -1349,11 +1602,22 @@ function HTT_LoadSettings()
     table.insert(optionsTable[positionCounter].controls, {
 
                 type = "checkbox",
-                name = "Custom Resource UI",
+                name = "Custom  Curved Resource UI",
                 getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isAltResourceUIOn end,
                 setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].isAltResourceUIOn = value end,
                 width = "half",	--or "half" (optional)
-                tooltip = "Turns ON/OFF visibility of custom resource UI",
+                tooltip = "Turns ON/OFF visibility of custom curved resource UI",
+            })
+    table.insert(optionsTable[positionCounter].controls, {
+
+                type = "checkbox",
+                name = "Custom Straight Resource UI",
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].isStraightResourceOn end,
+                setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].isStraightResourceOn = value 
+                HTT_switchStraightUI(value)
+                end,
+                width = "half",	--or "half" (optional)
+                tooltip = "Turns ON/OFF visibility of custom straight resource UI",
             })
     table.insert(optionsTable[positionCounter].controls, {
 
@@ -1364,6 +1628,9 @@ function HTT_LoadSettings()
                     HTTHealth:SetMovable(value)
                     HTTStamina:SetMovable(value)
                     HTTMagicka:SetMovable(value)
+                    HTTHealthStraight:SetMovable(value)
+                    HTTStaminaStraight:SetMovable(value)
+                    HTTMagickaStraight:SetMovable(value)
                 end,
                 width = "half",	--or "half" (optional)
                 tooltip = "Allows you to move custom resource UI around",
@@ -1472,26 +1739,28 @@ function HTT_LoadSettings()
         width = "full",	--or "half" (optional)
         reference = "ListOfOrder"
     })
-
+    currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
 
     table.insert(optionsTable[positionCounter].controls, {
          type = "dropdown",
          name = "Debuffs to swap",
-         choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs),
+         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable),
          getFunc = function() return holdDebuffSwapValue1 end,
-         setFunc = function(var) holdDebuffSwapValue1 = var end,
+         setFunc = function(var) holdDebuffSwapValue1 = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffNameToID[var] end,
          width = "half",	--or "half" (optional)
-         reference = "debuffSwapDropdown1"
+         reference = "debuffSwapDropdown1",
+         disabled = checkIfNone(currentlyEditedDebuffKey),
     })
 
     table.insert(optionsTable[positionCounter].controls, {
          type = "dropdown",
          --name = "",
-         choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs),
+         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable),
          getFunc = function() return holdDebuffSwapValue2 end,
-         setFunc = function(var) holdDebuffSwapValue2 = var end,
+         setFunc = function(var) holdDebuffSwapValue2 = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffNameToID[var] end,
          width = "half",	--or "half" (optional)
-         reference = "debuffSwapDropdown2"
+         reference = "debuffSwapDropdown2",
+         disabled = checkIfNone(currentlyEditedDebuffKey),
     })
 
      table.insert(optionsTable[positionCounter].controls, {
@@ -1499,20 +1768,20 @@ function HTT_LoadSettings()
         name = "Swap Debuffs",
         func = function() 
         if holdDebuffSwapValue1~= nil and holdDebuffSwapValue2 ~= nil then
-            HTT_functions.swapElementsInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],holdDebuffSwapValue1),HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],holdDebuffSwapValue2)) 
+            HTT_functions.swapElementsInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs,holdDebuffSwapValue1,holdDebuffSwapValue2) 
             ListOfOrder.data.text = generateDebuffOrderList()
             ListOfOrder:UpdateValue()
-            debuffSwapDropdown1.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs)
+            debuffSwapDropdown1.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
             debuffSwapDropdown1:UpdateChoices()
-            debuffSwapDropdown2.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs)
+            debuffSwapDropdown2.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
             debuffSwapDropdown2:UpdateChoices()
             HTT_functions.reanchorReticle()
             HTT_functions.reanchorBoss()
         end
         end,
         width = "half",
-
-
+        disabled = checkIfNone(currentlyEditedDebuffKey),
+        reference = "swapDebuffsButton",
 
     })
 
@@ -1520,13 +1789,11 @@ function HTT_LoadSettings()
 
    
 
-        currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
-        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey]) ~= "table" then
-              HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey] = {}
-         end
+        
+
        table.insert(optionsTable[positionCounter].controls, {
                     type = "header",
-                    name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][currentlyEditedDebuffKey].." (ID:"..currentlyEditedDebuffKey..")"),
+                    name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].name.." (ID:"..currentlyEditedDebuffKey..")"),
                     width = "full",	--or "half" (optional)
 					reference = "headerDebuff"
 			    })
@@ -1534,25 +1801,26 @@ function HTT_LoadSettings()
           table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "Pick Tracker to edit",
-                         choices = HTT_functions.removeEmptySpacesInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"]),
-                         getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][currentlyEditedDebuffKey] end,
-                         setFunc = function(var) currentlyEditedDebuffKey = HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],var)
-						 headerDebuff.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"][currentlyEditedDebuffKey].." (ID:"..currentlyEditedDebuffKey..")")
+                         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable),
+                         getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].name or "none" end,
+                         setFunc = function(var) currentlyEditedDebuffKey = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffNameToID[var]
+						 headerDebuff.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].name.." (ID:"..currentlyEditedDebuffKey..")")
 						 headerDebuff:UpdateValue()
-                         IDdropdownDebuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey]  or {"No IDs"}
-                         IDdropdownDebuff:UpdateChoices()
-                         SkillDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey]  or {"No skills"}
-                         SkillDebuffdropdown:UpdateChoices()
-                         ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"}
-                         ItemSetDebuffdropdown:UpdateChoices()
-                         if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey]) ~= "table" then
-                            HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey] = {}
-                         end
-                         colorPicker2Debuff.data.disabled = ShowColor2(currentlyEditedDebuffKey)
-                         colorPicker3Debuff.data.disabled = ShowColor3(currentlyEditedDebuffKey)
-						 end,
-                         width = "half",	--or "half" (optional)
-                         reference = "pickDropdownDebuff",
+                         IDdropdownDebuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs  or {"No IDs"}
+                        IDdropdownDebuff:UpdateChoices()
+                        SkillDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill  or {"No skills"}
+                        SkillDebuffdropdown:UpdateChoices()
+                        ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1] or {"No item sets"}
+                        ItemSetDebuffdropdown:UpdateChoices()
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet = {}
+                        end
+                        colorPicker2Debuff.data.disabled = ShowColor2(currentlyEditedDebuffKey)
+                        colorPicker3Debuff.data.disabled = ShowColor3(currentlyEditedDebuffKey)
+						end,
+                        width = "half",	--or "half" (optional)
+                        reference = "pickDropdownDebuff",
+                        disabled = checkIfNone(currentlyEditedDebuffKey),
                     })
 
 
@@ -1564,18 +1832,20 @@ function HTT_LoadSettings()
                 iconSize = 32,
                 maxColumns = 10,
                 visibleRows = 9,
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["icons"][currentlyEditedDebuffKey] end,
-                setFunc = function(var) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["icons"][currentlyEditedDebuffKey] = var
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].icon end,
+                setFunc = function(var) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet.icon = var
                 local icon = HTT:GetNamedChild("IconReticle"..currentlyEditedDebuffKey)
-                icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["icons"][currentlyEditedDebuffKey])
+                icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].icon)
                 for i=1, MAX_BOSSES do
                     local icon = _G["HTTBoss"..i]:GetNamedChild("IconBoss"..currentlyEditedDebuffKey..i)
-                    icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["icons"][currentlyEditedDebuffKey])
+                    icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].icon)
                 end
                 ListOfOrder.data.text = generateDebuffOrderList()
                 ListOfOrder:UpdateValue()
                 end,
                 width = "half",	--or "half" (optional)
+                reference = "iconpickerDebuff",
+                disabled = checkIfNone(currentlyEditedDebuffKey),
             })
 
 
@@ -1583,40 +1853,43 @@ function HTT_LoadSettings()
 				table.insert(optionsTable[positionCounter].controls, {
                     type = "checkbox",
                     name =  "Tracking on current target",
-                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][currentlyEditedDebuffKey] end,
-                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOn"][currentlyEditedDebuffKey] = value 
+                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].turnedOn end,
+                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].turnedOn = value 
                     HTT_functions.reanchorReticle()
                     end,
                     width = "full",	--or "half" (optional)
-
+                    disabled = checkIfNone(currentlyEditedDebuffKey),
+                    reference = "debuffTrackingOnCurrentTargetCheckbox",
                 })
                 table.insert(optionsTable[positionCounter].controls, {
                     type = "checkbox",
                     name =  "Tracking on bosses",
-                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"][currentlyEditedDebuffKey] end,
-                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["isTurnedOnBoss"][currentlyEditedDebuffKey] = value 
+                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].turnedOnBoss end,
+                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].turnedOnBoss = value 
                     HTT_functions.reanchorBoss()
                     end,
                     width = "full",	--or "half" (optional)
-
+                    disabled = checkIfNone(currentlyEditedDebuffKey),
+                    reference = "debuffTrackingOnBossCheckbox"
                 })
 				table.insert(optionsTable[positionCounter].controls, {
                     type = "colorpicker",
                     name = "Bar color",
                     getFunc = function() 
-                        return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][currentlyEditedDebuffKey])
+                        return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color or {0,0,0,0})
 
                     end,	
                     setFunc = function(r,g,b,a) 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][currentlyEditedDebuffKey][1] = r 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][currentlyEditedDebuffKey][2] = g
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][currentlyEditedDebuffKey][3] = b
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors"][currentlyEditedDebuffKey][4] = a
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color[1] = r 
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color[2] = g
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color[3] = b
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color[4] = a
                     local durationBar = HTT:GetNamedChild("DurationBarReticle"..currentlyEditedDebuffKey)
                     durationBar:SetColor(r,g,b,a)
                     end,	--(alpha is optional)
                     width = "full",	--or "half" (optional)
-
+                    disabled = checkIfNone(currentlyEditedDebuffKey),
+                    reference = "colorPicker1Debuff"
                 })
 
                 	
@@ -1627,15 +1900,15 @@ function HTT_LoadSettings()
                     name = "Bar color #2",
                     getFunc = function() 
                         
-                       if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors2"][currentlyEditedDebuffKey]) == "table"  then
-                            return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors2"][currentlyEditedDebuffKey])
+                       if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color2) == "table"  then
+                            return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color2)
                            
                        else
                             return 0,0,0,0
                         end
                     end,	
                     setFunc = function(r,g,b,a) 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors2"][currentlyEditedDebuffKey] = {
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color2 = {
                     [1] = r,
                     [2] = g,
                     [3] = b,
@@ -1646,7 +1919,6 @@ function HTT_LoadSettings()
                     width = "full",	--or "half" (optional)
                     disabled = ShowColor2(currentlyEditedDebuffKey),
                     reference = "colorPicker2Debuff",
-
                 })
                 
                 table.insert(optionsTable[positionCounter].controls, {
@@ -1654,15 +1926,15 @@ function HTT_LoadSettings()
                     name = "Bar color #3",
                     getFunc = function() 
                         
-                       if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors3"][currentlyEditedDebuffKey]) == "table"  then
-                            return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors3"][currentlyEditedDebuffKey])
+                       if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color3) == "table"  then
+                            return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color3)
                            
                        else
                             return 0,0,0,0
                         end
                     end,	
                     setFunc = function(r,g,b,a) 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["colors3"][currentlyEditedDebuffKey] = {
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].color3 = {
                     [1] = r,
                     [2] = g,
                     [3] = b,
@@ -1682,12 +1954,12 @@ function HTT_LoadSettings()
                     table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "List of tracked IDs",
-                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey]  or {"No IDs"},
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs  or {"No IDs"},
                          getFunc = function() return holdRemoveDebuffID end,
                          setFunc = function(var) holdRemoveDebuffID = var end,
                          width = "half",	--or "half" (optional)
                          reference = "IDdropdownDebuff",
-                         
+                         disabled = checkIfNone(currentlyEditedDebuffKey),
                     })
 
                     table.insert(optionsTable[positionCounter].controls, {
@@ -1695,14 +1967,15 @@ function HTT_LoadSettings()
 				name = "Delete ID",
 				func = function() 
                     if holdRemoveDebuffID ~= nil then
-                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey],holdRemoveDebuffID))
-                        IDdropdownDebuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey]
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs,holdRemoveDebuffID))
+                        IDdropdownDebuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs
                         IDdropdownDebuff:UpdateChoices()
                         EVENT_MANAGER:UnregisterForEvent("HTT"..holdRemoveDebuffID,EVENT_EFFECT_CHANGED)
                     end
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedDebuffKey),
+                reference = "debuffDeleteIDButton",
 			})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -1712,54 +1985,59 @@ function HTT_LoadSettings()
                 setFunc = function(text) addNewIDToExistingDebuff = tonumber(text) end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                reference = "debuffAddNewIDEditbox",
                 default = "",	--(optional)
+                disabled = checkIfNone(currentlyEditedDebuffKey),
 				})
 
 				table.insert(optionsTable[positionCounter].controls, {
 				type = "button",
 				name = "Add ID",
 				func = function() if addNewIDToExistingDebuff ~= nil then
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey][#HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey]+1] = addNewIDToExistingDebuff 
-                    IDdropdownDebuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey]
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs[#HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs+1] = addNewIDToExistingDebuff 
+                    IDdropdownDebuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs
                     IDdropdownDebuff:UpdateChoices()
                     HTT_functions.initializeEventsDebuffs(addNewIDToExistingDebuff,currentlyEditedDebuffKey)
                 end
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedDebuffKey),
+                reference = "debuffAddIDButton",
 			})
 
             table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
                 name = "Text displayed when effect is active",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][currentlyEditedDebuffKey] end,
-                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["texts"][currentlyEditedDebuffKey] = text 
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].text end,
+                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].text = text 
 				end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedDebuffKey),
+                reference = "debuffTextEditbox",
                 default = "",	--(optional)
             })
             table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
                 name = "Text displayed when effect is missing",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["textWhenMissing"][currentlyEditedDebuffKey] end,
-                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["textWhenMissing"][currentlyEditedDebuffKey] = text 
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].textWhenMissing end,
+                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].textWhenMissing = text 
 				end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedDebuffKey),
+                reference = "debuffTextWhenMissingEditbox",
                 default = "",	--(optional)
             })
            table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "List of tracked item sets",
-                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"},
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1] or {"No item sets"},
                          getFunc = function() return holdRemoveDebuffItemSet end,
                          setFunc = function(var) holdRemoveDebuffItemSet = var end,
                          width = "half",	--or "half" (optional)
                          reference = "ItemSetDebuffdropdown",
+                         disabled = checkIfNone(currentlyEditedDebuffKey),
                          tooltip = "If you want the tracker to automatically turn on/off based on if you have certain item set equipped, add the item set to this dropdown using the Add new item set checkbox(right click on any item from item set you want,choose Link in Chat and paste the item link here). Tracker will turn on if ANY of the added item sets is equipped",
                     })
 
@@ -1767,13 +2045,14 @@ function HTT_LoadSettings()
 				type = "button",
 				name = "Delete Item Set",
 				func = function() if holdRemoveDebuffItemSet ~= nil then
-                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1],holdRemoveDebuffItemSet))
-                        ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"}
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1],holdRemoveDebuffItemSet))
+                        ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1] or {"No item sets"}
                         ItemSetDebuffdropdown:UpdateChoices()
                     end
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedDebuffKey),
+                reference = "debuffDeleteItemSetButton",
 			})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -1783,8 +2062,9 @@ function HTT_LoadSettings()
                 setFunc = function(text) addNewItemSetsToExistingItemSetsDebuff = text end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedDebuffKey),
                 default = "",	--(optional)
+                reference = "debuffAddNewItemSetEditbox",
 				})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -1792,16 +2072,18 @@ function HTT_LoadSettings()
 				name = "Add Item Set",
 				func = function() 
                     if addNewItemSetsToExistingItemSetsDebuff ~= nil then
-                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1]) ~= "table" then
-                            HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] = {}
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1]) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1] = {}
                         end
-                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1],addNewItemSetsToExistingItemSetsDebuff)
-                        ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][1] or {"No item sets"}
+                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1],addNewItemSetsToExistingItemSetsDebuff)
+                        ItemSetDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[1] or {"No item sets"}
                         ItemSetDebuffdropdown:UpdateChoices()
                     end
                     --editbox.container:SetHidden(true)
                 end,
 				width = "half",
+                disabled = checkIfNone(currentlyEditedDebuffKey),
+                reference = "debuffAddItemSetButton",
                 })
 
             table.insert(optionsTable[positionCounter].controls, {
@@ -1811,11 +2093,13 @@ function HTT_LoadSettings()
                 min = 0,
                 max = 5,
                 step = 1,	--(optional)
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][2] or 0 end,
-                setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["itemSet"][currentlyEditedDebuffKey][2] = value end,
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[2] or 0 end,
+                setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].itemSet[2] = value end,
                -- end,
                 width = "full",	--or "half" (optional)
                 default = 5,	--(optional)
+                disabled = checkIfNone(currentlyEditedDebuffKey),
+                reference = "debuffSlider",
             })
 
 
@@ -1824,25 +2108,27 @@ function HTT_LoadSettings()
             table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "List of tracked skills",
-                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey]  or {"No skills"},
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill  or {"No skills"},
                          getFunc = function() return holdRemoveDebuffSkill end,
                          setFunc = function(var) holdRemoveDebuffSkill = var end,
                          width = "half",	--or "half" (optional)
                          reference = "SkillDebuffdropdown",
+                         disabled = checkIfNone(currentlyEditedDebuffKey),
                          tooltip = "If you want the tracker to automatically turn on/off based on if you have certain skill equipped on any bar, add the skill's slot ID (you can find Ability Viewer further down in the settings)  to this dropdown using the Add new skill checkbox. Tracker will turn on if ANY of the added abilities is slotted",
                     })
-
+                    disabled = checkIfNone(currentlyEditedDebuffKey),
                     table.insert(optionsTable[positionCounter].controls, {
 				type = "button",
 				name = "Delete Skill",
 				func = function() if holdRemoveDebuffSkill ~= nil then
-                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey],holdRemoveDebuffSkill))
-                        SkillDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey] 
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill,holdRemoveDebuffSkill))
+                        SkillDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill 
                         SkillDebuffdropdown:UpdateChoices()
                     end
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedDebuffKey),
+                reference = "debuffDeleteSkillButton",
 			})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -1852,8 +2138,9 @@ function HTT_LoadSettings()
                 setFunc = function(text) addNewSkillToExistingSkills = tonumber(text) end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedDebuffKey),
                 default = "",	--(optional)
+                reference = "debuffAddNewSkillEditbox",
 				})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -1861,17 +2148,18 @@ function HTT_LoadSettings()
 				name = "Add Skill",
 				func = function() 
                     if addNewSkillToExistingSkills ~= nil then
-                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey]) ~= "table" then
-                            HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey] = {}
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill = {}
                         end
-                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey],addNewSkillToExistingSkills)
-                        SkillDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["skill"][currentlyEditedDebuffKey]
+                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill,addNewSkillToExistingSkills)
+                        SkillDebuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].skill
                         SkillDebuffdropdown:UpdateChoices()
                     end
                     --colorPicker2Debuff.container:SetHidden(true)
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedDebuffKey),
+                reference = "debuffAddSkillButton",
 			})
 
 
@@ -1882,7 +2170,7 @@ function HTT_LoadSettings()
 					type = "button",
 					name = "Delete Tracker",
 					func = function() 
-                    for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["IDs"][currentlyEditedDebuffKey]) do
+                    for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[currentlyEditedDebuffKey].IDs) do
                         EVENT_MANAGER:UnregisterForEvent("HTT"..v,EVENT_EFFECT_CHANGED)
                     end
                     local textInBar = HTT:GetNamedChild("TextInBarReticle"..currentlyEditedDebuffKey)
@@ -1907,10 +2195,12 @@ function HTT_LoadSettings()
                     HTT_functions.removeDebuff(currentlyEditedDebuffKey) 
                     HTT_functions.reanchorReticle()
                     HTT_functions.reanchorBoss()
-                    currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
+                    currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
                     refreshAllDebuffTrackerInfo()
 					end,
 					width = "half",
+                    disabled = checkIfNone(currentlyEditedDebuffKey),
+                    reference = "debuffDeleteTrackerButton",
 					--warning = "Will reload the UI.",
 				
 				})
@@ -1984,21 +2274,9 @@ function HTT_LoadSettings()
             [7] = {
 				type = "button",
 				name = "Create Debuff Tracker",
-				func = function() local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
-                HTT_functions.addDebuff(createNewDebuffSavedVariables["name"],createNewDebuffSavedVariables["ID"],freeSlot, createNewDebuffSavedVariables["text"],createNewDebuffSavedVariables["textWhenMissing"],createNewDebuffSavedVariables["color"],nil,nil,createNewDebuffSavedVariables["onlyPlayer"],{},{})  
+				func = function() local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
+                HTT_functions.addDebuff(createNewDebuffSavedVariables["name"],{createNewDebuffSavedVariables["ID"]},freeSlot, createNewDebuffSavedVariables["text"],createNewDebuffSavedVariables["textWhenMissing"],createNewDebuffSavedVariables["color"],nil,nil,createNewDebuffSavedVariables["onlyPlayer"],{},{})  
 				currentlyEditedDebuffKey = freeSlot
-                refreshAllDebuffTrackerInfo()
-                if HTT:GetNamedChild("DurationTimerReticle"..freeSlot) == nil then
-                    HTT_functions.createDebuffControl(freeSlot)
-                    HTT_functions.createBossDebuffControl(freeSlot)
-                end
-                if createNewDebuffSavedVariables["name"] == "Weapon Skill" then
-                    HTT_functions.GenerateWeaponEvent(createNewDebuffSavedVariables["ID"],freeSlot)
-                else
-                    HTT_functions.initializeEventsDebuffs(createNewDebuffSavedVariables["ID"],freeSlot)
-                end
-                HTT_functions.reanchorReticle()
-                HTT_functions.reanchorBoss()
 				end,
 				width = "half",
 
@@ -2048,25 +2326,29 @@ function HTT_LoadSettings()
         reference = "ListOfOrderBuffs"
     })
 
+    currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
+
 
     table.insert(optionsTable[positionCounter].controls, {
          type = "dropdown",
          name = "Buffs to swap",
-         choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs),
+         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable),
          getFunc = function() return holdBuffSwapValue1 end,
-         setFunc = function(var) holdBuffSwapValue1 = var end,
+         setFunc = function(var) holdBuffSwapValue1 = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffNameToID[var] end,
          width = "half",	--or "half" (optional)
-         reference = "buffSwapDropdown1"
+         reference = "buffSwapDropdown1",
+         disabled = checkIfNone(currentlyEditedBuffKey),
     })
 
     table.insert(optionsTable[positionCounter].controls, {
          type = "dropdown",
          --name = "",
-         choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs),
+         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable),
          getFunc = function() return holdBuffSwapValue2 end,
-         setFunc = function(var) holdBuffSwapValue2 = var end,
+         setFunc = function(var) holdBuffSwapValue2 = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffNameToID[var] end,
          width = "half",	--or "half" (optional)
-         reference = "buffSwapDropdown2"
+         reference = "buffSwapDropdown2",
+         disabled = checkIfNone(currentlyEditedBuffKey),
     })
 
      table.insert(optionsTable[positionCounter].controls, {
@@ -2074,19 +2356,19 @@ function HTT_LoadSettings()
         name = "Swap Buffs",
         func = function() 
         if holdBuffSwapValue1~= nil and holdBuffSwapValue2 ~= nil then
-            HTT_functions.swapElementsInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],holdBuffSwapValue1),HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],holdBuffSwapValue2)) 
+            HTT_functions.swapElementsInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs,holdBuffSwapValue1,holdBuffSwapValue2) 
             ListOfOrderBuffs.data.text = generateBuffOrderList()
             ListOfOrderBuffs:UpdateValue()
-            buffSwapDropdown1.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs)
+            buffSwapDropdown1.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
             buffSwapDropdown1:UpdateChoices()
-            buffSwapDropdown2.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs)
+            buffSwapDropdown2.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
             buffSwapDropdown2:UpdateChoices()
             HTT_functions.reanchorBuffs()
         end
         end,
         width = "half",
-
-
+        disabled = checkIfNone(currentlyEditedBuffKey),
+        reference = "swapBuffsButton",
 
     })
 
@@ -2094,13 +2376,11 @@ function HTT_LoadSettings()
 
    
 
-        currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])
-        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey]) ~= "table" then
-            HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey] = {}
-        end
+        
+
        table.insert(optionsTable[positionCounter].controls, {
                     type = "header",
-                    name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][currentlyEditedBuffKey].." (ID:"..currentlyEditedBuffKey..")"),
+                    name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].name.." (ID:"..currentlyEditedBuffKey..")"),
                     width = "full",	--or "half" (optional)
 					reference = "headerBuff"
 			    })
@@ -2108,23 +2388,24 @@ function HTT_LoadSettings()
           table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "Pick Tracker",
-                         choices = HTT_functions.removeEmptySpacesInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])  or {"No trackers"},
-                         getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][currentlyEditedBuffKey] end,
-                         setFunc = function(var) currentlyEditedBuffKey = HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],var)
-						 headerBuff.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"][currentlyEditedBuffKey].." (ID:"..currentlyEditedBuffKey..")")
+                         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)  or {"No trackers"},
+                         getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].name end,
+                         setFunc = function(var) currentlyEditedBuffKey = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffNameToID[var]
+						 headerBuff.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].name.." (ID:"..currentlyEditedBuffKey..")")
 						 headerBuff:UpdateValue()
-                         IDdropdownBuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey]  or {"No IDs"}
+                         IDdropdownBuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs  or {"No IDs"}
                          IDdropdownBuff:UpdateChoices()
-                         SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey] or {"No skills"}
+                         SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill or {"No skills"}
                          SkillBuffdropdown:UpdateChoices()
-                         ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"}
+                         ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1] or {"No item sets"}
                          ItemSetBuffdropdown:UpdateChoices()
-                         if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey]) ~= "table" then
-                             HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey] = {}
+                         if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet) ~= "table" then
+                             HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet = {}
                          end
 						 end,
                          width = "half",	--or "half" (optional)
                          reference = "pickDropdownBuff",
+                         disabled = checkIfNone(currentlyEditedBuffKey),
                     })
 
 
@@ -2135,26 +2416,29 @@ function HTT_LoadSettings()
                 iconSize = 32,
                 maxColumns = 10,
                 visibleRows = 9,
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["icons"][currentlyEditedBuffKey] end,
-                setFunc = function(var) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["icons"][currentlyEditedBuffKey] = var
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].icon end,
+                setFunc = function(var) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].icon = var
                 local icon = HTTSelfBuffs:GetNamedChild("SelfBuffIcon"..currentlyEditedBuffKey)
-                icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["icons"][currentlyEditedBuffKey])
+                icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].icon)
                 ListOfOrderBuffs.data.text = generateBuffOrderList()
                 ListOfOrderBuffs:UpdateValue()
                 end,
                 width = "half",	--or "half" (optional)
+                disabled = checkIfNone(currentlyEditedBuffKey),
+                reference = "iconpickerBuff",
             })
 
 		
 				table.insert(optionsTable[positionCounter].controls, {
                     type = "checkbox",
                     name =  "Tracking",
-                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["isTurnedOn"][currentlyEditedBuffKey] end,
-                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["isTurnedOn"][currentlyEditedBuffKey] = value 
+                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].turnedOn end,
+                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].turnedOn = value 
                     HTT_functions.reanchorBuffs()
                     end,
                     width = "full",	--or "half" (optional)
-
+                    disabled = checkIfNone(currentlyEditedBuffKey),
+                    reference = "buffTracking",
                 })
 
 
@@ -2163,19 +2447,20 @@ function HTT_LoadSettings()
                     type = "colorpicker",
                     name = "Bar color",
                     getFunc = function() 
-                        return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][currentlyEditedBuffKey])
+                        return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].color)
 
                     end,	
                     setFunc = function(r,g,b,a) 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][currentlyEditedBuffKey][1] = r 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][currentlyEditedBuffKey][2] = g
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][currentlyEditedBuffKey][3] = b
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["colors"][currentlyEditedBuffKey][4] = a
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].color[1] = r 
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].color[2] = g
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].color[3] = b
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].color[4] = a
                     local durationBar = HTTSelfBuffs:GetNamedChild("SelfBuffDurationBar"..currentlyEditedBuffKey)
                     durationBar:SetColor(r,g,b,a)
                     end,	--(alpha is optional)
                     width = "full",	--or "half" (optional)
-
+                    disabled = checkIfNone(currentlyEditedBuffKey),
+                    reference = "buffColor",
                 })
 
                 	
@@ -2190,11 +2475,12 @@ function HTT_LoadSettings()
                     table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "List of tracked IDs",
-                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey]  or {"No IDs"},
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs  or {"No IDs"},
                          getFunc = function() return holdRemoveBuffID end,
                          setFunc = function(var) holdRemoveBuffID = var end,
                          width = "half",	--or "half" (optional)
                          reference = "IDdropdownBuff",
+                         disabled = checkIfNone(currentlyEditedBuffKey),
                     })
 
                     table.insert(optionsTable[positionCounter].controls, {
@@ -2202,14 +2488,15 @@ function HTT_LoadSettings()
 				name = "Delete ID",
 				func = function() 
                     if holdRemoveBuffID ~= nil then
-                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey],holdRemoveBuffID))
-                        IDdropdownBuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey]  or {"No IDs"}
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs,holdRemoveBuffID))
+                        IDdropdownBuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs  or {"No IDs"}
                         IDdropdownBuff:UpdateChoices()
                         EVENT_MANAGER:UnregisterForEvent("HTT"..holdRemoveBuffID,EVENT_EFFECT_CHANGED)
                     end
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
+                reference = "buffDeleteIDButton",
 			})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2219,56 +2506,61 @@ function HTT_LoadSettings()
                 setFunc = function(text) addNewIDToExistingBuff = tonumber(text) end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
                 default = "",	--(optional)
+                reference = "buffAddNewIDEditbox",
 				})
 
 				table.insert(optionsTable[positionCounter].controls, {
 				type = "button",
 				name = "Add ID",
 				func = function() if addNewIDToExistingBuff ~= nil then
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey][#HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey]+1] = addNewIDToExistingBuff 
-                    IDdropdownBuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey]  or {"No IDs"}
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs[#HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs+1] = addNewIDToExistingBuff 
+                    IDdropdownBuff.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs  or {"No IDs"}
                     IDdropdownBuff:UpdateChoices()
                     HTT_functions.initializeEventsBuffs(addNewIDToExistingBuff,currentlyEditedBuffKey)
                 end
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
+                reference = "buffAddIDButton",
 			})
 
             table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
                 name = "Text displayed when effect is active",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["texts"][currentlyEditedBuffKey] end,
-                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["texts"][currentlyEditedBuffKey] = text 
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].text end,
+                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].text = text 
 				end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
                 default = "",	--(optional)
+                reference = "buffTextEditbox",
             })
             table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
                 name = "Text displayed when effect is missing",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["textWhenMissing"][currentlyEditedBuffKey] end,
-                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["textWhenMissing"][currentlyEditedBuffKey] = text 
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].textWhenMissing end,
+                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].textWhenMissing = text 
 				end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
                 default = "",	--(optional)
+                reference = "buffTextWhenMissingEditbox",
             })
            
 
            table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "List of tracked item sets",
-                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"},
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1] or {"No item sets"},
                          getFunc = function() return holdRemoveBuffItemSet end,
                          setFunc = function(var) holdRemoveBuffItemSet = var end,
                          width = "half",	--or "half" (optional)
                          reference = "ItemSetBuffdropdown",
+                         disabled = checkIfNone(currentlyEditedBuffKey),
                          tooltip = "If you want the tracker to automatically turn on/off based on if you have certain item set equipped, add the item set to this dropdown using the Add new item set checkbox(right click on any item from item set you want,choose Link in Chat and paste the item link here). Tracker will turn on if ANY of the added item sets is equipped",
                     })
 
@@ -2276,13 +2568,14 @@ function HTT_LoadSettings()
 				type = "button",
 				name = "Delete Item Set",
 				func = function() if holdRemoveBuffItemSet ~= nil then
-                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1],holdRemoveBuffItemSet))
-                        ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"}
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1],holdRemoveBuffItemSet))
+                        ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1] or {"No item sets"}
                         ItemSetBuffdropdown:UpdateChoices()
                     end
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
+                reference = "buffDeleteItemSetButton",
 			})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2292,8 +2585,9 @@ function HTT_LoadSettings()
                 setFunc = function(text) addNewItemSetsToExistingItemSetsBuff = text end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
                 default = "",	--(optional)
+                reference = "buffAddNewItemSetEditbox",
 				})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2301,16 +2595,18 @@ function HTT_LoadSettings()
 				name = "Add Item Set",
 				func = function() 
                     if addNewItemSetsToExistingItemSetsBuff ~= nil then
-                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1]) ~= "table" then
-                            HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] = {}
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1]) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1] = {}
                         end
-                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1],addNewItemSetsToExistingItemSetsBuff)
-                        ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][1] or {"No item sets"}
+                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1],addNewItemSetsToExistingItemSetsBuff)
+                        ItemSetBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[1] or {"No item sets"}
                         ItemSetBuffdropdown:UpdateChoices()
                     end
                     --editbox.container:SetHidden(true)
                 end,
 				width = "half",
+                disabled = checkIfNone(currentlyEditedBuffKey),
+                reference = "buffAddItemSetButton",
                 })
 
             table.insert(optionsTable[positionCounter].controls, {
@@ -2320,22 +2616,25 @@ function HTT_LoadSettings()
                 min = 0,
                 max = 5,
                 step = 1,	--(optional)
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][2] or 0 end,
-                setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["itemSet"][currentlyEditedBuffKey][2] = value end,
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[2] or 0 end,
+                setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].itemSet[2] = value end,
                -- end,
                 width = "full",	--or "half" (optional)
                 default = 5,	--(optional)
+                disabled = checkIfNone(currentlyEditedBuffKey),
+                reference = "buffSlider",
             })
 
 
             table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "List of tracked skills",
-                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey] or {"No skills"},
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill or {"No skills"},
                          getFunc = function() return holdRemoveBuffSkill end,
                          setFunc = function(var) holdRemoveBuffSkill = var end,
                          width = "half",	--or "half" (optional)
                          reference = "SkillBuffdropdown",
+                         disabled = checkIfNone(currentlyEditedBuffKey),
                          tooltip = "If you want the tracker to automatically turn on/off based on if you have certain skill equipped on any bar, add the skill's slot ID (you can find Ability Viewer further down in the settings) to this dropdown using the Add new skill checkbox. Tracker will turn on if ANY of the added abilities is slotted",
                     })
 
@@ -2343,13 +2642,14 @@ function HTT_LoadSettings()
 				type = "button",
 				name = "Delete Skill",
 				func = function() if holdRemoveBuffSkill ~= nil then
-                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey],holdRemoveBuffSkill))
-                        SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey] or {"No skills"}
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill,holdRemoveBuffSkill))
+                        SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill or {"No skills"}
                         SkillBuffdropdown:UpdateChoices()
                     end
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
+                reference = "buffDeleteSkillButton",
 			})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2359,8 +2659,9 @@ function HTT_LoadSettings()
                 setFunc = function(text) addNewSkillToExistingSkillsBuff = tonumber(text) end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
                 default = "",	--(optional)
+                reference = "buffAddNewSkillEditbox",
 				})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2368,17 +2669,18 @@ function HTT_LoadSettings()
 				name = "Add Skill",
 				func = function() 
                     if addNewSkillToExistingSkillsBuff ~= nil then
-                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey]) ~= "table" then
-                            HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey] = {}
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill = {}
                         end
-                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey],addNewSkillToExistingSkillsBuff)
-                        SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["skill"][currentlyEditedBuffKey] or {"No skills"}
+                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill,addNewSkillToExistingSkillsBuff)
+                        SkillBuffdropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].skill or {"No skills"}
                         SkillBuffdropdown:UpdateChoices()
                     end
                     --editbox.container:SetHidden(true)
                 end,
 				width = "half",
-
+                disabled = checkIfNone(currentlyEditedBuffKey),
+                reference = "buffAddSkillButton",
 			})
 
 
@@ -2389,7 +2691,7 @@ function HTT_LoadSettings()
 					type = "button",
 					name = "Delete Tracker",
 					func = function() 
-                    for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["IDs"][currentlyEditedBuffKey]) do
+                    for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[currentlyEditedBuffKey].IDs) do
                         EVENT_MANAGER:UnregisterForEvent("HTT"..v,EVENT_EFFECT_CHANGED)
                     end
                     local textInBar = HTTSelfBuffs:GetNamedChild("SelfBuffTextInBar"..currentlyEditedBuffKey)
@@ -2404,12 +2706,13 @@ function HTT_LoadSettings()
 
                     HTT_functions.removeBuff(currentlyEditedBuffKey) 
                     HTT_functions.reanchorBuffs()
-                    currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])
+                    currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
                     refreshAllBuffTrackerInfo()
 					end,
 					width = "half",
+                    disabled = checkIfNone(currentlyEditedBuffKey),
 					--warning = "Will reload the UI.",
-				
+				    reference = "buffDeleteTrackerButton",
 				})
 				--end
     table.insert(optionsTable[positionCounter].controls, {
@@ -2474,7 +2777,7 @@ function HTT_LoadSettings()
 				type = "button",
 				name = "Create Buff Tracker",
 				func = function() if createNewBuffSavedVariables["name"] ~= nil then
-                    local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])
+                    local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
                     HTT_functions.addBuff(createNewBuffSavedVariables["name"],createNewBuffSavedVariables["ID"],freeSlot,createNewBuffSavedVariables["text"],createNewBuffSavedVariables["textWhenMissing"],createNewBuffSavedVariables["color"],nil,nil,{},{},nil,nil)  
 				    currentlyEditedBuffKey = freeSlot
                     refreshAllBuffTrackerInfo()
@@ -2530,28 +2833,32 @@ function HTT_LoadSettings()
         title = nil,	--(optional)
         text = generateCooldownOrderList(),
         width = "full",	--or "half" (optional)
-        reference = "ListOfOrderCooldowns"
+        reference = "ListOfOrderCooldowns",
+		disabled = checkIfNone(currentlyEditedCooldownKey),
     })
 
+    currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
 
     table.insert(optionsTable[positionCounter].controls, {
          type = "dropdown",
          name = "Cooldowns to swap",
-         choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns),
+         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable),
          getFunc = function() return holdCooldownSwapValue1 end,
-         setFunc = function(var) holdCooldownSwapValue1 = var end,
+         setFunc = function(var) holdCooldownSwapValue1 = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownNameToID[var] end,
          width = "half",	--or "half" (optional)
-         reference = "cooldownSwapDropdown1"
+         reference = "cooldownSwapDropdown1",
+		 disabled = checkIfNone(currentlyEditedCooldownKey),
     })
 
     table.insert(optionsTable[positionCounter].controls, {
          type = "dropdown",
          --name = "",
-         choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns),
+         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable),
          getFunc = function() return holdCooldownSwapValue2 end,
-         setFunc = function(var) holdCooldownSwapValue2 = var end,
+         setFunc = function(var) holdCooldownSwapValue2 = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownNameToID[var] end,
          width = "half",	--or "half" (optional)
-         reference = "cooldownSwapDropdown2"
+         reference = "cooldownSwapDropdown2",
+		 disabled = checkIfNone(currentlyEditedCooldownKey),
     })
 
      table.insert(optionsTable[positionCounter].controls, {
@@ -2559,19 +2866,19 @@ function HTT_LoadSettings()
         name = "Swap Cooldowns",
         func = function() 
         if holdCooldownSwapValue1~= nil and holdCooldownSwapValue2 ~= nil then
-            HTT_functions.swapElementsInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],holdCooldownSwapValue1),HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],holdCooldownSwapValue2)) 
+            HTT_functions.swapElementsInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns,holdCooldownSwapValue1,holdCooldownSwapValue2) 
             ListOfOrderCooldowns.data.text = generateCooldownOrderList()
             ListOfOrderCooldowns:UpdateValue()
-            cooldownSwapDropdown1.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns)
+            cooldownSwapDropdown1.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
             cooldownSwapDropdown1:UpdateChoices()
-            cooldownSwapDropdown2.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns)
+            cooldownSwapDropdown2.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
             cooldownSwapDropdown2:UpdateChoices()
             HTT_functions.reanchorCooldowns()
         end
         end,
         width = "half",
-
-
+		disabled = checkIfNone(currentlyEditedCooldownKey),
+		reference = "swapCooldownsButton",
 
     })
 
@@ -2579,37 +2886,37 @@ function HTT_LoadSettings()
 
    
 
-        currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])
-        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey]) ~= "table" then
-            HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey] = {}
-        end
+        
+
        table.insert(optionsTable[positionCounter].controls, {
                     type = "header",
-                    name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"][currentlyEditedCooldownKey].." (ID:"..currentlyEditedCooldownKey..")"),
+                    name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].name.." (ID:"..currentlyEditedCooldownKey..")"),
                     width = "full",	--or "half" (optional)
-					reference = "headerCooldown"
+					reference = "headerCooldown",
+					disabled = checkIfNone(currentlyEditedCooldownKey),
 			    })
 
           table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "Pick Tracker",
-                         choices = HTT_functions.removeEmptySpacesInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])  or {"No trackers"},
-                         getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"][currentlyEditedCooldownKey] end,
-                         setFunc = function(var) currentlyEditedCooldownKey = HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],var)
-						 headerCooldown.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"][currentlyEditedCooldownKey].." (ID:"..currentlyEditedCooldownKey..")")
+                         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)  or {"No trackers"},
+                         getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].name end,
+                         setFunc = function(var) currentlyEditedCooldownKey = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownNameToID[var]
+						 headerCooldown.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].name.." (ID:"..currentlyEditedCooldownKey..")")
 						 headerCooldown:UpdateValue()
-                         IDdropdownCooldown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey]  or {"No IDs"}
+                         IDdropdownCooldown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs  or {"No IDs"}
                          IDdropdownCooldown:UpdateChoices()
-                         SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey] or {"No skills"}
+                         SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill or {"No skills"}
                          SkillCooldowndropdown:UpdateChoices()
-                         ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"}
+                         ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1] or {"No item sets"}
                          ItemSetCooldowndropdown:UpdateChoices()
-                         if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey]) ~= "table" then
-                             HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey] = {}
+                         if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet) ~= "table" then
+                             HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet = {}
                          end
 						 end,
                          width = "half",	--or "half" (optional)
                          reference = "pickDropdownCooldown",
+						 disabled = checkIfNone(currentlyEditedCooldownKey),
                     })
 
 
@@ -2620,25 +2927,28 @@ function HTT_LoadSettings()
                 iconSize = 32,
                 maxColumns = 10,
                 visibleRows = 9,
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["icons"][currentlyEditedCooldownKey] end,
-                setFunc = function(var) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["icons"][currentlyEditedCooldownKey] = var
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].icon end,
+                setFunc = function(var) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].icon = var
                 local icon = HTTCooldowns:GetNamedChild("CooldownIcon"..currentlyEditedCooldownKey)
-                icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["icons"][currentlyEditedCooldownKey])
+                icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].icon)
                 ListOfOrderCooldowns.data.text = generateCooldownOrderList()
                 ListOfOrderCooldowns:UpdateValue()
                 end,
                 width = "half",	--or "half" (optional)
+				disabled = checkIfNone(currentlyEditedCooldownKey),
+				reference = "iconpickerCooldown",
             })
 		
 				table.insert(optionsTable[positionCounter].controls, {
                     type = "checkbox",
                     name =  "Tracking",
-                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isTurnedOn"][currentlyEditedCooldownKey] end,
-                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isTurnedOn"][currentlyEditedCooldownKey] = value 
+                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].turnedOn end,
+                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].turnedOn = value 
                     HTT_functions.reanchorCooldowns()
                     end,
                     width = "full",	--or "half" (optional)
-
+					disabled = checkIfNone(currentlyEditedCooldownKey),
+					reference = "cooldownTracking",
                 })
 
 
@@ -2647,19 +2957,20 @@ function HTT_LoadSettings()
                     type = "colorpicker",
                     name = "Bar color",
                     getFunc = function() 
-                        return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["colors"][currentlyEditedCooldownKey])
+                        return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].color)
 
                     end,	
                     setFunc = function(r,g,b,a) 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["colors"][currentlyEditedCooldownKey][1] = r 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["colors"][currentlyEditedCooldownKey][2] = g
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["colors"][currentlyEditedCooldownKey][3] = b
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["colors"][currentlyEditedCooldownKey][4] = a
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].color[1] = r 
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].color[2] = g
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].color[3] = b
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].color[4] = a
                     local durationBar = HTTCooldowns:GetNamedChild("CooldownsDurationBar"..currentlyEditedCooldownKey)
                     durationBar:SetColor(r,g,b,a)
                     end,	--(alpha is optional)
                     width = "full",	--or "half" (optional)
-
+					disabled = checkIfNone(currentlyEditedCooldownKey),
+					reference = "cooldownColorPicker",
                 })
 
                 	
@@ -2673,11 +2984,12 @@ function HTT_LoadSettings()
                     table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "List of tracked IDs",
-                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey]  or {"No IDs"},
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs  or {"No IDs"},
                          getFunc = function() return holdRemoveCooldownID end,
                          setFunc = function(var) holdRemoveCooldownID = var end,
                          width = "half",	--or "half" (optional)
                          reference = "IDdropdownCooldown",
+						 disabled = checkIfNone(currentlyEditedCooldownKey),
                     })
 
                     table.insert(optionsTable[positionCounter].controls, {
@@ -2685,14 +2997,15 @@ function HTT_LoadSettings()
 				name = "Delete ID",
 				func = function() 
                     if holdRemoveCooldownID ~= nil then
-                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey],holdRemoveCooldownID))
-                        IDdropdownCooldown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey]  or {"No IDs"}
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs,holdRemoveCooldownID))
+                        IDdropdownCooldown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs  or {"No IDs"}
                         IDdropdownCooldown:UpdateChoices()
                         EVENT_MANAGER:UnregisterForEvent("HTT"..holdRemoveCooldownID,EVENT_EFFECT_CHANGED)
                     end
                 end,
 				width = "half",
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
+				reference = "cooldownDeleteIDButton",
 			})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2702,45 +3015,49 @@ function HTT_LoadSettings()
                 setFunc = function(text) addNewIDToExistingCooldown = tonumber(text) end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
                 default = "",	--(optional)
+				reference = "cooldownAddNewIDEditbox",
 				})
 
 				table.insert(optionsTable[positionCounter].controls, {
 				type = "button",
 				name = "Add ID",
 				func = function() if addNewIDToExistingCooldown ~= nil then
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey][#HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey]+1] = addNewIDToExistingCooldown 
-                    IDdropdownCooldown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey]  or {"No IDs"}
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs[#HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs+1] = addNewIDToExistingCooldown 
+                    IDdropdownCooldown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs  or {"No IDs"}
                     IDdropdownCooldown:UpdateChoices()
                     HTT_functions.GenerateCooldownEvent(addNewIDToExistingCooldown,currentlyEditedCooldownKey)
                 end
                 end,
 				width = "half",
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
+				reference = "cooldownAddIdButton",
 			})
 
             table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
                 name = "Text displayed when effect is active",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["texts"][currentlyEditedCooldownKey] end,
-                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["texts"][currentlyEditedCooldownKey] = text 
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].text end,
+                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].text = text 
 				end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
                 default = "",	--(optional)
+				reference = "cooldownText",
             })
             table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
                 name = "Text displayed when effect is missing",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["textWhenMissing"][currentlyEditedCooldownKey] end,
-                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["textWhenMissing"][currentlyEditedCooldownKey] = text 
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].textWhenMissing end,
+                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].textWhenMissing = text 
 				end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
                 default = "",	--(optional)
+				reference = "cooldownTextWhenMissing",
             })
            
 
@@ -2750,11 +3067,12 @@ function HTT_LoadSettings()
             table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "List of tracked item sets",
-                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"},
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1] or {"No item sets"},
                          getFunc = function() return holdRemoveCooldownItemSet end,
                          setFunc = function(var) holdRemoveCooldownItemSet = var end,
                          width = "half",	--or "half" (optional)
                          reference = "ItemSetCooldowndropdown",
+						 disabled = checkIfNone(currentlyEditedCooldownKey),
                          tooltip = "If you want the tracker to automatically turn on/off based on if you have certain item set equipped, add the item set to this dropdown using the Add new item set checkbox(right click on any item from item set you want,choose Link in Chat and paste the item link here). Tracker will turn on if ANY of the added item sets is equipped",
                     })
 
@@ -2762,13 +3080,14 @@ function HTT_LoadSettings()
 				type = "button",
 				name = "Delete Item Set",
 				func = function() if holdRemoveCooldownItemSet ~= nil then
-                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1],holdRemoveCooldownItemSet))
-                        ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"}
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1],holdRemoveCooldownItemSet))
+                        ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1] or {"No item sets"}
                         ItemSetCooldowndropdown:UpdateChoices()
                     end
                 end,
 				width = "half",
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
+				reference = "cooldownDeleteItemSetButton",
 			})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2778,8 +3097,9 @@ function HTT_LoadSettings()
                 setFunc = function(text) addNewItemSetsToExistingItemSetsCooldown = text end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
                 default = "",	--(optional)
+				reference = "cooldownAddNewItemSetEditbox",
 				})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2787,16 +3107,18 @@ function HTT_LoadSettings()
 				name = "Add Item Set",
 				func = function() 
                     if addNewItemSetsToExistingItemSetsCooldown ~= nil then
-                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1]) ~= "table" then
-                            HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] = {}
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1]) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1] = {}
                         end
-                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1],addNewItemSetsToExistingItemSetsCooldown)
-                        ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][1] or {"No item sets"}
+                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1],addNewItemSetsToExistingItemSetsCooldown)
+                        ItemSetCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[1] or {"No item sets"}
                         ItemSetCooldowndropdown:UpdateChoices()
                     end
                     --editbox.container:SetHidden(true)
                 end,
 				width = "half",
+				disabled = checkIfNone(currentlyEditedCooldownKey),
+				reference = "cooldownAddItemSetButton",
                 })
 
             table.insert(optionsTable[positionCounter].controls, {
@@ -2806,11 +3128,13 @@ function HTT_LoadSettings()
                 min = 0,
                 max = 5,
                 step = 1,	--(optional)
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][2] or 0 end,
-                setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["itemSet"][currentlyEditedCooldownKey][2] = value end,
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[2] or 0 end,
+                setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].itemSet[2] = value end,
                -- end,
                 width = "full",	--or "half" (optional)
                 default = 5,	--(optional)
+				disabled = checkIfNone(currentlyEditedCooldownKey),
+				reference = "cooldownSlider",
             })
 
 
@@ -2818,11 +3142,12 @@ function HTT_LoadSettings()
             table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "List of tracked skills",
-                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey] or {"No skills"},
+                         choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill or {"No skills"},
                          getFunc = function() return holdRemoveCooldownSkill end,
                          setFunc = function(var) holdRemoveCooldownSkill = var end,
                          width = "half",	--or "half" (optional)
                          reference = "SkillCooldowndropdown",
+						 disabled = checkIfNone(currentlyEditedCooldownKey),
                          tooltip = "If you want the tracker to automatically turn on/off based on if you have certain skill equipped on any bar, add the skill's slot ID (you can find Ability Viewer further down in the settings) to this dropdown using the Add new skill checkbox. Tracker will turn on if ANY of the added abilities is slotted",
                     })
 
@@ -2830,13 +3155,14 @@ function HTT_LoadSettings()
 				type = "button",
 				name = "Delete Skill",
 				func = function() if holdRemoveCooldownSkill ~= nil then
-                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey],HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey],holdRemoveCooldownSkill))
-                        SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey] or {"No skills"}
+                        table.remove(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill,holdRemoveCooldownSkill))
+                        SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill or {"No skills"}
                         SkillCooldowndropdown:UpdateChoices()
                     end
                 end,
 				width = "half",
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
+				reference = "cooldownDeleteSkillButton",
 			})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2846,8 +3172,9 @@ function HTT_LoadSettings()
                 setFunc = function(text) addNewSkillToExistingSkillsCooldown = tonumber(text) end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
                 default = "",	--(optional)
+				reference = "cooldownAddNewSkillEditbox",
 				})
 
 				table.insert(optionsTable[positionCounter].controls, {
@@ -2855,17 +3182,18 @@ function HTT_LoadSettings()
 				name = "Add Skill",
 				func = function() 
                     if addNewSkillToExistingSkillsCooldown ~= nil then
-                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey]) ~= "table" then
-                            HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey] = {}
+                        if type(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill) ~= "table" then
+                            HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill = {}
                         end
-                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey],addNewSkillToExistingSkillsCooldown)
-                        SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["skill"][currentlyEditedCooldownKey] or {"No skills"}
+                        table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill,addNewSkillToExistingSkillsCooldown)
+                        SkillCooldowndropdown.data.choices = HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].skill or {"No skills"}
                         SkillCooldowndropdown:UpdateChoices()
                     end
                     --editbox.container:SetHidden(true)
                 end,
 				width = "half",
-
+				disabled = checkIfNone(currentlyEditedCooldownKey),
+				reference = "cooldownAddSkillButton",
 			})
 
 
@@ -2876,7 +3204,7 @@ function HTT_LoadSettings()
 					type = "button",
 					name = "Delete Tracker",
 					func = function() 
-                    for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["IDs"][currentlyEditedCooldownKey]) do
+                    for _,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[currentlyEditedCooldownKey].IDs) do
                         EVENT_MANAGER:UnregisterForEvent("HTT"..v,EVENT_COMBAT_EVENT)
                     end
                     local textInBar = HTTCooldowns:GetNamedChild("CooldownTextInBar"..currentlyEditedCooldownKey)
@@ -2891,10 +3219,12 @@ function HTT_LoadSettings()
 
                     HTT_functions.removeCooldown(currentlyEditedCooldownKey) 
                     HTT_functions.reanchorCooldowns()
-                    currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])
+                    currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
                     refreshAllCooldownTrackerInfo()
 					end,
 					width = "half",
+					disabled = checkIfNone(currentlyEditedCooldownKey),
+					reference = "cooldownDeleteTrackerButton",
 					--warning = "Will reload the UI.",
 				
 				})
@@ -2971,7 +3301,7 @@ function HTT_LoadSettings()
 				type = "button",
 				name = "Create Tracker",
 				func = function() if createNewCooldownSavedVariables["name"] ~= nil then
-                    local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])
+                    local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
                     HTT_functions.addCooldown(createNewCooldownSavedVariables["name"],createNewCooldownSavedVariables["ID"],freeSlot,createNewCooldownSavedVariables["text"],createNewCooldownSavedVariables["textWhenMissing"],createNewCooldownSavedVariables["color"],nil,nil,createNewCooldownSavedVariables["duration"],{},{})  
 				    currentlyEditedCooldownKey = freeSlot
                     refreshAllCooldownTrackerInfo()
@@ -3031,25 +3361,27 @@ function HTT_LoadSettings()
         reference = "ListOfOrderSynergies"
     })
 
-
+    currentlyEditedSynergyKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable)
     table.insert(optionsTable[positionCounter].controls, {
          type = "dropdown",
          name = "Synergies to swap",
-         choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies),
+         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable),
          getFunc = function() return holdSynergySwapValue1 end,
-         setFunc = function(var) holdSynergySwapValue1 = var end,
+         setFunc = function(var) holdSynergySwapValue1 = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesNameToID[var] end,
          width = "half",	--or "half" (optional)
-         reference = "synergySwapDropdown1"
+         reference = "synergySwapDropdown1",
+         disabled = checkIfNone(currentlyEditedSynergyKey),
     })
 
     table.insert(optionsTable[positionCounter].controls, {
          type = "dropdown",
          --name = "",
-         choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies),
+         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable),
          getFunc = function() return holdSynergySwapValue2 end,
-         setFunc = function(var) holdSynergySwapValue2 = var end,
+         setFunc = function(var) holdSynergySwapValue2 = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesNameToID[var] end,
          width = "half",	--or "half" (optional)
-         reference = "synergySwapDropdown2"
+         reference = "synergySwapDropdown2",
+         disabled = checkIfNone(currentlyEditedSynergyKey),
     })
 
      table.insert(optionsTable[positionCounter].controls, {
@@ -3057,19 +3389,19 @@ function HTT_LoadSettings()
         name = "Swap Synergies",
         func = function() 
         if holdSynergySwapValue1~= nil and holdSynergySwapValue2 ~= nil then
-            HTT_functions.swapElementsInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies,HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"],holdSynergySwapValue1),HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"],holdSynergySwapValue2)) 
-            ListOfOrderSynergies.data.text = generateCooldownOrderList()
+            HTT_functions.swapElementsInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies,holdSynergySwapValue1,holdSynergySwapValue2) 
+            ListOfOrderSynergies.data.text = generateSynergyOrderList()
             ListOfOrderSynergies:UpdateValue()
-            synergySwapDropdown1.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies)
+            synergySwapDropdown1.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable)
             synergySwapDropdown1:UpdateChoices()
-            synergySwapDropdown2.data.choices = rearrangeTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"],HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfSynergies)
+            synergySwapDropdown2.data.choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable)
             synergySwapDropdown2:UpdateChoices()
             HTT_functions.reanchorSynergies()
         end
         end,
         width = "half",
-
-
+        disabled = checkIfNone(currentlyEditedSynergyKey),
+        reference = "swapSynergiesButton",
 
     })
 
@@ -3077,10 +3409,10 @@ function HTT_LoadSettings()
 
    
 
-        currentlyEditedSynergyKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"])
+        
        table.insert(optionsTable[positionCounter].controls, {
                     type = "header",
-                    name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"][currentlyEditedSynergyKey].." (ID:"..currentlyEditedSynergyKey..")"),
+                    name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].name.." (ID:"..currentlyEditedSynergyKey..")"),
                     width = "full",	--or "half" (optional)
 					reference = "headerSynergy"
 			    })
@@ -3088,14 +3420,15 @@ function HTT_LoadSettings()
           table.insert(optionsTable[positionCounter].controls, {
                          type = "dropdown",
                          name = "Pick Tracker",
-                         choices = HTT_functions.removeEmptySpacesInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"])  or {"No trackers"},
-                         getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"][currentlyEditedSynergyKey] end,
-                         setFunc = function(var) currentlyEditedSynergyKey = HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"],var)
-						 headerSynergy.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"][currentlyEditedSynergyKey].." (ID:"..currentlyEditedSynergyKey..")")
+                         choices = createTableOfNames(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable)  or {"No trackers"},
+                         getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].name end,
+                         setFunc = function(var) currentlyEditedSynergyKey = HTTsavedVars[HTT_variables.currentlySelectedProfile].synergyNameToID[var]
+						 headerSynergy.data.name = ZO_HIGHLIGHT_TEXT:Colorize(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].name.." (ID:"..currentlyEditedSynergyKey..")")
 						 headerSynergy:UpdateValue()
 						 end,
                          width = "half",	--or "half" (optional)
                          reference = "pickDropdownSynergies",
+                         disabled = checkIfNone(currentlyEditedSynergyKey),
                     })
 
             table.insert(optionsTable[positionCounter].controls, {
@@ -3105,26 +3438,29 @@ function HTT_LoadSettings()
                 iconSize = 32,
                 maxColumns = 10,
                 visibleRows = 9,
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["icons"][currentlyEditedSynergyKey] end,
-                setFunc = function(var) HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["icons"][currentlyEditedSynergyKey] = var
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].icon end,
+                setFunc = function(var) HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].icon = var
                 local icon = HTTSynergies:GetNamedChild("SynergiesIcon"..currentlyEditedSynergyKey)
-                icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["icons"][currentlyEditedSynergyKey])
+                icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].icon)
                 ListOfOrderSynergies.data.text = generateSynergiesOrderList()
                 ListOfOrderSynergies:UpdateValue()
                 end,
                 width = "half",	--or "half" (optional)
+                disabled = checkIfNone(currentlyEditedSynergyKey),
+                reference = "synergyIconPicker",
             })
 
 		
 				table.insert(optionsTable[positionCounter].controls, {
                     type = "checkbox",
                     name =  "Tracking",
-                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["isTurnedOn"][currentlyEditedSynergyKey] end,
-                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["isTurnedOn"][currentlyEditedSynergyKey] = value 
+                    getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].turnedOn end,
+                    setFunc = function(value) HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].turnedOn = value 
                     HTT_functions.reanchorSynergies()
                     end,
                     width = "full",	--or "half" (optional)
-
+                    disabled = checkIfNone(currentlyEditedSynergyKey),
+                    reference = "synergyTrackingCheckbox",
                 })
 
 
@@ -3133,43 +3469,46 @@ function HTT_LoadSettings()
                     type = "colorpicker",
                     name = "Bar color",
                     getFunc = function() 
-                        return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["colors"][currentlyEditedSynergyKey])
+                        return unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].color)
 
                     end,	
                     setFunc = function(r,g,b,a) 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["colors"][currentlyEditedSynergyKey][1] = r 
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["colors"][currentlyEditedSynergyKey][2] = g
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["colors"][currentlyEditedSynergyKey][3] = b
-                    HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["colors"][currentlyEditedSynergyKey][4] = a
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].color[1] = r 
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].color[2] = g
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].color[3] = b
+                    HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].color[4] = a
                     local durationBar = HTTSynergies:GetNamedChild("SynergiesDurationBar"..currentlyEditedSynergyKey)
                     durationBar:SetColor(r,g,b,a)
                     end,	--(alpha is optional)
                     width = "full",	--or "half" (optional)
-
+                    disabled = checkIfNone(currentlyEditedSynergyKey),
+                    reference = "synergyColorPicker",
                 })
 
 
             table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
                 name = "Text displayed when effect is active",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["texts"][currentlyEditedSynergyKey] end,
-                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["texts"][currentlyEditedSynergyKey] = text 
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].text end,
+                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].text = text 
 				end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedSynergyKey),
                 default = "",	--(optional)
+                reference = "synergyTextEditbox",
             })
             table.insert(optionsTable[positionCounter].controls, {
                 type = "editbox",
                 name = "Text displayed when effect is missing",
-                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["textWhenMissing"][currentlyEditedSynergyKey] end,
-                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["textWhenMissing"][currentlyEditedSynergyKey] = text 
+                getFunc = function() return HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].textWhenMissing end,
+                setFunc = function(text) HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable[currentlyEditedSynergyKey].textWhenMissing = text 
 				end,
                 isMultiline = false,	--boolean
                 width = "half",	--or "half" (optional)
-
+                disabled = checkIfNone(currentlyEditedSynergyKey),
                 default = "",	--(optional)
+                reference = "synergyTextWhenMissingEditbox",
             })
         positionCounter = positionCounter+1
            
@@ -3496,7 +3835,7 @@ function HTT_LoadSettingsPremadeTrackers()
         name = "Hyper Tanking Tools - Premade Trackers",
         displayName = "Hyper Tanking Tools - Premade Trackers",
         author = "Hyperioxes",
-        version = "1.16",
+        version = "1.17",
 		website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
 		feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
 		donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
@@ -3583,10 +3922,10 @@ function HTT_LoadSettingsPremadeTrackers()
                 --tooltip = "Button's tooltip text.",
                 func = function() 
                            if typeToNumber[nameOfSubmenu] == 1 then
-                	            if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"],trackerName) then
+                	            if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable,trackerName) then
 		                            d("Duplicate tracker name")
 	                            else
-                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable["names"])
+                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
                                    HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
                                     refreshAllDebuffTrackerInfo()
                                     if HTT:GetNamedChild("DurationTimerReticle"..freeSlot) == nil then
@@ -3610,10 +3949,10 @@ function HTT_LoadSettingsPremadeTrackers()
                                     HTT_functions.reanchorBoss()
                                 end
                            elseif typeToNumber[nameOfSubmenu] == 2 then
-                                if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"],trackerName) then
+                                if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable,trackerName) then
 		                            d("Duplicate tracker name")
 	                            else
-                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable["names"])
+                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
                                    HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
                                     refreshAllBuffTrackerInfo()
                                     if HTTSelfBuffs:GetNamedChild("SelfBuffDurationTimer"..freeSlot) == nil then
@@ -3634,10 +3973,10 @@ function HTT_LoadSettingsPremadeTrackers()
                                     HTT_functions.reanchorBuffs()
                                 end
                            elseif typeToNumber[nameOfSubmenu] == 3 then
-                                if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"],trackerName) then
+                                if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable,trackerName) then
 		                            d("Duplicate tracker name")
 	                            else
-                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["names"])
+                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
                                    HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
                                     refreshAllCooldownTrackerInfo()
                                     if HTTCooldowns:GetNamedChild("CooldownDurationTimer"..freeSlot) == nil then

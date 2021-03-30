@@ -1,10 +1,5 @@
 HTT_variables = {
 	isUIPreviewOn = false,
-
-	immovableOn = false,
-	isBoundAegisOn = false,
-	isSacredGroundOn = false,
-
 	eventWindowVisibility = false,
 	buffWindowVisibility = false,
 	debuffWindowVisibility = false,
@@ -16,10 +11,9 @@ HTT_variables = {
 	currentlySelectedProfile,
 	alkoshHits = {},
 	targetNameUnitID = {},
+	majorMendingDuration = 3,
+	majorMendingExpiresAt = 0,
 	scene,
-	maxMag,effectiveSpellDamage,
-	engulfingMagCoefficient = 0.00015873,
-	engulfingSpellCoefficient = 0.00145, --needs adjustment
 
 	roleIcons = {
 	[0] = "/esoui/art/contacts/gamepad/gp_social_status_offline.dds",
@@ -114,9 +108,6 @@ HTT_variables = {
 		[4] = 0,
 	},
 
-
-
-	exceptionsToEvents = {},
 
 	weaponSkills = {
 		[39018] = "Blockade of Lightning",

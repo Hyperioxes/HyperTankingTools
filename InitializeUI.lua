@@ -729,7 +729,7 @@ function HTT_initializeUI.generateUI()
 	local SelfBuffsBackground = WM:CreateControl("$(parent)SelfBuffsBackground", HTTSelfBuffs, CT_TEXTURE)
 	SelfBuffsBackground:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffBackgroundColor))
 	SelfBuffsBackground:SetAnchor(TOPLEFT, HTTSelfBuffs, TOPLEFT, 0, 0)
-	SelfBuffsBackground:SetDimensions(width, (height*HTT_functions.GetNumberOfBuffs())+20)
+	SelfBuffsBackground:SetDimensions(width, (height*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable))+20)
 	SelfBuffsBackground:SetHidden(false)
 
 	local SelfBuffsText = WM:CreateControl("$(parent)SelfBuffsText",HTTSelfBuffs,CT_LABEL)
@@ -909,7 +909,7 @@ function HTT_initializeUI.generateUI()
 	HTTBackground:SetAnchor(TOPLEFT, HTT, TOPLEFT, 0, 0)
 	HTTBackground:SetScale(1.0)
 	HTTBackground:SetDrawLayer(0)
-	HTTBackground:SetDimensions(width, (height*HTT_functions.GetNumberOfDebuffs())+20)
+	HTTBackground:SetDimensions(width, (height*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable))+20)
 	HTTBackground:SetHidden(false)
 
 
@@ -954,7 +954,7 @@ function HTT_initializeUI.generateUI()
 		HTTBackground:SetAnchor(TOPLEFT, _G["HTTBoss"..i], TOPLEFT, 0, 0)
 		HTTBackground:SetScale(1.0)
 		HTTBackground:SetDrawLayer(0)
-		HTTBackground:SetDimensions(width, (height*HTT_functions.GetNumberOfDebuffs())+20)
+		HTTBackground:SetDimensions(width, (height*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable))+20)
 		HTTBackground:SetHidden(false)
 
 
@@ -990,7 +990,7 @@ function HTT_initializeUI.generateUI()
 	CooldownsBackground:SetAnchor(TOPLEFT, HTTCooldowns, TOPLEFT, 0, 0)
 	CooldownsBackground:SetScale(1.0)
 	CooldownsBackground:SetDrawLayer(0)
-	CooldownsBackground:SetDimensions(width, (height*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable["isTurnedOn"]))+20)
+	CooldownsBackground:SetDimensions(width, (height*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable))+20)
 	CooldownsBackground:SetHidden(false)
 
 
@@ -1027,7 +1027,7 @@ function HTT_initializeUI.generateUI()
 	SynergiesBackground:SetAnchor(TOPLEFT, HTTSynergies, TOPLEFT, 0, 0)
 	SynergiesBackground:SetScale(1.0)
 	SynergiesBackground:SetDrawLayer(0)
-	SynergiesBackground:SetDimensions(width, (height*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["isTurnedOn"]))+20)
+	SynergiesBackground:SetDimensions(width, (height*HTT_functions.CountTurnedOn(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable))+20)
 	SynergiesBackground:SetHidden(false)
 
 
@@ -1047,46 +1047,7 @@ function HTT_initializeUI.generateUI()
 		
 
 
-		timer = WM:CreateControl("$(parent)SynergiesDurationTimer"..v, HTTSynergies, CT_LABEL)			
-		timer:SetFont(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesFont)
-		timer:SetScale(height/HTT_variables.fontMultipliers[HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesFont][1])
-		timer:SetWrapMode(TEX_MODE_CLAMP)
-		timer:SetDrawLayer(2)
-		timer:SetColor(255,255,255, 1)
-		timer:SetText("0.0s")				
-		timer:SetAnchor(TOPLEFT, SynergiesBackground, TOPLEFT, 5,0)
-		timer:SetDimensions((HTT_variables.fontMultipliers[HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesFont][1]/20)*width/4, 1)
-		--timer:SetHorizontalAlignment(LEFT)
-		timer:SetHidden(false)
-			
-			
-
-		bar = WM:CreateControl("$(parent)SynergiesDurationBar"..v, HTTSynergies, CT_STATUSBAR)	
-		bar:SetScale(1.0)
-		bar:SetAnchor(TOPLEFT, SynergiesBackground, TOPLEFT,0, 0)
-		bar:SetDimensions(width*0.75,height)
-		bar:SetColor(unpack(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["colors"][v]))
-		bar:SetHidden(false)		
-		bar:SetDrawLayer(1)
-		bar:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].currentlySelectedBarTexture)
-
-		textInBar = WM:CreateControl("$(parent)SynergiesTextInBar"..v, HTTSynergies, CT_LABEL)
-		textInBar:SetFont(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesFont)
-		textInBar:SetScale(height/HTT_variables.fontMultipliers[HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesFont][1])
-		textInBar:SetWrapMode(TEX_MODE_CLAMP)
-		textInBar:SetDrawLayer(2)
-		textInBar:SetColor(1,1,1,1)
-		textInBar:SetText(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["names"][v])				
-		textInBar:SetAnchor(TOPLEFT, SynergiesBackground, TOPLEFT, 30,0)
-		textInBar:SetDimensions(width*(HTT_variables.fontMultipliers[HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesFont][1]/20), 1)
-		textInBar:SetHidden(false)
-
-		icon = WM:CreateControl("$(parent)SynergiesIcon"..v, HTTSynergies, CT_TEXTURE,4)
-		icon:SetDimensions(height,height)
-		icon:SetAnchor(TOPLEFT,SynergiesBackground,TOPLEFT,5,0)
-		icon:SetTexture(HTTsavedVars[HTT_variables.currentlySelectedProfile].synergiesTable["icons"][v])
-		icon:SetHidden(false)
-		icon:SetDrawLayer(2)
+		HTT_functions.createSynergyControl(v)
 
 
 

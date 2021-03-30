@@ -1,6 +1,6 @@
 ## APIVersion: 100034
 ## Title: HyperTankingTools
-## Version: 1.16
+## Version: 1.17
 ## Author: Hyperioxes
 ## Description: Set of trackers and tools that help with tanking
 ## SavedVariables: HyperTankingToolsSV
@@ -24,4 +24,6 @@ Events.lua
 Alerts.lua
 TextureList.lua
 DodgeRoll.lua
-ResourceBars.lua
+StraightResourceBars.lua
+Transmission.lua
+Asylum.lua
