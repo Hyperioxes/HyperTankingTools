@@ -106,6 +106,8 @@
 	yOffsetLlothis = 0,
 	xOffsetFelms = 0,
 	yOffsetFelms = 0,
+	xOffsetOlms = 0,
+	yOffsetOlms = 0,
 	width=200,
 	height=40,
 	currentlySelectedBarTexture = "HyperTankingTools/icons/gradientProgressBar.dds",
@@ -169,6 +171,7 @@
 		}
 	},
 	orderOfDebuffs = {},
+	debuffNameToID = {},
 	buffTable = {
 		["none"] = {
 			name = "none",
@@ -185,6 +188,7 @@
 		}
 	},
 	orderOfBuffs = {},
+	buffNameToID = {},
 	cooldownTable = {
 		["none"] = {
 			name = "none",
@@ -201,6 +205,7 @@
 		}
 	},
 	orderOfCooldowns = {},
+	cooldownNameToID = {},
 	synergiesTable = {
 		["none"] = {
 			name = "none",
@@ -215,6 +220,7 @@
     },
     
 	orderOfSynergies = {},
+	synergyNameToID = {},
 }
 
 

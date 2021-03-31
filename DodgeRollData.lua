@@ -32,9 +32,8 @@ HTT_DodgeRollData = {
 	},
 	["Asylum Sanctorium"] = {
 		[95428] = {duration = 1,isOnByDefault = true}, --Swipe
-		[95545] = {duration = 2,isOnByDefault = true,alertRepeat = {2000,4000},preventDouble = 2000,onlyBlock = true}, --Llothis Cone
-		[98895] = {duration = 1,notOnlyPlayer = true},
-		[99974] = {duration = 2.5,notOnlyPlayer = true,resultOverride=2240}
+		[95545] = {duration = 2,isOnByDefault = true,alertRepeat = {2000,4000},preventDouble = 2000,onlyBlock = true,texture = "/esoui/art/icons/ability_healer_032.dds"}, --Llothis Cone
+		[99974] = {duration = 2.5,notOnlyPlayer = true,resultOverride=2240} --Gusts of Steam
 	},
 	["Black Drake Villa"] = {
 		[142717] = {duration = 2.15,isOnByDefault = true}, --Clobber, Kinras Ironeye

@@ -2277,6 +2277,7 @@ function HTT_LoadSettings()
 				func = function() local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
                 HTT_functions.addDebuff(createNewDebuffSavedVariables["name"],{createNewDebuffSavedVariables["ID"]},freeSlot, createNewDebuffSavedVariables["text"],createNewDebuffSavedVariables["textWhenMissing"],createNewDebuffSavedVariables["color"],nil,nil,createNewDebuffSavedVariables["onlyPlayer"],{},{})  
 				currentlyEditedDebuffKey = freeSlot
+				refreshAllDebuffTrackerInfo()
 				end,
 				width = "half",
 
@@ -2781,11 +2782,6 @@ function HTT_LoadSettings()
                     HTT_functions.addBuff(createNewBuffSavedVariables["name"],createNewBuffSavedVariables["ID"],freeSlot,createNewBuffSavedVariables["text"],createNewBuffSavedVariables["textWhenMissing"],createNewBuffSavedVariables["color"],nil,nil,{},{},nil,nil)  
 				    currentlyEditedBuffKey = freeSlot
                     refreshAllBuffTrackerInfo()
-                    if HTTSelfBuffs:GetNamedChild("SelfBuffDurationTimer"..freeSlot) == nil then
-                        HTT_functions.createBuffControl(freeSlot)
-                    end
-                    HTT_functions.initializeEventsBuffs(createNewBuffSavedVariables["ID"],freeSlot)
-                    HTT_functions.reanchorBuffs()
                 end
 				end,
 				width = "half",
@@ -3305,11 +3301,7 @@ function HTT_LoadSettings()
                     HTT_functions.addCooldown(createNewCooldownSavedVariables["name"],createNewCooldownSavedVariables["ID"],freeSlot,createNewCooldownSavedVariables["text"],createNewCooldownSavedVariables["textWhenMissing"],createNewCooldownSavedVariables["color"],nil,nil,createNewCooldownSavedVariables["duration"],{},{})  
 				    currentlyEditedCooldownKey = freeSlot
                     refreshAllCooldownTrackerInfo()
-                    if HTTCooldowns:GetNamedChild("CooldownDurationTimer"..freeSlot) == nil then
-                        HTT_functions.createCooldownControl(freeSlot)
-                    end
-                    HTT_functions.GenerateCooldownEvent(createNewCooldownSavedVariables["ID"],freeSlot)
-                    HTT_functions.reanchorCooldowns()
+                    
                 end
 				end,
 				width = "half",
@@ -3922,76 +3914,70 @@ function HTT_LoadSettingsPremadeTrackers()
                 --tooltip = "Button's tooltip text.",
                 func = function() 
                            if typeToNumber[nameOfSubmenu] == 1 then
-                	            if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable,trackerName) then
-		                            d("Duplicate tracker name")
-	                            else
-                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
-                                   HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
-                                    refreshAllDebuffTrackerInfo()
-                                    if HTT:GetNamedChild("DurationTimerReticle"..freeSlot) == nil then
-                                        HTT_functions.createDebuffControl(freeSlot)
-                                        HTT_functions.createBossDebuffControl(freeSlot)
+
+                                local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
+                                HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
+                                refreshAllDebuffTrackerInfo()
+                                if HTT:GetNamedChild("DurationTimerReticle"..freeSlot) == nil then
+                                    HTT_functions.createDebuffControl(freeSlot)
+                                    HTT_functions.createBossDebuffControl(freeSlot)
+                                end
+                                if trackerName == "Weapon Skill" then
+                                    for _,abilityID in pairs(trackerVariables.ID) do
+                                        HTT_functions.GenerateWeaponEvent(abilityID,freeSlot)
                                     end
-                                    if trackerName == "Weapon Skill" then
+                                else
+                                    if type(trackerVariables.ID) == "table" then
                                         for _,abilityID in pairs(trackerVariables.ID) do
-                                            HTT_functions.GenerateWeaponEvent(abilityID,freeSlot)
+                                            HTT_functions.initializeEventsDebuffs(abilityID,freeSlot)
                                         end
                                     else
-                                        if type(trackerVariables.ID) == "table" then
-                                            for _,abilityID in pairs(trackerVariables.ID) do
-                                                HTT_functions.initializeEventsDebuffs(abilityID,freeSlot)
-                                            end
-                                        else
-                                            HTT_functions.initializeEventsDebuffs(trackerVariables.ID,freeSlot)
-                                        end
+                                        HTT_functions.initializeEventsDebuffs(trackerVariables.ID,freeSlot)
                                     end
-                                    HTT_functions.reanchorReticle()
-                                    HTT_functions.reanchorBoss()
                                 end
+                                HTT_functions.reanchorReticle()
+                                HTT_functions.reanchorBoss()
+
                            elseif typeToNumber[nameOfSubmenu] == 2 then
-                                if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable,trackerName) then
-		                            d("Duplicate tracker name")
-	                            else
-                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
-                                   HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
-                                    refreshAllBuffTrackerInfo()
-                                    if HTTSelfBuffs:GetNamedChild("SelfBuffDurationTimer"..freeSlot) == nil then
-                                        HTT_functions.createBuffControl(freeSlot)
-                                    end
-                                    if type(trackerVariables.ID) == "table" then
-                                        for _,abilityID in pairs(trackerVariables.ID) do
-                                             HTT_functions.initializeEventsBuffs(abilityID,freeSlot)
-                                        end
-                                    else
-                                        if trackerName == "Dragon Blood" then
-				                            HTT_functions.initializeEventsBuffsCombatEvent(trackerVariables.ID,freeSlot,23)
-			                            else
-                                            HTT_functions.initializeEventsBuffs(trackerVariables.ID,freeSlot)
-                                        end
-                                    end
 
-                                    HTT_functions.reanchorBuffs()
+                                local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
+                                HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
+                                refreshAllBuffTrackerInfo()
+                                if HTTSelfBuffs:GetNamedChild("SelfBuffDurationTimer"..freeSlot) == nil then
+                                    HTT_functions.createBuffControl(freeSlot)
                                 end
+                                if type(trackerVariables.ID) == "table" then
+                                    for _,abilityID in pairs(trackerVariables.ID) do
+                                            HTT_functions.initializeEventsBuffs(abilityID,freeSlot)
+                                    end
+                                else
+                                    if trackerName == "Dragon Blood" then
+				                        HTT_functions.initializeEventsBuffsCombatEvent(trackerVariables.ID,freeSlot,23)
+			                        else
+                                        HTT_functions.initializeEventsBuffs(trackerVariables.ID,freeSlot)
+                                    end
+                                end
+
+                                HTT_functions.reanchorBuffs()
+
                            elseif typeToNumber[nameOfSubmenu] == 3 then
-                                if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable,trackerName) then
-		                            d("Duplicate tracker name")
-	                            else
-                                   local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
-                                   HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
-                                    refreshAllCooldownTrackerInfo()
-                                    if HTTCooldowns:GetNamedChild("CooldownDurationTimer"..freeSlot) == nil then
-                                        HTT_functions.createCooldownControl(freeSlot)
-                                    end
-                                    if type(trackerVariables.ID) == "table" then
-                                        for _,abilityID in pairs(trackerVariables.ID) do
-                                            HTT_functions.GenerateCooldownEvent(abilityID,freeSlot)
-                                        end
-                                    else
-                                        HTT_functions.GenerateCooldownEvent(trackerVariables.ID,freeSlot)
-                                    end
 
-                                    HTT_functions.reanchorCooldowns()
+                                local freeSlot = HTT_functions.findFreeSlotInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
+                                HTT_functions.addTracker(typeToNumber[nameOfSubmenu],trackerName,trackerVariables.ID,freeSlot,trackerVariables.text,trackerVariables.textWhenMissing,trackerVariables.color,trackerVariables.color2,trackerVariables.color3,trackerVariables.onlyPlayer,trackerVariables.skills or {},trackerVariables.itemSet or {},trackerVariables.itemSetNumber,trackerVariables.duration,trackerVariables.icon)  
+                                refreshAllCooldownTrackerInfo()
+                                if HTTCooldowns:GetNamedChild("CooldownDurationTimer"..freeSlot) == nil then
+                                    HTT_functions.createCooldownControl(freeSlot)
                                 end
+                                if type(trackerVariables.ID) == "table" then
+                                    for _,abilityID in pairs(trackerVariables.ID) do
+                                        HTT_functions.GenerateCooldownEvent(abilityID,freeSlot)
+                                    end
+                                else
+                                    HTT_functions.GenerateCooldownEvent(trackerVariables.ID,freeSlot)
+                                end
+
+                                HTT_functions.reanchorCooldowns()
+
                            end
 				        end,
                 width = "half",	--or "half" (optional)

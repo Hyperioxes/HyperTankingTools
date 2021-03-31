@@ -397,11 +397,13 @@ function OnAddOnLoaded(event, addonName)
 
 
 	for k,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].xOffsetFelms) ~= "number" then
+		if type(HTTsavedVars[v].xOffsetOlms) ~= "number" then
 			HTTsavedVars[v].xOffsetLlothis = 0
 			HTTsavedVars[v].yOffsetLlothis = 0
 			HTTsavedVars[v].xOffsetFelms = 0
 			HTTsavedVars[v].yOffsetFelms = 0
+			HTTsavedVars[v].xOffsetOlms = 0
+			HTTsavedVars[v].yOffsetOlms = 0
 		end
 	end
 
@@ -485,6 +487,17 @@ EVENT_MANAGER:RegisterForEvent(HTT.name, EVENT_PLAYER_COMBAT_STATE, function()
 end)
 
 ------------------- COMBAT / OUT OF COMBAT SWITCHING ---------------------
+CALLBACK_MANAGER:RegisterCallback("OnWorldMapChanged", function() -- on map change
+	HTT_switchAsylumUI(true)
 
 
+
+
+
+
+
+
+
+
+end)
 

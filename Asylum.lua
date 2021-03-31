@@ -1,3 +1,6 @@
+--OLMS
+local breathReadyAt = 0
+local kiteReadyAt = 0
 --LLOTHIS
 local llothisJumpReadyAt = 0
 local coneReadyAt = 0
@@ -7,6 +10,35 @@ local manifestReadyAt = 0
 local felmsJumpReadyAt = 0
 
 local function UpdateEvery100()
+	--OLMS
+	local BreathCounter = HTTOlms:GetNamedChild("OlmsBreathNumber")
+	local BreathOutline = HTTOlms:GetNamedChild("OlmsBreathOutline")
+	local OlmsKiteCounter = HTTOlms:GetNamedChild("OlmsKiteNumber")
+	local OlmsKiteOutline = HTTOlms:GetNamedChild("OlmsKiteOutline")
+	if breathReadyAt > GetGameTimeSeconds() then
+		if breathReadyAt - 3 > GetGameTimeSeconds() then
+			BreathCounter:SetText(math.floor(breathReadyAt-GetGameTimeSeconds()))
+			BreathOutline:SetColor(1,0,0)
+		else
+			BreathCounter:SetText(HTT_functions.HTT_processTimer((math.floor((breathReadyAt-GetGameTimeSeconds())*10)/10)))
+			BreathOutline:SetColor(1,1,0)
+		end
+	else
+		BreathCounter:SetText("0")
+		BreathOutline:SetColor(0,1,0)
+	end
+	if kiteReadyAt > GetGameTimeSeconds() then
+		if kiteReadyAt - 3 > GetGameTimeSeconds() then
+			OlmsKiteCounter:SetText(math.floor(kiteReadyAt-GetGameTimeSeconds()))
+			OlmsKiteOutline:SetColor(1,0,0)
+		else
+			OlmsKiteCounter:SetText(HTT_functions.HTT_processTimer((math.floor((kiteReadyAt-GetGameTimeSeconds())*10)/10)))
+			OlmsKiteOutline:SetColor(1,1,0)
+		end
+	else
+		OlmsKiteCounter:SetText("0")
+		OlmsKiteOutline:SetColor(0,1,0)
+	end
 	--LLOTHIS
 	local jumpCounter = HTTLlothis:GetNamedChild("LlothisJumpNumber")
 	local jumpOutline = HTTLlothis:GetNamedChild("LlothisJumpOutline")
@@ -23,6 +55,7 @@ local function UpdateEvery100()
 			jumpOutline:SetColor(1,1,0)
 		end
 	else
+		jumpCounter:SetText("0")
 		jumpOutline:SetColor(0,1,0)
 	end
 	if coneReadyAt > GetGameTimeSeconds() then
@@ -34,6 +67,7 @@ local function UpdateEvery100()
 			coneOutline:SetColor(1,1,0)
 		end
 	else
+		coneCounter:SetText("0")
 		coneOutline:SetColor(0,1,0)
 	end
 	if interruptReadyAt > GetGameTimeSeconds() then
@@ -45,6 +79,7 @@ local function UpdateEvery100()
 			interruptOutline:SetColor(1,1,0)
 		end
 	else
+		interruptCounter:SetText("0")
 		interruptOutline:SetColor(0,1,0)
 	end
 	--FELMS
@@ -61,6 +96,7 @@ local function UpdateEvery100()
 			manifestOutline:SetColor(1,1,0)
 		end
 	else
+		manifestCounter:SetText("0")
 		manifestOutline:SetColor(0,1,0)
 	end
 	if felmsJumpReadyAt > GetGameTimeSeconds() then
@@ -72,6 +108,7 @@ local function UpdateEvery100()
 			felmsJumpOutline:SetColor(1,1,0)
 		end
 	else
+		felmsJumpCounter:SetText("0")
 		felmsJumpOutline:SetColor(0,1,0)
 	end
 end
@@ -81,6 +118,26 @@ local function generateEvents()
 
 	EVENT_MANAGER:RegisterForUpdate("HTT_Asylum_UpdateEvery100", 100,UpdateEvery100)
 
+	--------------- OLMS ----------------------
+	EVENT_MANAGER:RegisterForEvent("OlmsBreath", EVENT_COMBAT_EVENT, function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType,
+	targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
+		if result == 2200 then
+			breathReadyAt = GetGameTimeSeconds() + 10
+		end
+
+	end)
+	EVENT_MANAGER:AddFilterForEvent("OlmsBreath", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,99027)
+
+	EVENT_MANAGER:RegisterForEvent("OlmsKite", EVENT_COMBAT_EVENT, function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType,
+	targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
+		if result == 2200 then
+			kiteReadyAt = GetGameTimeSeconds() + 20
+		end
+
+	end)
+	EVENT_MANAGER:AddFilterForEvent("OlmsKite", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,99138)
+	--------------- OLMS ----------------------
+	--------------- LLOTHIS ----------------------
 	EVENT_MANAGER:RegisterForEvent("LlothisInterrupt", EVENT_COMBAT_EVENT, function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType,
 	targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
 		if result == ACTION_RESULT_INTERRUPT then
@@ -104,31 +161,48 @@ local function generateEvents()
 	EVENT_MANAGER:RegisterForEvent("LlothisCone", EVENT_COMBAT_EVENT, function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType,
 	targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
 		if hitValue == 2000 then
-			coneReadyAt = GetGameTimeSeconds() + 20
+			coneReadyAt = GetGameTimeSeconds() + 21
 		end
 
 	end)
 	EVENT_MANAGER:AddFilterForEvent("LlothisCone", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,95545)
-
+	--------------- LLOTHIS ----------------------
+	--------------- FELMS ----------------------
 	EVENT_MANAGER:RegisterForEvent("FelmsManifestWrath", EVENT_COMBAT_EVENT, function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType,
 	targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
 		if result == 2200 then
-			manifestReadyAt = GetGameTimeSeconds() + 6
+			manifestReadyAt = GetGameTimeSeconds() + 10
 		end
 
 	end)
 	EVENT_MANAGER:AddFilterForEvent("FelmsManifestWrath", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,99027)
-	
+
+	EVENT_MANAGER:RegisterForEvent("FelmsJump", EVENT_COMBAT_EVENT, function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType,
+	targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
+		if result == 2200 then
+			felmsJumpReadyAt = GetGameTimeSeconds() + 20
+		end
+
+	end)
+	EVENT_MANAGER:AddFilterForEvent("FelmsJump", EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID,99138)
+	--------------- FELMS ----------------------
 
 
 end
 
 local function removeEvents()
+	EVENT_MANAGER:UnregisterForUpdate("HTT_Asylum_UpdateEvery100", 100)
+	--------------- OLMS ----------------------
+	--------------- OLMS ----------------------
+	--------------- LLOTHIS ----------------------
 	EVENT_MANAGER:UnregisterForEvent("LlothisInterrupt", EVENT_COMBAT_EVENT)
 	EVENT_MANAGER:UnregisterForEvent("LlothisNotInterrupted", EVENT_COMBAT_EVENT)
 	EVENT_MANAGER:UnregisterForEvent("LlothisJump", EVENT_COMBAT_EVENT)
 	EVENT_MANAGER:UnregisterForEvent("LlothisCone", EVENT_COMBAT_EVENT)
-	EVENT_MANAGER:UnregisterForUpdate("HTT_Asylum_UpdateEvery100", 100)
+	--------------- LLOTHIS ----------------------
+	--------------- FELMS ----------------------
+	--------------- FELMS ----------------------
+	
 end
 
 
@@ -174,6 +248,72 @@ function AsylumInitializeUI()
     end)
 
 	------------------ OLMS -----------------------------
+
+	local OlmsIcon = WM:CreateControl("$(parent)OlmsIcon",HTTOlms,  CT_TEXTURE, 4)
+	OlmsIcon:SetDimensions(128,128)
+	OlmsIcon:SetAnchor(TOPLEFT,HTTOlms,TOPLEFT,0,0)
+	OlmsIcon:SetTexture("HyperTankingTools/icons/Olms.dds")
+	OlmsIcon:SetColor(1,1,1)
+	OlmsIcon:SetHidden(false)
+	OlmsIcon:SetDrawLayer(0)
+
+	local OlmsBreath = WM:CreateControl("$(parent)OlmsBreath",HTTOlms,  CT_TEXTURE, 4)
+	OlmsBreath:SetDimensions(64,64)
+	OlmsBreath:SetAnchor(TOPLEFT,OlmsIcon,BOTTOMLEFT,0,0)
+	OlmsBreath:SetTexture("/esoui/art/icons/achievement_update16_027.dds")
+	OlmsBreath:SetColor(1,1,1)
+	OlmsBreath:SetHidden(false)
+	OlmsBreath:SetDrawLayer(0)
+
+	local OlmsBreathNumber = WM:CreateControl("$(parent)OlmsBreathNumber",HTTOlms,CT_LABEL)
+	OlmsBreathNumber:SetFont("ZoFontCallout3")
+	OlmsBreathNumber:SetScale(0.8)
+	OlmsBreathNumber:SetDrawLayer(2)
+	OlmsBreathNumber:SetText("0")				
+	OlmsBreathNumber:SetAnchor(CENTER, OlmsBreath, CENTER,0,0)
+	OlmsBreathNumber:SetDimensions(64,64)
+	OlmsBreathNumber:SetHidden(false)
+	OlmsBreathNumber:SetHorizontalAlignment(1)
+	OlmsBreathNumber:SetVerticalAlignment(1)
+	OlmsBreathNumber:SetColor(1,1,1,1)
+
+	local OlmsBreathOutline = WM:CreateControl("$(parent)OlmsBreathOutline",HTTOlms,  CT_TEXTURE, 4)
+	OlmsBreathOutline:SetDimensions(128,128)
+	OlmsBreathOutline:SetAnchor(CENTER,OlmsBreath,CENTER,0,0)
+	OlmsBreathOutline:SetTexture("/esoui/art/hud/gamepad/gp_skillglow.dds")
+	OlmsBreathOutline:SetColor(1,0,0)
+	OlmsBreathOutline:SetHidden(false)
+	OlmsBreathOutline:SetDrawLayer(1)
+
+	local OlmsKite = WM:CreateControl("$(parent)OlmsKite",HTTOlms,  CT_TEXTURE, 4)
+	OlmsKite:SetDimensions(64,64)
+	OlmsKite:SetAnchor(TOPLEFT,OlmsBreath,TOPRIGHT,4,0)
+	OlmsKite:SetTexture("/esoui/art/icons/death_recap_shock_aoe.dds")
+	OlmsKite:SetColor(1,1,1)
+	OlmsKite:SetHidden(false)
+	OlmsKite:SetDrawLayer(0)
+
+	local OlmsKiteNumber = WM:CreateControl("$(parent)OlmsKiteNumber",HTTOlms,CT_LABEL)
+	OlmsKiteNumber:SetFont("ZoFontCallout3")
+	OlmsKiteNumber:SetScale(0.8)
+	OlmsKiteNumber:SetDrawLayer(2)
+	OlmsKiteNumber:SetText("0")				
+	OlmsKiteNumber:SetAnchor(CENTER, OlmsKite, CENTER,0,0)
+	OlmsKiteNumber:SetDimensions(64,64)
+	OlmsKiteNumber:SetHidden(false)
+	OlmsKiteNumber:SetHorizontalAlignment(1)
+	OlmsKiteNumber:SetVerticalAlignment(1)
+	OlmsKiteNumber:SetColor(1,1,1,1)
+
+	local OlmsKiteOutline = WM:CreateControl("$(parent)OlmsKiteOutline",HTTOlms,  CT_TEXTURE, 4)
+	OlmsKiteOutline:SetDimensions(128,128)
+	OlmsKiteOutline:SetAnchor(CENTER,OlmsKite,CENTER,0,0)
+	OlmsKiteOutline:SetTexture("/esoui/art/hud/gamepad/gp_skillglow.dds")
+	OlmsKiteOutline:SetColor(1,0,0)
+	OlmsKiteOutline:SetHidden(false)
+	OlmsKiteOutline:SetDrawLayer(1)
+
+
 
 	------------------ OLMS -----------------------------
 	
@@ -286,7 +426,7 @@ function AsylumInitializeUI()
 	local FelmsManifest = WM:CreateControl("$(parent)FelmsManifest",HTTFelms,  CT_TEXTURE, 4)
 	FelmsManifest:SetDimensions(64,64)
 	FelmsManifest:SetAnchor(TOPLEFT,FelmsIcon,BOTTOMLEFT,0,0)
-	FelmsManifest:SetTexture("/esoui/art/icons/ability_destructionstaff_001a.dds")
+	FelmsManifest:SetTexture("/esoui/art/icons/death_recap_magic_aoe.dds")
 	FelmsManifest:SetColor(1,1,1)
 	FelmsManifest:SetHidden(false)
 	FelmsManifest:SetDrawLayer(0)
@@ -314,7 +454,7 @@ function AsylumInitializeUI()
 	local FelmsJump = WM:CreateControl("$(parent)FelmsJump",HTTFelms,  CT_TEXTURE, 4)
 	FelmsJump:SetDimensions(64,64)
 	FelmsJump:SetAnchor(TOPLEFT,FelmsManifest,TOPRIGHT,4,0)
-	FelmsJump:SetTexture("/esoui/art/icons/ability_healer_032.dds")
+	FelmsJump:SetTexture("/esoui/art/icons/ability_nightblade_008.dds")
 	FelmsJump:SetColor(1,1,1)
 	FelmsJump:SetHidden(false)
 	FelmsJump:SetDrawLayer(0)
@@ -344,8 +484,8 @@ function AsylumInitializeUI()
 	------------------ FELMS -----------------------------
 
 
-	--HTTOlms:ClearAnchors()
-	--HTTOlms:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,(Rwidth*0.421875)+HTTsavedVars[HTT_variables.currentlySelectedProfile].xOffsetOlms,(Rheight/1.1125)+HTTsavedVars[HTT_variables.currentlySelectedProfile].yOffsetOlms)
+	HTTOlms:ClearAnchors()
+	HTTOlms:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,(Rwidth*0.421875)+HTTsavedVars[HTT_variables.currentlySelectedProfile].xOffsetOlms,(Rheight/1.1125)+HTTsavedVars[HTT_variables.currentlySelectedProfile].yOffsetOlms)
 	HTTLlothis:ClearAnchors()
 	HTTLlothis:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT,(Rwidth*0.63)+HTTsavedVars[HTT_variables.currentlySelectedProfile].xOffsetLlothis,(Rheight/1.1125)+HTTsavedVars[HTT_variables.currentlySelectedProfile].yOffsetLlothis)
 	HTTFelms:ClearAnchors()
@@ -382,7 +522,7 @@ local function onSceneChange(_,scene)
 end
 
 function HTT_switchAsylumUI(turnedOn)
-	if turnedOn then
+	if turnedOn and GetUnitZone("player") == "Asylum Sanctorium" then
 		HTTOlms:SetHidden(false)
 		HTTLlothis:SetHidden(false)
 		HTTFelms:SetHidden(false)

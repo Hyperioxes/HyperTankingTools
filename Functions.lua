@@ -1083,48 +1083,48 @@ end
 
 
 function HTT_functions.adjustCooldowns()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable) do
-		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[k].itemSet[1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[k].skill) then
-			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[k].itemSet) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[k].itemSet[1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[k].skill) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[k].skill)) then
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[k].turnedOn = true
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns) do
+		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].itemSet[1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].skill) then
+			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].itemSet) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].itemSet[1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].skill) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].skill)) then
+				HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].turnedOn = true
 			else
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[k].turnedOn = false
+				HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[v].turnedOn = false
 			end
 		end
 	end
 end
 
 function HTT_functions.adjustDebuffs()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable) do
-		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].itemSet[1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].skill) then
-			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].itemSet) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].itemSet[1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].skill) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].itemSet)) then
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].turnedOn = true
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
+		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].itemSet[1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].skill) then
+			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].itemSet) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].itemSet[1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].skill) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].itemSet)) then
+				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].turnedOn = true
 			else
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].turnedOn = false
+				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].turnedOn = false
 			end
 		end
 	end
 end
 
 function HTT_functions.adjustBuffs()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable) do
-		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[k].itemSet[1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[k].skill) then
-			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[k].itemSet) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[k].itemSet[1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[k].skill) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[k].skill)) then
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[k].turnedOn = true
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs) do
+		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].itemSet[1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].skill) then
+			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].itemSet) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].itemSet[1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].skill) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].skill)) then
+				HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].turnedOn = true
 			else
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[k].turnedOn = false
+				HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[v].turnedOn = false
 			end
 		end
 	end
 end
 
 function HTT_functions.adjustBoss()
-	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable) do
-		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].itemSet[1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].skill) then
-			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].itemSet) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].itemSet[1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].skill) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].skill)) then
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].turnedOnBoss = true
+	for k,v in pairs(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs) do
+		if not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].itemSet[1]) or not HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].skill) then
+			if (HTT_functions.TurnOnForWornSets(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].itemSet) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].itemSet[1])) and (HTT_functions.TurnOnForEquipppedSkills(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].skill) or HTT_functions.checkIfTableIsEmpty(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].skill)) then
+				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].turnedOnBoss = true
 			else
-				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[k].turnedOnBoss = false
+				HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[v].turnedOnBoss = false
 			end
 		end
 	end
@@ -1206,105 +1206,133 @@ end
 
 
 function HTT_functions.addBuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,skill,itemSet,itemSetNumber,icon)
-
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[tableSlot] = {
-		name = nameOfTracker,	
-		turnedOn = true,
-		turnedOnBoss = true,
-		color = {unpack(color or {})},
-		color2 = {unpack(color2 or {})},
-		color3 = {unpack(color3 or {})},
-		IDs = abilityID,
-		icon = icon or GetAbilityIcon(abilityID[1]),
-		duration = 0,
-		expiresAt =0,
-		skill = skill or {},
-		itemSet = {[1] = itemSet,[2] = itemSetNumber} or {},
-		text = text,
-		textWhenMissing = textWhenMissing,
-
-
-
-
+	if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable,nameOfTracker) then
+		d("Duplicate tracker name")
+	else
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable[tableSlot] = {
+			name = nameOfTracker,	
+			turnedOn = true,
+			turnedOnBoss = true,
+			color = {unpack(color or {})},
+			color2 = {unpack(color2 or {})},
+			color3 = {unpack(color3 or {})},
+			IDs = abilityID,
+			icon = icon or GetAbilityIcon(abilityID[1]),
+			duration = 0,
+			expiresAt =0,
+			skill = skill or {},
+			itemSet = {[1] = itemSet,[2] = itemSetNumber} or {},
+			text = text,
+			textWhenMissing = textWhenMissing,
 
 
-	}
-	table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs,tableSlot)
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].buffNameToID[nameOfTracker] = tableSlot
 
+
+
+
+		}
+		table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfBuffs,tableSlot)
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].buffNameToID[nameOfTracker] = tableSlot
+		if HTTSelfBuffs:GetNamedChild("SelfBuffDurationTimer"..freeSlot) == nil then
+			HTT_functions.createBuffControl(tableSlot)
+		end
+		if nameOfTracker == "Dragon Blood" then
+			for k,v in pairs(abilityID) do
+				HTT_functions.initializeEventsBuffsCombatEvent(v,tableSlot,23)
+			end
+		else
+			for k,v in pairs(abilityID) do
+				HTT_functions.initializeEventsBuffs(v,tableSlot)
+			end
+		end
+		HTT_functions.reanchorBuffs()
+	end
 end
 
 
 function HTT_functions.addDebuff(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,onlyCastByPlayer,skill,itemSet,itemSetNumber,icon)
-
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[tableSlot] = {
-		name = nameOfTracker,	
-		turnedOn = true,
-		turnedOnBoss = true,
-		color = {unpack(color or {})},
-		color2 = {unpack(color2 or {})},
-		color3 = {unpack(color3 or {})},
-		IDs = abilityID,
-		icon = icon or GetAbilityIcon(abilityID[1]),
-		duration = {},
-		expiresAt = {},
-		skill = skill or {},
-		itemSet = {[1] = itemSet,[2] = itemSetNumber} or {},
-		text = text,
-		textWhenMissing = textWhenMissing,
-		onlyCastByPlayer = onlyCastByPlayer,
-
-
-
-
+	if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable,nameOfTracker) then
+		d("Duplicate tracker name")
+	else
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable[tableSlot] = {
+			name = nameOfTracker,	
+			turnedOn = true,
+			turnedOnBoss = true,
+			color = {unpack(color or {})},
+			color2 = {unpack(color2 or {})},
+			color3 = {unpack(color3 or {})},
+			IDs = abilityID,
+			icon = icon or GetAbilityIcon(abilityID[1]),
+			duration = {},
+			expiresAt = {},
+			skill = skill or {},
+			itemSet = {[1] = itemSet,[2] = itemSetNumber} or {},
+			text = text,
+			textWhenMissing = textWhenMissing,
+			onlyCastByPlayer = onlyCastByPlayer,
 
 
-	}
-	table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs,tableSlot)
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffNameToID[nameOfTracker] = tableSlot
-	if HTT:GetNamedChild("DurationTimerReticle"..tableSlot) == nil then
-        HTT_functions.createDebuffControl(tableSlot)
-        HTT_functions.createBossDebuffControl(tableSlot)
-    end
-	if nameOfTracker == "Weapon Skill" then
-		for k,v in pairs(abilityID) do
-			HTT_functions.GenerateWeaponEvent(v,tableSlot)
+
+
+
+
+		}
+		table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfDebuffs,tableSlot)
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffNameToID[nameOfTracker] = tableSlot
+		if HTT:GetNamedChild("DurationTimerReticle"..tableSlot) == nil then
+			HTT_functions.createDebuffControl(tableSlot)
+			HTT_functions.createBossDebuffControl(tableSlot)
 		end
-    else
-		for k,v in pairs(abilityID) do
-			HTT_functions.initializeEventsDebuffs(v,tableSlot)
+		if nameOfTracker == "Weapon Skill" then
+			for k,v in pairs(abilityID) do
+				HTT_functions.GenerateWeaponEvent(v,tableSlot)
+			end
+		else
+			for k,v in pairs(abilityID) do
+				HTT_functions.initializeEventsDebuffs(v,tableSlot)
+			end
 		end
-    end
-	HTT_functions.reanchorReticle()
-    HTT_functions.reanchorBoss()
+		HTT_functions.reanchorReticle()
+		HTT_functions.reanchorBoss()
+	end
 end
 
 function HTT_functions.addCooldown(nameOfTracker,abilityID,tableSlot,text,textWhenMissing,color,color2,color3,duration,skill,itemSet,itemSetNumber,icon)
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[tableSlot] = {
-		name = nameOfTracker,	
-		turnedOn = true,
-		turnedOnBoss = true,
-		color = {unpack(color or {})},
-		color2 = {unpack(color2 or {})},
-		color3 = {unpack(color3 or {})},
-		IDs = abilityID,
-		icon = icon or GetAbilityIcon(abilityID[1]),
-		duration = duration,
-		expiresAt = 0,
-		skill = skill or {},
-		itemSet = {[1] = itemSet,[2] = itemSetNumber} or {},
-		text = text,
-		textWhenMissing = textWhenMissing,
+	if HTT_functions.findPositionOfElementInTable(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable,nameOfTracker) then
+		d("Duplicate tracker name")
+	else
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable[tableSlot] = {
+			name = nameOfTracker,	
+			turnedOn = true,
+			turnedOnBoss = true,
+			color = {unpack(color or {})},
+			color2 = {unpack(color2 or {})},
+			color3 = {unpack(color3 or {})},
+			IDs = abilityID,
+			icon = icon or GetAbilityIcon(abilityID[1]),
+			duration = duration,
+			expiresAt = 0,
+			skill = skill or {},
+			itemSet = {[1] = itemSet,[2] = itemSetNumber} or {},
+			text = text,
+			textWhenMissing = textWhenMissing,
 
 
 
 
 
 
-	}
-	table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns,tableSlot)
-	HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownNameToID[nameOfTracker] = tableSlot
-
+		}
+		table.insert(HTTsavedVars[HTT_variables.currentlySelectedProfile].orderOfCooldowns,tableSlot)
+		HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownNameToID[nameOfTracker] = tableSlot
+		if HTTCooldowns:GetNamedChild("CooldownDurationTimer"..tableSlot) == nil then
+			HTT_functions.createCooldownControl(tableSlot)
+		end
+		for k,v in pairs(abilityID) do
+			HTT_functions.GenerateCooldownEvent(v,tableSlot)
+		end
+		HTT_functions.reanchorCooldowns()
+	end
 end
 
 --1 debuff
