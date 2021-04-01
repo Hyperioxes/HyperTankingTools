@@ -35,8 +35,10 @@ function OnAddOnLoaded(event, addonName)
 
 
 	HTTsavedVars = ZO_SavedVars:NewAccountWide("HyperTankingToolsSV",57, nil, HTT_defaultSettings)
-	HTTsavedVarsCharacterSpecific = ZO_SavedVars:New("HyperTankingToolsSV",57, nil, HTT_defaultSettingsCharacterSpecific)
-	HTT_variables.currentlySelectedProfile = HTTsavedVarsCharacterSpecific["currentlySelectedProfile"]
+	SVCS = ZO_SavedVars:New("HyperTankingToolsSV",57, nil, HTT_defaultSettingsCharacterSpecific)
+	SVAW = ZO_SavedVars:NewAccountWide("HyperTankingToolsSV",57, nil, HTT_defaultSettingsAccountWideNonProfile)
+	HTT_variables.currentlySelectedProfile = SVCS["currentlySelectedProfile"]
+
 	if type(HTTsavedVars[HTT_variables.currentlySelectedProfile]) ~= "table" then
 		HTT_variables.currentlySelectedProfile = HTT_functions.pickAnyElement(HTTsavedVars["availableProfiles"])
 	end
@@ -187,13 +189,7 @@ function OnAddOnLoaded(event, addonName)
 		end
 	end
 
-	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
-		for k1,v1 in pairs(HTTsavedVars[v].orderOfDebuffs) do
-			if type(HTTsavedVars[v].debuffTable[v1].itemSet) ~= "table" then
-				HTTsavedVars[v].debuffTable[v1].itemSet = {[1] = {},[2] = 0}
-			end
-		end
-	end
+	
 
 
 	for k,v in pairs(HTTsavedVars["availableProfiles"]) do
@@ -254,6 +250,15 @@ function OnAddOnLoaded(event, addonName)
 			HTTsavedVars[v].debuffTable["onlyCastByPlayer"] = nil
 			HTTsavedVars[v].debuffTable["isPreMade"] = nil
 	end
+
+	for _,v in pairs(HTTsavedVars["availableProfiles"]) do
+		for k1,v1 in pairs(HTTsavedVars[v].orderOfDebuffs) do
+			if type(HTTsavedVars[v].debuffTable[v1].itemSet) ~= "table" then
+				HTTsavedVars[v].debuffTable[v1].itemSet = {[1] = {},[2] = 0}
+			end
+		end
+	end
+
 
 	for k,v in pairs(HTTsavedVars["availableProfiles"]) do
 		if type(HTTsavedVars[v].buffTable["names"]) == "table" then
@@ -396,16 +401,6 @@ function OnAddOnLoaded(event, addonName)
 	end
 
 
-	for k,v in pairs(HTTsavedVars["availableProfiles"]) do
-		if type(HTTsavedVars[v].xOffsetOlms) ~= "number" then
-			HTTsavedVars[v].xOffsetLlothis = 0
-			HTTsavedVars[v].yOffsetLlothis = 0
-			HTTsavedVars[v].xOffsetFelms = 0
-			HTTsavedVars[v].yOffsetFelms = 0
-			HTTsavedVars[v].xOffsetOlms = 0
-			HTTsavedVars[v].yOffsetOlms = 0
-		end
-	end
 
 
 
@@ -427,6 +422,7 @@ function OnAddOnLoaded(event, addonName)
 	AsylumInitializeUI()
 	HTT_LoadSettings()
 	HTT_LoadSettingsPremadeTrackers()
+	HTT_LoadSettingsRaidAlerts()
 	if HTTsavedVars[HTT_variables.currentlySelectedProfile].isStoneFistCustomIconOn then
 		StonefistStompIconHook()
 	end
@@ -435,6 +431,9 @@ function OnAddOnLoaded(event, addonName)
 	EVENT_MANAGER:RegisterForUpdate("HTTalwaysUpdate", 100,HTT_updateUI.UpdateAlways)
 	EVENT_MANAGER:RegisterForUpdate("HTTupdateDodgeRolls", 50,HTT_DodgeRoll_Update)
 	HTT_functions.UpdateBaseGameUI(HTTsavedVars[HTT_variables.currentlySelectedProfile].isBaseGameUIOn)
+	CALLBACK_MANAGER:RegisterCallback("OnWorldMapChanged", function() -- on map change
+	HTT_AsylumUIUpdate()
+	end)
 end
 
 
@@ -487,17 +486,5 @@ EVENT_MANAGER:RegisterForEvent(HTT.name, EVENT_PLAYER_COMBAT_STATE, function()
 end)
 
 ------------------- COMBAT / OUT OF COMBAT SWITCHING ---------------------
-CALLBACK_MANAGER:RegisterCallback("OnWorldMapChanged", function() -- on map change
-	HTT_switchAsylumUI(true)
 
-
-
-
-
-
-
-
-
-
-end)
 

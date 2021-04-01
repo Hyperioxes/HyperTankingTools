@@ -632,7 +632,7 @@ function HTT_LoadSettings()
         name = "Hyper Tanking Tools",
         displayName = "Hyper Tanking Tools",
         author = "Hyperioxes",
-        version = "1.17",
+        version = "1.18",
 		website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
 		feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
 		donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
@@ -673,7 +673,7 @@ function HTT_LoadSettings()
                 setFunc = function(var) HTT_functions.hideEverythingOnSwitch()
                 HTT_events.unregisterEvents()
                 HTT_variables.currentlySelectedProfile = var
-                HTTsavedVarsCharacterSpecific["currentlySelectedProfile"] = var
+                SVCS["currentlySelectedProfile"] = var
                 currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
                 currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
                 currentlyEditedCooldownKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].cooldownTable)
@@ -711,7 +711,7 @@ function HTT_LoadSettings()
 				func = function()  HTT_functions.hideEverythingOnSwitch()
                 HTT_events.unregisterEvents()
                 HTT_functions.deleteProfile(HTT_variables.currentlySelectedProfile)
-                HTTsavedVarsCharacterSpecific["currentlySelectedProfile"] = HTT_functions.pickAnyElement(HTTsavedVars["availableProfiles"])
+                SVCS["currentlySelectedProfile"] = HTT_functions.pickAnyElement(HTTsavedVars["availableProfiles"])
                 HTT_variables.currentlySelectedProfile = HTT_functions.pickAnyElement(HTTsavedVars["availableProfiles"])
                 currentlyEditedDebuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].debuffTable)
                 currentlyEditedBuffKey = HTT_functions.pickAnyKey(HTTsavedVars[HTT_variables.currentlySelectedProfile].buffTable)
@@ -766,7 +766,7 @@ function HTT_LoadSettings()
                     HTT_events.unregisterEvents()
                     HTT_functions.hideEverythingOnSwitch()
                     HTT_functions.createProfile(createNewProfileSavedVariables["name"])
-                    HTTsavedVarsCharacterSpecific["currentlySelectedProfile"] = createNewProfileSavedVariables["name"]
+                    SVCS["currentlySelectedProfile"] = createNewProfileSavedVariables["name"]
                     HTT_variables.currentlySelectedProfile = createNewProfileSavedVariables["name"]
                     profileDropdown.data.choices =  HTT_functions.removeEmptySpacesInTable(HTTsavedVars["availableProfiles"]) or {"No profiles"}
                     profileDropdown:UpdateChoices()
@@ -809,7 +809,7 @@ function HTT_LoadSettings()
                     HTT_events.unregisterEvents()
                     HTT_functions.hideEverythingOnSwitch()
                     HTT_functions.createEmptyProfile(createNewProfileSavedVariables["name"])
-                    HTTsavedVarsCharacterSpecific["currentlySelectedProfile"] = createNewProfileSavedVariables["name"]
+                    SVCS["currentlySelectedProfile"] = createNewProfileSavedVariables["name"]
                     HTT_variables.currentlySelectedProfile = createNewProfileSavedVariables["name"]
                     profileDropdown.data.choices =  HTT_functions.removeEmptySpacesInTable(HTTsavedVars["availableProfiles"]) or {"No profiles"}
                     profileDropdown:UpdateChoices()
@@ -3827,7 +3827,7 @@ function HTT_LoadSettingsPremadeTrackers()
         name = "Hyper Tanking Tools - Premade Trackers",
         displayName = "Hyper Tanking Tools - Premade Trackers",
         author = "Hyperioxes",
-        version = "1.17",
+        version = "1.18",
 		website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
 		feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
 		donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
@@ -3990,4 +3990,170 @@ function HTT_LoadSettingsPremadeTrackers()
     end
 
     LibAddonMenu2:RegisterOptionControls("Hyper Tanking Tools - Premade Trackers", optionsTable)
+
+
+
+end
+
+local sounds = {"none",SOUNDS.DUEL_START}
+
+
+function HTT_LoadSettingsRaidAlerts()
+    local panelData = {
+        type = "panel",
+        name = "Hyper Tanking Tools - Raid Alerts",
+        displayName = "Hyper Tanking Tools - Raid Alerts",
+        author = "Hyperioxes",
+        version = "1.18",
+	    website = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html",
+	    feedback = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#comments",
+	    donation = "https://www.esoui.com/downloads/info2778-HyperTankingTools.html#donate",
+        slashCommand = "/httra",
+        registerForRefresh = true,
+        registerForDefaults = true,
+    }
+    LibAddonMenu2:RegisterAddonPanel("Hyper Tanking Tools - Raid Alerts", panelData)
+
+    local optionsTable = {}
+    
+
+
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Asylum",
+        getFunc = function() return  SVAW.Asylum end,
+        setFunc = function(value) SVAW.Asylum = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "header",
+        name = ZO_HIGHLIGHT_TEXT:Colorize("Saint Olms"),
+        width = "full",	--or "half" (optional)
+	})
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Turn ON/OFF",
+        getFunc = function() return  SVAW.Olms end,
+        setFunc = function(value) SVAW.Olms = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Scalding Roar (breath)",
+        getFunc = function() return SVAW.OlmsBreath end,
+        setFunc = function(value) SVAW.OlmsBreath = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Storm the Heavens (kite)",
+        getFunc = function() return SVAW.OlmsKite end,
+        setFunc = function(value) SVAW.OlmsKite = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Exhaustive Charges",
+        getFunc = function() return SVAW.OlmsExhaustive end,
+        setFunc = function(value) SVAW.OlmsExhaustive = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "header",
+        name = ZO_HIGHLIGHT_TEXT:Colorize("Saint Llothis"),
+        width = "full",	--or "half" (optional)
+	})
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Turn ON/OFF",
+        getFunc = function() return SVAW.Llothis end,
+        setFunc = function(value) SVAW.Llothis = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Oppressive Bolts (interrupt)",
+        getFunc = function() return SVAW.LlothisInterrupt end,
+        setFunc = function(value) SVAW.LlothisInterrupt = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "dropdown",
+        name =  "Oppressive Bolts (interrupt) Sound Alert",
+        choices = sounds,
+        getFunc = function() return SVAW.LlothisInterruptSound end,
+        setFunc = function(value) SVAW.LlothisInterruptSound = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Defiling Dye Blast (cone)",
+        getFunc = function() return SVAW.LlothisCone end,
+        setFunc = function(value) SVAW.LlothisCone = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Pernicious Transmission (jump)",
+        getFunc = function() return SVAW.LlothisJump end,
+        setFunc = function(value) SVAW.LlothisJump = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "header",
+        name = ZO_HIGHLIGHT_TEXT:Colorize("Saint Felms"),
+        width = "full",	--or "half" (optional)
+	})
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Turn ON/OFF",
+        getFunc = function() return SVAW.Felms end,
+        setFunc = function(value) SVAW.Felms = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Manifest Wrath",
+        getFunc = function() return SVAW.FelmsManifest end,
+        setFunc = function(value) SVAW.FelmsManifest = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name =  "Teleport Strike",
+        getFunc = function() return SVAW.FelmsJump end,
+        setFunc = function(value) SVAW.FelmsJump = value 
+        HTT_AsylumUIUpdate()
+        end,
+        width = "full",	--or "half" (optional)
+    })
+
+
+
+
+    LibAddonMenu2:RegisterOptionControls("Hyper Tanking Tools - Raid Alerts", optionsTable)
 end

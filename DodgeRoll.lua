@@ -1,4 +1,4 @@
-
+local alertSentAt = {}
 local debugCounter = {}
 local bar = {}
 for i=1,7 do
@@ -152,6 +152,7 @@ function HTT_DodgeRoll_SendAlert(abilityID,abilityName,duration,sourceName,textu
 	if i == 8 then
 		return true
 	end
+	alertSentAt[GetGameTimeSeconds()] = abilityID
 	bar[i].windup = false
 	if hitValue == windup then
 		bar[i].expiresAt = GetGameTimeSeconds()+windup/1000
@@ -233,7 +234,7 @@ function HTT_DodgeRoll_RegisterEvent(abilityID,duration,notOnlyPlayer,sound,text
 	EVENT_MANAGER:RegisterForEvent("HTT"..abilityID..duration, EVENT_COMBAT_EVENT, function( _, result, _, abilityName, _, 
 	_, sourceName, _, _, targetType, hitValue, _, _, _, _, _, _)
 
-	if result == triggerOnResult and ((targetType == COMBAT_UNIT_TYPE_PLAYER) or notOnlyPlayer) and (preventDouble==nil or preventDouble==hitValue) then
+	if result == triggerOnResult and ((targetType == COMBAT_UNIT_TYPE_PLAYER) or notOnlyPlayer) and (preventDouble==nil or preventDouble==hitValue) and (alertSentAt[GetGameTimeSeconds()] or -1) ~= abilityID then
 		HTT_DodgeRoll_SendAlert(abilityID,nameOverride or abilityName,duration,sourceNameOverride or sourceName,texture,dodgeDurationOverride,onlyBlock,windup,hitValue)
 		if alertRepeat then
 			for _,v in pairs(alertRepeat) do

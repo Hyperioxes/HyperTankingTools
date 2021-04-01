@@ -102,12 +102,6 @@
 	yOffsetMagickaStraight = 0,
 	xOffsetSynergies = 200,
 	yOffsetSynergies = 200,
-	xOffsetLlothis = 0,
-	yOffsetLlothis = 0,
-	xOffsetFelms = 0,
-	yOffsetFelms = 0,
-	xOffsetOlms = 0,
-	yOffsetOlms = 0,
 	width=200,
 	height=40,
 	currentlySelectedBarTexture = "HyperTankingTools/icons/gradientProgressBar.dds",
@@ -233,9 +227,36 @@ end
 
 
 HTT_defaultSettingsCharacterSpecific = {
+
+	
+
 	["currentlySelectedProfile"] = "test1",
 }
 
+HTT_defaultSettingsAccountWideNonProfile = {
+	xOffsetAlertBoss1 = 0,
+	yOffsetAlertBoss1 = 0,
+	xOffsetAlertBoss2 = 0,
+	yOffsetAlertBoss2 = 0,
+	xOffsetAlertBoss3 = 0,
+	yOffsetAlertBoss3 = 0,
+
+	--ASYLUM
+	Asylum = true,
+	Olms = true,
+	OlmsBreath = true,
+	OlmsKite = true,
+	OlmsExhaustive = true,
+	Llothis = true,
+	LlothisInterrupt = true,
+	LlothisInterruptSound = SOUNDS.DUEL_START,
+	LlothisCone = true,
+	LlothisJump = true,
+	Felms = true,
+	FelmsManifest = true,
+	FelmsJump = true,
+
+}
 
 HTT_defaultSettings = {
 	["availableProfiles"] = {
