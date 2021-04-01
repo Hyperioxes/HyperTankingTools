@@ -10,12 +10,12 @@ local interruptReadyAt = 0
 local manifestReadyAt = 0
 local felmsJumpReadyAt = 0
 
-local llothisSpawned = true
+local llothisSpawned = false
 local llothisDormant = false
-local llothisEnrageAt = 9999999
-local felmsSpawned = true
+local llothisEnrageAt = 0
+local felmsSpawned = false
 local felmsDormant = false
-local felmsEnrageAt = 9999999
+local felmsEnrageAt = 0
 
 local function UpdateEvery100()
 	--OLMS
